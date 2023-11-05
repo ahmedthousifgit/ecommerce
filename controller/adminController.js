@@ -61,27 +61,24 @@ exports.adminCategoryForm = async (req, res) => {
   }
 };
 
+
 exports.submitCategory = async (req, res) => {
-  const { image, name, description } = req.body;
   try {
+    const { image, name, description } = req.body;
     const category = new Category({ image, name, description });
     await category.save();
-    res.redirect("/admin/listCategories");
-  } catch (error) {
-    console.log(error);
-  }
-};
 
-exports.listCategories = async (req, res) => {
-  try {
+    // Fetch the list of categories and indicate that a submission has occurred
     const categories = await Category.find();
-    const isSubmitted = req.url.includes("#submitted");
+    const isSubmitted = true;
+
     res.render("admin/categoryForm", { categories, isSubmitted });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "An error occurred" });
   }
 };
+
 
 exports.logOut = (req, res) => {
   req.session.adminLoggedIn = null;

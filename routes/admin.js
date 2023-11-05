@@ -27,8 +27,16 @@ router.get('/categories',adminController.adminCategoryForm)
 
 router.post('/categoryForm',adminController.submitCategory)
 
-router.get('/listCategories',adminController.listCategories)
 
+
+//PRODUCT
+router.get('/product-list',(req,res)=>{
+  res.render('admin/product-list')
+})
+
+router.get('/add-product',(req,res)=>{
+  res.render('admin/add-products')
+})
 
 router.get('/logout',adminController.logOut)
 
