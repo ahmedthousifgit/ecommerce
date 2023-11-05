@@ -1,0 +1,85 @@
+<%-include('../partials/adminheader')  %>
+
+<body>
+    <div class="screen-overlay"></div>
+    <%-include('../partials/adminaside') %>
+    <main class="main-wrap">
+       <%-include('../partials/adminNav') %>
+        <section class="content-main">
+            <div class="content-header">
+                <div>
+                    <h2 class="content-title card-title">Categories </h2>
+                    <p>Add, edit or delete a category</p>
+                </div>
+                
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <form action="/admin/categoryForm#submitted" method="post">
+                                <div class="mb-4">
+                                    <label for="product_name" class="form-label">Image Url</label>
+                                    <input type="text" placeholder="Type here" class="form-control" id="product_name" name="image">
+                                </div>
+                                <div class="mb-4">
+                                    <label for="product_slug" class="form-label">Category name</label>
+                                    <input type="text" placeholder="Type here" class="form-control" id="product_slug" name="name">
+                                </div>
+                                <div class="mb-4">
+                                    <label class="form-label">Description</label>
+                                    <textarea placeholder="Type here" class="form-control" name="description"></textarea>
+                                </div>
+                                <div class="d-grid">
+                                    <button class="btn btn-primary" type="submit">Create category</button>
+                                </div>
+                            </form>
+                            </div>
+                        
+                            <div class="col-md-9">
+                                <div class="table-responsive">
+                                  <table class="table table-hover">
+                                    <thead>
+                                      <tr>
+                                        <th>Image</th>
+                                        <th>Name</th>
+                                        <th>Description</th>
+                                        <th>Order</th>
+                                        <th class="text-end">Action</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      <% categories.forEach(category => { %>
+                                      <tr>
+                                        <td>
+                                          <img src="<%= category.image %>" alt="Category Image" width="50" height="50">
+                                        </td>
+                                        <td><b><%= category.name %></b></td>
+                                        <td><%= category.description %></td>
+                                        <td><%= category.order %></td>
+                                        <td class="text-end">
+                                          <div class="dropdown">
+                                            <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm">
+                                              <i class="material-icons md-more_horiz"></i>
+                                            </a>
+                                            <div class="dropdown-menu">
+                                              <a class="dropdown-item" href="#">List </a>
+                                              <a class="dropdown-item" href="#">Unlist</a>
+                                              <a class="dropdown-item text-danger" href="#">Delete</a>
+                                            </div>
+                                          </div>
+                                        </td>
+                                      </tr>
+                                      <% }); %>
+                                    </tbody>
+                                  </table>
+                                </div>
+                              </div>
+                              
+                          
+                        
+                    </div> <!-- .row // -->
+                </div> <!-- card body .// -->
+            </div> <!-- card .// -->
+        </section> <!-- content-main end// -->
+       <%-include('../partials/adminFooter') %>

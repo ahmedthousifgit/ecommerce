@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const categoryModel = mongoose.schema({
+const categoryModel = mongoose.Schema({
     image:{
         type:String,
         required:true
