@@ -2,6 +2,8 @@ const adminModel = require("../models/admin");
 const Category = require("../models/category");
 const bcrypt = require("bcrypt");
 const auth = require("../middleware/auth");
+const Product = require("../models/products-model");
+// const multer = require("../multer/multers");
 
 exports.adminIndex = (req, res) => {
   if (req.session.adminLoggedIn == true) {
@@ -61,7 +63,6 @@ exports.adminCategoryForm = async (req, res) => {
   }
 };
 
-
 exports.submitCategory = async (req, res) => {
   try {
     const { image, name, description } = req.body;
@@ -79,6 +80,61 @@ exports.submitCategory = async (req, res) => {
   }
 };
 
+exports.addProductForm = async (req, res) => {
+  try {
+    const categories = await Category.find();
+    res.render("admin/add-products", { categories });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "An error occured" });
+  }
+};
+
+exports.addProduct = async (req, res) => {
+  try {
+    const {
+      title,
+      description,
+      regularPrice,
+      salePrice,
+      units,
+      taxRate,
+      color,
+      category,
+      subCategory,
+    } = req.body;
+
+    const product = new Product({
+      title,
+      description,
+      regularPrice,
+      salePrice,
+      units,
+      taxRate,
+      color,
+      category,
+      subCategory,
+      // image:req.file.filename,
+    });
+
+    await product.save();
+
+    res.redirect("/admin/product-list");
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "An error occurred" });
+  }
+};
+
+exports.listProduct = async (req, res) => {
+  try {
+    const products = await Product.find();
+    res.render("admin/product-list", { products });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "An error occurred" });
+  }
+};
 
 exports.logOut = (req, res) => {
   req.session.adminLoggedIn = null;

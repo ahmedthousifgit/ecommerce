@@ -1,133 +1,158 @@
 <%-include('../partials/adminheader') %>
 
 <body>
-    <div class="screen-overlay"></div>
-    <%-include('../partials/adminaside') %>
-    <main class="main-wrap">
-        <%-include('../partials/adminNav') %>
-        <section class="content-main">
-            <div class="row">
-                <div class="col-9">
-                    <div class="content-header">
-                        <h2 class="content-title">Add New Product</h2>
-
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <h4>Basic</h4>
-                        </div>
-                        <div class="card-body">
-                            <form>
-                                <div class="mb-4">
-                                    <label for="product_name" class="form-label">Product title</label>
-                                    <input type="text" placeholder="Type here" class="form-control" id="product_name">
-                                </div>
-                                <div class="mb-4">
-                                    <label class="form-label">Full description</label>
-                                    <textarea placeholder="Type here" class="form-control" rows="4"></textarea>
-                                </div>
-                                <div class="row">
-                                    <div class="col-lg-4">
-                                        <div class="mb-4">
-                                            <label class="form-label">Regular price</label>
-                                            <div class="row gx-2">
-                                                <input placeholder="$" type="text" class="form-control">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-4">
-                                        <div class="mb-4">
-                                            <label class="form-label">Sale price</label>
-                                            <input placeholder="$" type="text" class="form-control">
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-4">
-                                        <label class="form-label">Unit</label>
-                                        <input placeholder="$" type="text" class="form-control">
-                                        
-                                    </div>
-                                </div>
-                                <div class="mb-4">
-                                    <label class="form-label">Tax rate</label>
-                                    <input type="text" placeholder="%" class="form-control" id="product_name">
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" style="background-color: red; border-color: red;" name="color" id="inlineRadio2" value="red" checked>
-                                    <label class="form-check-label" for="inlineRadio2">Red</label>
-                                  </div>
-                                  <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" style="background-color: white; border-color: black;" name="color" id="inlineRadio2" value="black"  >
-                                    <label class="form-check-label" for="inlineRadio2">white</label>
-                                  </div>
-                             
-                                  <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" style="background-color: brown; border-color: brown;" name="color" id="inlineRadio2" value="Brown" >
-                                    <label class="form-check-label" for="inlineRadio2">Brown</label>
-                                  </div>
-                               
-    
-                                  <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" style="background-color: black; border-color: black;" name="color" id="inlineRadio2" value="black">
-                                    <label class="form-check-label" for="inlineRadio2">Black</label>
-                                  </div>
-                               
-                                  <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" style="background-color: Blue; border-color: Blue;" name="color" id="inlineRadio2" value="Blue">
-                                    <label class="form-check-label" for="inlineRadio2">Blue</label>
-                                  </div>
-                               
-                                  <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" style="background-color: Orange; border-color: Orange;" name="color" id="inlineRadio2" value="Orange">
-                                    <label class="form-check-label" for="inlineRadio2">Orange</label>
-                                  </div>
-                            </form>
-                        </div>
-                    </div> <!-- card end// -->
-                    
-                </div>
-                <div class="col-lg-3">
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <h4>Media</h4>
-                        </div>
-                        <div class="card-body">
-                            <div class="input-upload">
-                                <img src="/assets/imgs/theme/upload.svg" alt="">
-                                <input class="form-control" type="file">
-                            </div>
-                        </div>
-                    </div> <!-- card end// -->
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <h4>Organization</h4>
-                        </div>
-                        <div class="card-body">
-                            <div class="row gx-2">
-                                <div class="col-sm-6 mb-3">
-                                    <label class="form-label">Category</label>
-                                    <select class="form-select">
-                                        <option> Men </option>
-                                        <option> Women</option>
-                                        <option> Kids </option>
-                                       
-                                    </select>
-                                </div>
-                                <div class="col-sm-6 mb-3">
-                                    <label class="form-label">Sub-category</label>
-                                    <select class="form-select">
-                                        <option> Nike</option>
-                                        <option> Adidas</option>
-                                        <option> Puma </option>
-                                        <option> Sketchers </option>
-                                    </select>
-                                </div>
-                                
-                            </div> <!-- row.// -->
-                        </div>
-                    </div> <!-- card end// -->
-                </div>
+  <div class="screen-overlay"></div>
+  <%-include('../partials/adminaside') %>
+  <main class="main-wrap">
+    <%-include('../partials/adminNav') %>
+    <section class="content-main">
+      <form action="/admin/add-product" method="post">
+        <div class="row">
+          <div class="col-9">
+            <div class="content-header">
+              <h2 class="content-title">Add New Product</h2>
             </div>
-        </section> <!-- content-main end// -->
-       <%-include('../partials/adminfooter')  %>
+          </div>
+          <div class="col-lg-6">
+            <div class="card mb-4">
+              <div class="card-header">
+                <h4>Basic</h4>
+              </div>
+              <div class="card-body">
+                <div class="mb-4">
+                  <label for="product_name" class="form-label"
+                    >Product title</label
+                  >
+                  <input
+                    type="text"
+                    placeholder="Type here"
+                    class="form-control"
+                    id="product_name"
+                    name="title"
+                  />
+                </div>
+                <div class="mb-4">
+                  <label class="form-label">Full description</label>
+                  <textarea
+                    placeholder="Type here"
+                    class="form-control"
+                    rows="4"
+                    name="description"
+                  ></textarea>
+                </div>
+                <!-- <div class="mb-4">
+                  <label class="form-label">Product Image</label>
+                  <input type="file" class="form-control" name="image" />
+                </div> -->
+
+                <div class="row">
+                  <div class="col-lg-4">
+                    <div class="mb-4">
+                      <label class="form-label">Regular price</label>
+                      <div class="row gx-2">
+                        <input
+                          placeholder="$"
+                          type="text"
+                          class="form-control"
+                          name="regularPrice"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-lg-4">
+                    <div class="mb-4">
+                      <label class="form-label">Sale price</label>
+                      <input
+                        placeholder="$"
+                        type="text"
+                        class="form-control"
+                        name="salePrice"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-lg-4">
+                    <label class="form-label">Unit</label>
+                    <input
+                      placeholder="$"
+                      type="text"
+                      class="form-control"
+                      name="units"
+                    />
+                  </div>
+                </div>
+                <div class="mb-4">
+                  <label class="form-label">Tax rate</label>
+                  <input
+                    type="text"
+                    placeholder="%"
+                    class="form-control"
+                    name="taxRate"
+                  />
+                </div>
+                <!-- Add radio input for color selection with the name attribute -->
+                <!-- Other form fields for product details -->
+                <div class="d-flex justify-content-end">
+                  <button
+                    type="submit"
+                    class="btn btn-md rounded font-sm col-lg-4 hover-up"
+                  >
+                    Add product
+                  </button>
+                </div>
+              </div>
+            </div>
+            <!-- card end// -->
+          </div>
+
+          <div class="col-lg-3">
+            <div class="card mb-4">
+              <div class="card-header">
+                <h4>Media</h4>
+              </div>
+              <div class="card-body">
+                <div class="input-upload">
+                  <img src="/assets/imgs/theme/upload.svg" alt="" />
+                  <input class="form-control" type="file" />
+                </div>
+              </div>
+            </div>
+            <!-- card end// -->
+            <div class="card mb-4">
+              <div class="card-header">
+                <h4>Organization</h4>
+              </div>
+              <div class="card-body">
+                <div class="row gx-2">
+                  <div class="col-sm-6 mb-3">
+                    <label class="form-label">Category</label>
+                    <select class="form-select" name="category">
+                      <% categories.forEach(category => { %>
+                      <option value="<%= category._id %>">
+                        <%= category.name %>
+                      </option>
+                      <% }); %>
+                    </select>
+                  </div>
+                  <div class="col-sm-6 mb-3">
+                    <label class="form-label">Sub-category</label>
+                    <select class="form-select" name="Sub-category">
+                      <option>Nike</option>
+                      <option>Adidas</option>
+                      <option>Puma</option>
+                      <option>Sketchers</option>
+                    </select>
+                  </div>
+                </div>
+                <!-- row.// -->
+              </div>
+            </div>
+            <!-- card end// -->
+          </div>
+        </div>
+      </form>
+    </section>
+    <!-- content-main end// -->
+
+    <%-include('../partials/adminfooter') %>
+  </main>
+</body>
