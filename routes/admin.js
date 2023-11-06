@@ -2,6 +2,8 @@ var express = require("express");
 var router = express.Router();
 const adminController = require("../controller/adminController");
 const auth = require("../middleware/auth");
+const multer = require("../multer/multers");
+const update = multer.update;
 
 router.get("/", auth.adminLoggedIn, adminController.adminIndex);
 
@@ -29,10 +31,11 @@ router.post("/categoryForm", adminController.submitCategory);
 //PRODUCT
 router.get("/add-product", adminController.addProductForm);
 
-router.post("/add-product", adminController.addProduct);
+router.post("/add-product",update.array("image",1),adminController.addProduct);
 
 router.get("/product-list", adminController.listProduct);
 
+//LOGOUT
 router.get("/logout", adminController.logOut);
 
 module.exports = router;

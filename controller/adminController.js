@@ -90,35 +90,59 @@ exports.addProductForm = async (req, res) => {
   }
 };
 
+// exports.addProduct = async (req, res) => {
+//   try {
+//     const {
+//       title,
+//       description,
+//       regularPrice,
+//       salePrice,
+//       units,
+//       taxRate,
+//       color,
+//       category,
+//       subCategory,
+//     } = req.body;
+
+//     const product = new Product({
+//       title,
+//       description,
+//       regularPrice,
+//       salePrice,
+//       units,
+//       taxRate,
+//       color,
+//       category,
+//       subCategory,
+//       image:req.file.filename,
+//     });
+
+//     await product.save();
+
+//     res.redirect("/admin/product-list");
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).json({ error: "An error occurred" });
+//   }
+// };
+
 exports.addProduct = async (req, res) => {
   try {
-    const {
-      title,
-      description,
-      regularPrice,
-      salePrice,
-      units,
-      taxRate,
-      color,
-      category,
-      subCategory,
-    } = req.body;
+    const productData = {
+      name: req.body.name,
+      description: req.body.description,
+      category: req.body.category,
+      subCategory: req.body.subCategory,
+      regularPrice: req.body.regularPrice,
+      salePrice: req.body.salePrice,
+      createdOn: Date.now(),
+      taxRate: req.body.taxRate,
+      units: req.body.units,
+      image: [req.files[0].filename],
+    };
 
-    const product = new Product({
-      title,
-      description,
-      regularPrice,
-      salePrice,
-      units,
-      taxRate,
-      color,
-      category,
-      subCategory,
-      // image:req.file.filename,
-    });
-
+    const product = new Product(productData);
     await product.save();
-
     res.redirect("/admin/product-list");
   } catch (error) {
     console.log(error);
