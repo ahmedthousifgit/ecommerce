@@ -4,6 +4,7 @@ const adminController = require("../controller/adminController");
 const auth = require("../middleware/auth");
 const multer = require("../multer/multers");
 const update = multer.update;
+const upload = multer.upload
 
 router.get("/", auth.adminLoggedIn, adminController.adminIndex);
 
@@ -26,7 +27,7 @@ router.get("/dashboard", (req, res) => {
 //CATEGORY
 router.get("/categories", adminController.adminCategoryForm);
 
-router.post("/categoryForm", adminController.submitCategory);
+router.post("/categoryForm",upload.single('image'),adminController.submitCategory);
 
 //PRODUCT
 router.get("/add-product", adminController.addProductForm);

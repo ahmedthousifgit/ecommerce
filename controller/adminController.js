@@ -65,8 +65,13 @@ exports.adminCategoryForm = async (req, res) => {
 
 exports.submitCategory = async (req, res) => {
   try {
-    const { image, name, description } = req.body;
-    const category = new Category({ image, name, description });
+      const categoryData = {
+      name: req.body.name,
+      description: req.body.description,
+      image: req.file.filename,
+    }
+
+    const category = new Category(categoryData);
     await category.save();
 
     // Fetch the list of categories and indicate that a submission has occurred
@@ -89,42 +94,6 @@ exports.addProductForm = async (req, res) => {
     res.status(500).json({ error: "An error occured" });
   }
 };
-
-// exports.addProduct = async (req, res) => {
-//   try {
-//     const {
-//       title,
-//       description,
-//       regularPrice,
-//       salePrice,
-//       units,
-//       taxRate,
-//       color,
-//       category,
-//       subCategory,
-//     } = req.body;
-
-//     const product = new Product({
-//       title,
-//       description,
-//       regularPrice,
-//       salePrice,
-//       units,
-//       taxRate,
-//       color,
-//       category,
-//       subCategory,
-//       image:req.file.filename,
-//     });
-
-//     await product.save();
-
-//     res.redirect("/admin/product-list");
-//   } catch (error) {
-//     console.log(error);
-//     res.status(500).json({ error: "An error occurred" });
-//   }
-// };
 
 exports.addProduct = async (req, res) => {
   try {
