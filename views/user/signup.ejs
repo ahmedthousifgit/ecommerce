@@ -10,13 +10,9 @@
     <div class="signup-container">
         <form action="/signup" method="POST" onsubmit="validateForm(event)">
             <div class="error-message">
-                <% if (errorMessage && errorMessage.length > 0) { %>
-                  <p style="color: red;">Please fix the following errors:</p>
-                  <ul>
-                    <% errorMessage.forEach(function(error) { %>
-                      <li><%= error.msg %></li>
-                    <% }); %>
-                  </ul>
+                <% if (errorMessage ) { %>
+                  <p style="color: red;"><%= errorMessage %></p>
+                  
                 <% } %>
               </div>
             <h2>Sign Up</h2>

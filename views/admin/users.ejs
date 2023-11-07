@@ -52,12 +52,12 @@
                         <% } %>
                     </td>
                     <td>
-                        <% if (users.blocked) { %>
-                          <a href="/admin/unblockUser/<%= users._id %>">
+                        <% if (user.blocked) { %>
+                          <a href="/admin/unblockUser/<%= user._id %>">
                             <button class="badge rounded-pill alert-success">Unblock</button>
                           </a>
                         <% } else { %>
-                          <a href="/admin/blockUser/<%= users._id %>">
+                          <a href="/admin/blockUser/<%= user._id %>">
                             <button class="badge rounded-pill alert-danger">Block</button>
                           </a>
                         <% } %>

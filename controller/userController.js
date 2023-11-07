@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 const Product = require("../models/products-model");
 const Category = require("../models/category");
 
+
 exports.home = async (req, res, next) => {
   const products = await Product.find();
   res.render("user/index", { title: "Express", products });
@@ -39,8 +40,7 @@ exports.registerUser = async (req, res, next) => {
     // Save the new user to the database
     await newUser.save();
     req.session.user = newUser;
-    // Redirect to the appropriate page after successful registration
-    res.render("user/men", { errorMessage: "" });
+    res.redirect('/men')
   } catch (err) {
     console.error(err);
     return res.status(500).json({ message: "Internal server error" }); // Handle other errors gracefully
@@ -60,23 +60,26 @@ exports.showLogin = async (req, res) => {
 };
 
 // login process
-exports.login = async (req, res, next) => {
+exports.login = async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { name, password } = req.body;
     // Find the user by username using async/await
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ name });
     if (!user) {
       const errorMessage = "Invalid username or password";
       return res.render("user/login", { errorMessage });
     } else {
+      if(user.blocked){
+        const errorMessage = "User is blocked. Please contact support.";
+        return res.render('user/login',{errorMessage})
+      }
       const passwordMatch = await user.verifyPassword(password);
       if (!passwordMatch) {
         const errorMessage = "Invalid password";
         return res.render("user/login", { errorMessage });
       } else {
         req.session.userId = user._id;
-        const menProducts = await Product.find();
-        res.render("user/men", { products: menProducts });
+        res.redirect('/men')
       }
     }
     // Start a user session

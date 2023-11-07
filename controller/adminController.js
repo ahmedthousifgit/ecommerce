@@ -167,7 +167,7 @@ exports.blockUser = async(req,res)=>{
     }else{
       user.blocked = true; // Unblock the user
       await user.save();
-      res.redirect('/admin/users')
+      res.redirect('/admin/users-list')
     }
   }
   catch(error){
@@ -185,7 +185,7 @@ exports.unblockUser = async(req,res)=>{
     }else{
       user.blocked = false; // unblock the user
       await user.save();
-      res.redirect('/admin/users')
+      res.redirect('/admin/users-list')
     }
   }
   catch(error){
