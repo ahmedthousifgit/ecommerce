@@ -30,6 +30,12 @@
                                     <label class="form-label">Description</label>
                                     <textarea placeholder="Type here" class="form-control" name="description"></textarea>
                                 </div>
+                                <% if (isError) { %>
+                                  <!-- <div class="alert alert-danger" role="alert">
+                                    Category with the same name already exists.
+                                  </div> -->
+                                  <span style="color: chocolate;"><%= isError %></span>
+                                <% } %>
                                 <div class="d-grid">
                                     <button class="btn btn-primary" type="submit">Create category</button>
                                 </div>

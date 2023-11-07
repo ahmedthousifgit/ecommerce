@@ -49,9 +49,11 @@ exports.adminCategoryForm = async (req, res) => {
   try {
     const categories = await Category.find(); // Fetch the categories
     if (req.session.adminId) {
+      const isError = ''
       res.render("admin/categoryForm", {
         title: "Category management",
         errorMessage: "",
+        isError,
         categories, // Pass the categories to the template
       });
     } else {
@@ -64,23 +66,33 @@ exports.adminCategoryForm = async (req, res) => {
 
 exports.submitCategory = async (req, res) => {
   try {
+     const {name,description}= req.body
+     const image = req.file.filename
+    
+     const existingCategory = await Category.findOne({name})
+     const categories = await Category.find()
+
+     if (existingCategory) {
+      const isError ='category already existed'
+      // Category with the same name exists, return an error
+      res.render("admin/categoryForm", {categories, isError });
+      
+     }else{
       const categoryData = {
       name: req.body.name,
       description: req.body.description,
       image: req.file.filename,
       
     }
-    console.log('uploaded filer:',req.file);
-    console.log("Path to image directory:", "public/uploads/categories");
-
     const category = new Category(categoryData);
     await category.save();
 
     // Fetch the list of categories and indicate that a submission has occurred
     const categories = await Category.find();
     const isSubmitted = true;
-
-    res.render("admin/categoryForm", { categories, isSubmitted });
+    const isError = ''
+    res.render("admin/categoryForm", { categories, isSubmitted ,isError });
+  }
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "An error occurred" });
