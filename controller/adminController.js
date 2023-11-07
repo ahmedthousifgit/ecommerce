@@ -68,7 +68,10 @@ exports.submitCategory = async (req, res) => {
       name: req.body.name,
       description: req.body.description,
       image: req.file.filename,
+      
     }
+    console.log('uploaded filer:',req.file);
+    console.log("Path to image directory:", "public/uploads/categories");
 
     const category = new Category(categoryData);
     await category.save();
