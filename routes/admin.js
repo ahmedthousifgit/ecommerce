@@ -27,7 +27,7 @@ router.get("/dashboard", (req, res) => {
 //CATEGORY
 router.get("/categories", adminController.adminCategoryForm);
 
-router.post("/categoryForm",upload.single('image'),adminController.submitCategory);
+router.post("/categoryForm",upload.single("image"),adminController.submitCategory);
 
 //PRODUCT
 router.get("/add-product", adminController.addProductForm);

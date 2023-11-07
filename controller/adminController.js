@@ -3,7 +3,6 @@ const Category = require("../models/category");
 const bcrypt = require("bcrypt");
 const auth = require("../middleware/auth");
 const Product = require("../models/products-model");
-// const multer = require("../multer/multers");
 
 exports.adminIndex = (req, res) => {
   if (req.session.adminLoggedIn == true) {
