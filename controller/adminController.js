@@ -3,6 +3,7 @@ const Category = require("../models/category");
 const bcrypt = require("bcrypt");
 const auth = require("../middleware/auth");
 const Product = require("../models/products-model");
+const User = require('../models/user')
 
 exports.adminIndex = (req, res) => {
   if (req.session.adminLoggedIn == true) {
@@ -142,6 +143,56 @@ exports.listProduct = async (req, res) => {
     res.status(500).json({ error: "An error occurred" });
   }
 };
+
+//USERS
+exports.users= async(req,res)=>{
+  try{
+    const users = await User.find()
+    res.render('admin/users',{users})
+  }
+  catch(error){
+    console.log(error);
+    res.status(500).json({ error: 'An error occurred' });
+  }
+  
+}
+
+
+exports.blockUser = async(req,res)=>{
+  try{
+    const userId = req.params.userId
+    const user = await User.findById(userId)
+    if(!user){
+      return res.status(404).json({ error: 'User not found' });
+    }else{
+      user.blocked = true; // Unblock the user
+      await user.save();
+      res.redirect('/admin/users')
+    }
+  }
+  catch(error){
+    console.log(error);
+    res.status(500).json({ error: 'An error occurred' });
+  }
+}
+
+exports.unblockUser = async(req,res)=>{
+  try{
+    const userId = req.params.userId
+    const user = await User.findById(userId)
+    if(!user){
+      return res.status(404).json({ error: 'User not found' });
+    }else{
+      user.blocked = false; // unblock the user
+      await user.save();
+      res.redirect('/admin/users')
+    }
+  }
+  catch(error){
+    console.log(error);
+    res.status(500).json({ error: 'An error occurred' });
+  }
+}
 
 exports.logOut = (req, res) => {
   req.session.adminLoggedIn = null;

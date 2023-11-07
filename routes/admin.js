@@ -36,6 +36,13 @@ router.post("/add-product",update.array("image",1),adminController.addProduct);
 
 router.get("/product-list", adminController.listProduct);
 
+//USERLIST
+router.get('/users-list',adminController.users)
+
+router.get('/blockUser/:userId', adminController.blockUser);
+
+router.get('/unblockUser/:userId', adminController.unblockUser);
+
 //LOGOUT
 router.get("/logout", adminController.logOut);
 

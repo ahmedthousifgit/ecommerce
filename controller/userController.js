@@ -1,11 +1,11 @@
 const User = require("../models/user");
 const session = require("express-session");
 const bcrypt = require("bcrypt");
-const Product = require('../models/products-model')
-const Category = require('../models/category')
+const Product = require("../models/products-model");
+const Category = require("../models/category");
 
-exports.home = async(req, res, next)=> {
-  const products = await Product.find()
+exports.home = async (req, res, next) => {
+  const products = await Product.find();
   res.render("user/index", { title: "Express", products });
 };
 
@@ -20,7 +20,7 @@ exports.registerUser = async (req, res, next) => {
     if (existingUser) {
       return res.render("user/signup", {
         errorMessage: "Username or email already exists",
-     });
+      });
     }
 
     // Hash the password before saving it
@@ -47,17 +47,17 @@ exports.registerUser = async (req, res, next) => {
   }
 };
 
-exports.showSignUp = async (req, res)=> {
+exports.showSignUp = async (req, res) => {
   if (req.session.userId) {
     res.redirect("/men");
   } else {
     res.render("user/signup", { title: "Express", errorMessage: "" });
   }
-}
+};
 
-exports.showLogin = async(req,res)=>{
-  res.render('user/login' ,{ errorMessage:"" })
-}
+exports.showLogin = async (req, res) => {
+  res.render("user/login", { errorMessage: "" });
+};
 
 // login process
 exports.login = async (req, res, next) => {
@@ -72,44 +72,39 @@ exports.login = async (req, res, next) => {
       const passwordMatch = await user.verifyPassword(password);
       if (!passwordMatch) {
         const errorMessage = "Invalid password";
-        return res.render('user/login', { errorMessage });
+        return res.render("user/login", { errorMessage });
       } else {
         req.session.userId = user._id;
-        const menProducts = await Product.find()
-        res.render('user/men',{products : menProducts})
+        const menProducts = await Product.find();
+        res.render("user/men", { products: menProducts });
       }
     }
     // Start a user session
   } catch (err) {
-  console.log(error);
-    res.status(500).json({ error: 'An error occurred' });
+    console.log(error);
+    res.status(500).json({ error: "An error occurred" });
   }
 };
 
-
-
-
-
-exports.menPage= async(req,res)=>{
-  try{
-    console.log('get dufhsa');
-      const menProducts = await Product.find()
-      console.log(menProducts);
-      res.render('user/men',{products : menProducts})
-  }
-  catch(error){
+exports.menPage = async (req, res) => {
+  try {
+    console.log("get dufhsa");
+    const menProducts = await Product.find();
+    console.log(menProducts);
+    res.render("user/men", { products: menProducts });
+  } catch (error) {
     console.log(error);
-    res.status(500).json({ error: 'An error occurred' });
+    res.status(500).json({ error: "An error occurred" });
   }
-}
+};
 
-exports.womenPage = async(req, res, next) =>{
+exports.womenPage = async (req, res, next) => {
   if (req.session.userId) {
     res.render("user/women", { title: "Express" });
   } else {
     res.redirect("/login");
   }
-}
+};
 
 exports.kidPage = async (req, res, next) => {
   if (req.session.userId) {
@@ -117,7 +112,7 @@ exports.kidPage = async (req, res, next) => {
   } else {
     res.redirect("/login");
   }
-}
+};
 
 exports.accoutPage = async (req, res) => {
   if (req.session.userId) {
@@ -125,15 +120,15 @@ exports.accoutPage = async (req, res) => {
   } else {
     res.redirect("/login");
   }
-}
+};
 
-exports.cartPage = async  (req, res, next)=> {
+exports.cartPage = async (req, res, next) => {
   if (req.session.userId) {
     res.render("user/cart", { title: "Express" });
   } else {
     res.redirect("/login");
   }
-}
+};
 
 exports.productPage = async (req, res, next) => {
   if (req.session.userId) {
@@ -141,13 +136,13 @@ exports.productPage = async (req, res, next) => {
   } else {
     res.redirect("/login");
   }
-}
+};
 
-exports.logOut = async(req, res) => {
+exports.logOut = async (req, res) => {
   req.session.destroy((err) => {
     if (err) {
       console.log(err);
     }
     res.redirect("/login");
   });
-}
+};
