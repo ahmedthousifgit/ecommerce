@@ -6,71 +6,31 @@ const User = require("../models/user");
 /* GET home page. */
 router.get("/", userController.home);
 
-router.get("/men", userController.menPage);
+//signup
+router.get("/signup", userController.showSignUp);
 
-router.get("/women", function (req, res, next) {
-  if (req.session.userId) {
-    res.render("user/women", { title: "Express" });
-  } else {
-    res.redirect("/login");
-  }
-});
+router.post("/signup", userController.registerUser);
 
-router.get("/kids", function (req, res, next) {
-  if (req.session.userId) {
-    res.render("user/kids", { title: "Express" });
-  } else {
-    res.redirect("/login");
-  }
-});
-
-router.get("/account", function (req, res, next) {
-  if (req.session.userId) {
-    res.render("user/account", { title: "Express" });
-  } else {
-    res.redirect("/login");
-  }
-});
-
-router.get("/cart", function (req, res, next) {
-  if (req.session.userId) {
-    res.render("user/cart", { title: "Express" });
-  } else {
-    res.redirect("/login");
-  }
-});
-
-router.get("/product", function (req, res, next) {
-  if (req.session.userId) {
-    res.render("user/product", { title: "Express" });
-  } else {
-    res.redirect("/login");
-  }
-});
-
+//LOGIN
 router.get("/login", userController.showLogin);
 
 router.post("/login", userController.login);
 
-//signup
-router.get("/signup", function (req, res, next) {
-  if (req.session.userId) {
-    res.redirect("/men");
-  } else {
-    res.render("user/signup", { title: "Express", errorMessage: "" });
-  }
-});
+// HOME PAGE NAV
 
-router.post("/signup", userController.registerUser);
+router.get("/men", userController.menPage);
 
-// logout
-router.get("/logout", (req, res) => {
-  req.session.destroy((err) => {
-    if (err) {
-      console.log(err);
-    }
-    res.redirect("/login");
-  });
-});
+router.get("/women", userController.womenPage);
+
+router.get("/kids", userController.kidPage);
+
+router.get("/product", userController.productPage);
+
+router.get("/account", userController.accoutPage);
+
+router.get("/cart", userController.cartPage);
+
+//LOGOUT
+router.get("/logout", userController.logOut);
 
 module.exports = router;

@@ -47,6 +47,14 @@ exports.registerUser = async (req, res, next) => {
   }
 };
 
+exports.showSignUp = async (req, res)=> {
+  if (req.session.userId) {
+    res.redirect("/men");
+  } else {
+    res.render("user/signup", { title: "Express", errorMessage: "" });
+  }
+}
+
 exports.showLogin = async(req,res)=>{
   res.render('user/login' ,{ errorMessage:"" })
 }
@@ -95,3 +103,51 @@ exports.menPage= async(req,res)=>{
   }
 }
 
+exports.womenPage = async(req, res, next) =>{
+  if (req.session.userId) {
+    res.render("user/women", { title: "Express" });
+  } else {
+    res.redirect("/login");
+  }
+}
+
+exports.kidPage = async (req, res, next) => {
+  if (req.session.userId) {
+    res.render("user/kids", { title: "Express" });
+  } else {
+    res.redirect("/login");
+  }
+}
+
+exports.accoutPage = async (req, res) => {
+  if (req.session.userId) {
+    res.render("user/account", { title: "Express" });
+  } else {
+    res.redirect("/login");
+  }
+}
+
+exports.cartPage = async  (req, res, next)=> {
+  if (req.session.userId) {
+    res.render("user/cart", { title: "Express" });
+  } else {
+    res.redirect("/login");
+  }
+}
+
+exports.productPage = async (req, res, next) => {
+  if (req.session.userId) {
+    res.render("user/product", { title: "Express" });
+  } else {
+    res.redirect("/login");
+  }
+}
+
+exports.logOut = async(req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.log(err);
+    }
+    res.redirect("/login");
+  });
+}
