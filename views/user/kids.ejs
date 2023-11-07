@@ -41,20 +41,102 @@
 	<div class="colorlib-loader"></div>
 
 	<div id="page">
+
 		<%-include('../partials/nav')  %>
 		<div class="breadcrumbs">
 			<div class="container">
 				<div class="row">
 					<div class="col">
-						<p class="bread"><span><a href="index.html">Home</a></span> / <span>About</span></p>
+						<p class="bread"><span><a href="index.html">Home</a></span> / <span>Kids</span></p>
 					</div>
 				</div>
 			</div>
 		</div>
 
+		<div class="breadcrumbs-two">
+			<div class="container">
+				<div class="row">
+					<div class="col">
+						<div class="breadcrumbs-img" style="background-image: url(images/cover-img-1.jpg);">
+							<h2>Kids</h2>
+						</div>
+						<div class="menu text-center">
+							<p><a href="#">New Arrivals</a> <a href="#">Best Sellers</a> <a href="#">Extended Widths</a> <a href="#">Sale</a></p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 
-		<%-include('../partials/sidebar')  %>
-      <%-include('../partials/footer') %>
+		<div class="colorlib-featured">
+			<div class="container">
+				<div class="row">
+					<div class="col-sm-4 text-center">
+						<div class="featured">
+							<div class="featured-img featured-img-2" style="background-image: url(images/img_bg_2.jpg);">
+								<h2>Casuals</h2>
+								<p><a href="#" class="btn btn-primary btn-lg">Shop now</a></p>
+							</div>
+						</div>
+					</div>
+					<div class="col-sm-4 text-center">
+						<div class="featured">
+							<div class="featured-img featured-img-2" style="background-image: url(images/women.jpg);">
+								<h2>Dress</h2>
+								<p><a href="#" class="btn btn-primary btn-lg">Shop now</a></p>
+							</div>
+						</div>
+					</div>
+					<div class="col-sm-4 text-center">
+						<div class="featured">
+							<div class="featured-img featured-img-2" style="background-image: url(images/item-11.jpg);">
+								<h2>Sports</h2>
+								<p><a href="#" class="btn btn-primary btn-lg">Shop now</a></p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="colorlib-product">
+			<div class="container">
+				<div class="row">
+					<%-include('../partials/sidebar')  %>
+					<div class="col-lg-9 col-xl-9">
+						<div class="row row-pb-md">
+							<div class="col-lg-4 mb-4 text-center">
+								<div class="product-entry border">
+									<a href="#" class="prod-img">
+										<img src="images/item-1.jpg" class="img-fluid" alt="Free html5 bootstrap 4 template">
+									</a>
+									<div class="desc">
+										<h2><a href="#">Women's Boots Shoes Maca</a></h2>
+										<span class="price">$139.00</span>
+									</div>
+								</div>
+							</div>
+						<div class="row">
+							<!-- <div class="col-md-12 text-center">
+								<div class="block-27">
+				               <ul>
+					               <li><a href="#"><i class="ion-ios-arrow-back"></i></a></li>
+				                  <li class="active"><span>1</span></li>
+				                  <li><a href="#">2</a></li>
+				                  <li><a href="#">3</a></li>
+				                  <li><a href="#">4</a></li>
+				                  <li><a href="#">5</a></li>
+				                  <li><a href="#"><i class="ion-ios-arrow-forward"></i></a></li>
+				               </ul>
+				            </div>
+							</div> -->
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<%-include('../partials/footer') %>
 	</div>
 
 	<div class="gototop js-top">
