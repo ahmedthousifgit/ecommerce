@@ -6,21 +6,7 @@ const Product = require("../models/products-model");
 const User = require("../models/user");
 const category = require("../models/category");
 
-exports.adminIndex = (req, res) => {
-  if (req.session.adminLoggedIn == true) {
-    res.render("admin/dashboard");
-  } else {
-    res.redirect("/admin/login");
-  }
-};
 
-exports.adminLoggin = (req, res) => {
-  if (req.session.adminLoggedIn == true) {
-    res.render("admin/dashboard");
-  } else {
-    res.render("admin/login");
-  }
-};
 
 exports.authenticateAdmin = async (req, res) => {
   const { username, password } = req.body;
@@ -47,6 +33,29 @@ exports.authenticateAdmin = async (req, res) => {
   }
 };
 
+exports.adminIndex = (req, res) => {
+   if(req.session.adminId){
+    res.redirect('/admin/dashboard')
+   }
+  const errorMessage = ''
+    res.render("admin/login",{errorMessage});
+ 
+};
+
+exports.adminLoggin = (req, res) => {
+ try{
+  if (req.session.adminId) {
+    res.redirect("/dashboard");
+  } else {
+    res.render("admin/login");
+  }
+ }
+ catch(error){
+    console.log(error);
+    res.status(500).json({ error: "An error occurred" });
+ }
+};
+
 exports.dashboard = async (req, res) => {
   if (req.session.adminId) {
     res.render("admin/dashboard", {
@@ -54,7 +63,7 @@ exports.dashboard = async (req, res) => {
       errorMessage: "",
     });
   } else {
-    res.redirect("/");
+    res.redirect("/admin");
   }
 }
 
@@ -160,8 +169,13 @@ exports.deleteCategory = async(req,res)=>{
 
 exports.addProductForm = async (req, res) => {
   try {
-    const categories = await Category.find({isListed:true});
-    res.render("admin/add-products", { categories });
+    if(req.session.adminId){
+      const categories = await Category.find({isListed:true});
+      res.render("admin/add-products", { categories });
+    }else{
+      res.redirect('/admin')
+    }
+    
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "An error occured" });
@@ -205,8 +219,13 @@ exports.listProduct = async (req, res) => {
 //USERS
 exports.users = async (req, res) => {
   try {
-    const users = await User.find();
-    res.render("admin/users", { users });
+    if(req.session.adminId){
+      const users = await User.find();
+      res.render("admin/users", { users });
+    }else{
+      res.redirect('/admin')
+    }
+    
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "An error occurred" });
@@ -301,6 +320,6 @@ exports.deleteProduct = async(req,res)=>{
 }
 
 exports.logOut = (req, res) => {
-  req.session.adminLoggedIn = null;
-  res.render("admin/login", { errorMessage: "" });
+  req.session.adminId = null;
+  res.redirect("/admin");
 };

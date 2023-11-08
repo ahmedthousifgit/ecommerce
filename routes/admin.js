@@ -1,4 +1,5 @@
 var express = require("express");
+const session = require('express-session')
 var router = express.Router();
 const adminController = require("../controller/adminController");
 const auth = require("../middleware/auth");
@@ -6,12 +7,13 @@ const multer = require("../multer/multers");
 const update = multer.update;
 const upload = multer.upload
 
+
 //LOGIN
-router.get("/", auth.adminLoggedIn, adminController.adminIndex);
+router.get("/", adminController.adminIndex);
 
-router.get("/admin-login", adminController.adminLoggin);
+// router.get("/admin", adminController.adminLoggin);
 
-router.post("/admin-login", adminController.authenticateAdmin);
+router.post("/admin", adminController.authenticateAdmin);
 
 //DASHBOARD
 router.get("/dashboard",adminController.dashboard);

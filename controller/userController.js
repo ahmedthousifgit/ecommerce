@@ -6,6 +6,9 @@ const Category = require("../models/category");
 
 
 exports.home = async (req, res, next) => {
+  if(req.session.userId){
+    res.redirect('/men')
+  }
   const products = await Product.find();
   res.render("user/index", { title: "Express", products });
 };
@@ -56,6 +59,9 @@ exports.showSignUp = async (req, res) => {
 };
 
 exports.showLogin = async (req, res) => {
+  if(req.session.userId){
+    res.redirect('/men')
+  }
   res.render("user/login", { errorMessage: "" });
 };
 
@@ -91,17 +97,21 @@ exports.login = async (req, res) => {
 
 exports.menPage = async (req, res) => {
   try {
-    console.log("get dufhsa");
-    const menProducts = await Product.find();
-    console.log(menProducts);
-    res.render("user/men", { products: menProducts });
+    if(req.session.userId){
+      const menProducts = await Product.find();
+      console.log(menProducts);
+      res.render("user/men", { products: menProducts });
+    }else{
+      res.redirect('/login')
+    }
+    
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "An error occurred" });
   }
 };
 
-exports.womenPage = async (req, res, next) => {
+exports.womenPage = async (req, res) => {
   if (req.session.userId) {
     res.render("user/women", { title: "Express" });
   } else {
@@ -109,7 +119,7 @@ exports.womenPage = async (req, res, next) => {
   }
 };
 
-exports.kidPage = async (req, res, next) => {
+exports.kidPage = async (req, res) => {
   if (req.session.userId) {
     res.render("user/kids", { title: "Express" });
   } else {
