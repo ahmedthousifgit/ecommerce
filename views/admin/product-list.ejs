@@ -47,10 +47,16 @@
                 </td>
                 <td><%= product.units%></td>
                 <td>
-                  <a href="/admin/edit-products/<%= product._id %>" class="btn btn-sm font-sm rounded btn-brand">
+                  <a
+                    href="/admin/edit-products/<%= product._id %>"
+                    class="btn btn-sm font-sm rounded btn-brand"
+                  >
                     <i class="material-icons md-edit"></i> Edit
                   </a>
-                  <a href="/admin/deleteProduct/<%= product._id %>" class="btn btn-sm font-sm btn-light rounded">
+                  <a
+                    href="/admin/deleteProduct/<%= product._id %>"
+                    class="btn btn-sm font-sm btn-light rounded"
+                  >
                     <i class="material-icons md-delete_forever"></i> Delete
                   </a>
                 </td>

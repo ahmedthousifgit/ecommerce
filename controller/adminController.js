@@ -46,6 +46,17 @@ exports.authenticateAdmin = async (req, res) => {
   }
 };
 
+exports.dashboard = async (req, res) => {
+  if (req.session.adminId) {
+    res.render("admin/dashboard", {
+      title: "Admin dashboard",
+      errorMessage: "",
+    });
+  } else {
+    res.redirect("/");
+  }
+}
+
 exports.adminCategoryForm = async (req, res) => {
   try {
     const categories = await Category.find(); // Fetch the categories
@@ -132,7 +143,7 @@ exports.unlistCategory = async(req,res)=>{
 
 exports.addProductForm = async (req, res) => {
   try {
-    const categories = await Category.find();
+    const categories = await Category.find({isListed:true});
     res.render("admin/add-products", { categories });
   } catch (error) {
     console.log(error);

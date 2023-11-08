@@ -6,23 +6,15 @@ const multer = require("../multer/multers");
 const update = multer.update;
 const upload = multer.upload
 
+//LOGIN
 router.get("/", auth.adminLoggedIn, adminController.adminIndex);
 
 router.get("/admin-login", adminController.adminLoggin);
 
 router.post("/admin-login", adminController.authenticateAdmin);
 
-//dashboard
-router.get("/dashboard", (req, res) => {
-  if (req.session.adminId) {
-    res.render("admin/dashboard", {
-      title: "Admin dashboard",
-      errorMessage: "",
-    });
-  } else {
-    res.redirect("/");
-  }
-});
+//DASHBOARD
+router.get("/dashboard",adminController.dashboard);
 
 //CATEGORY
 router.get("/categories", adminController.adminCategoryForm);
