@@ -25,6 +25,8 @@ router.get('/listCategory/:categoryId',adminController.listCategory)
 
 router.get('/unlistCategory/:categoryId',adminController.unlistCategory)
 
+router.get('/deleteCategory/:categoryId',adminController.deleteCategory)
+
 
 //PRODUCT
 router.get("/add-product", adminController.addProductForm);

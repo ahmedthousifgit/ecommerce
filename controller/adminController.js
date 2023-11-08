@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 const auth = require("../middleware/auth");
 const Product = require("../models/products-model");
 const User = require("../models/user");
+const category = require("../models/category");
 
 exports.adminIndex = (req, res) => {
   if (req.session.adminLoggedIn == true) {
@@ -135,6 +136,22 @@ exports.unlistCategory = async(req,res)=>{
 
     res.redirect('/admin/categories');
   }
+  catch(error){
+    console.log(error);
+    res.status(500).json({ error: "An error occurred" });
+  }
+}
+
+exports.deleteCategory = async(req,res)=>{
+  try{
+    const categoryId = req.params.categoryId
+    const category = await Category.findByIdAndRemove(categoryId)
+    if(!category){
+      return res.status(404).json({ error: 'Product not found' });
+    }
+    res.redirect('/admin/categories')
+  }
+  
   catch(error){
     console.log(error);
     res.status(500).json({ error: "An error occurred" });
