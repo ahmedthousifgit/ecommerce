@@ -1,0 +1,116 @@
+<%-include('../partials/adminheader') %>
+
+<body>
+  <div class="screen-overlay"></div>
+  <%-include('../partials/adminaside') %>
+  <main class="main-wrap">
+    <%-include('../partials/adminNav') %>
+    <section class="content-main">
+      <form
+        action="/admin/edit-products/<%= product._id %>"
+        method="post"
+        enctype="multipart/form-data"
+      >
+        <div class="row">
+          <div class="col-9">
+            <div class="content-header">
+              <h2 class="content-title">Edit Product</h2>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="card mb-4">
+              <div class="card-header">
+                <h4>Basic</h4>
+              </div>
+              <div class="card-body">
+                <!-- Include input fields for editing product attributes, pre-populated with current values -->
+                <div class="mb-4">
+                  <label for="product_name" class="form-label">Product title</label>
+                  <input type="text" class="form-control" id="product_name" name="name" value="<%= product.name %>" />
+                </div>
+                <!-- Other input fields for editing -->
+                <div class="mb-4">
+                  <label class="form-label">Full description</label>
+                  <textarea class="form-control" rows="4" name="description"><%= product.description %></textarea>
+                </div>
+                <div class="mb-4">
+                  <label class="form-label">Product Image</label>
+                  <input type="file" class="form-control" name="image" />
+                </div>
+                <div class="row">
+                  <div class="col-lg-4">
+                    <div class="mb-4">
+                      <label class="form-label">Regular price</label>
+                      <div class="row gx-2">
+                        <input type="text" class="form-control" name="regularPrice" value="<%= product.regularPrice %>" />
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-lg-4">
+                    <div class="mb-4">
+                      <label class="form-label">Sale price</label>
+                      <input type="text" class="form-control" name="salePrice" value="<%= product.salePrice %>" />
+                    </div>
+                  </div>
+                  <div class="col-lg-4">
+                    <label class="form-label">Unit</label>
+                    <input type="text" class="form-control" name="units" value="<%= product.units %>" />
+                  </div>
+                </div>
+                <div class="mb-4">
+                  <label class="form-label">Tax rate</label>
+                  <input type="text" class="form-control" name="taxRate" value="<%= product.taxRate %>" />
+                </div>
+                
+                <!-- Other form fields for product details -->
+                <div class="d-flex justify-content-end">
+                  <button type="submit" class="btn btn-md rounded font-sm col-lg-4 hover-up">Save Changes</button>
+                </div>
+              </div>
+            </div>
+            <!-- card end// -->
+          </div>
+          <div class="col-lg-3">
+            <div class="card mb-4">
+              <div class="card-header">
+                <h4>Organization</h4>
+              </div>
+              <div class="card-body">
+                <div class="row gx-2">
+                  <div class="col-sm-6 mb-3">
+                    <label class="form-label">Category</label>
+                    <select class="form-select" name="category">
+                      <% categories.forEach(category => { %>
+                        <option value="<%= category._id %>"<% if (category._id.toString() === product.category.toString()) { %> selected<% } %>>
+                          <%= category.name %>
+                        </option>
+                      <% }); %>
+                    </select>
+                  </div>
+                  <!-- Include selection for Sub-category -->
+                  <!-- Include selection for Sub-category -->
+<div class="col-sm-6 mb-3">
+  <label class="form-label">Sub-category</label>
+  <select class="form-select" name="subCategory">
+      <option value="Nike" <% if (product.subCategory === 'Nike') { %>selected<% } %>>Nike</option>
+      <option value="Adidas" <% if (product.subCategory === 'Adidas') { %>selected<% } %>>Adidas</option>
+      <option value="Puma" <% if (product.subCategory === 'Puma') { %>selected<% } %>>Puma</option>
+      <option value="Sketchers" <% if (product.subCategory === 'Sketchers') { %>selected<% } %>>Sketchers</option>
+  </select>
+</div>
+<!-- End selection for Sub-category -->
+
+                  <!-- End selection for Sub-category -->
+                </div>
+                <!-- row.// -->
+              </div>
+            </div>
+            <!-- card end// -->
+          </div>
+        </div>
+      </form>
+    </section>
+    <!-- content-main end// -->
+    <%-include('../partials/adminfooter') %>
+  </main>
+</body>

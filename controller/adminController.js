@@ -3,7 +3,7 @@ const Category = require("../models/category");
 const bcrypt = require("bcrypt");
 const auth = require("../middleware/auth");
 const Product = require("../models/products-model");
-const User = require('../models/user')
+const User = require("../models/user");
 
 exports.adminIndex = (req, res) => {
   if (req.session.adminLoggedIn == true) {
@@ -50,7 +50,7 @@ exports.adminCategoryForm = async (req, res) => {
   try {
     const categories = await Category.find(); // Fetch the categories
     if (req.session.adminId) {
-      const isError = ''
+      const isError = "";
       res.render("admin/categoryForm", {
         title: "Category management",
         errorMessage: "",
@@ -67,33 +67,31 @@ exports.adminCategoryForm = async (req, res) => {
 
 exports.submitCategory = async (req, res) => {
   try {
-     const {name,description}= req.body
-     const image = req.file.filename
-    
-     const existingCategory = await Category.findOne({name})
-     const categories = await Category.find()
+    const { name, description } = req.body;
+    const image = req.file.filename;
 
-     if (existingCategory) {
-      const isError ='category already existed'
-      // Category with the same name exists, return an error
-      res.render("admin/categoryForm", {categories, isError });
-      
-     }else{
-      const categoryData = {
-      name: req.body.name,
-      description: req.body.description,
-      image: req.file.filename,
-      
-    }
-    const category = new Category(categoryData);
-    await category.save();
-
-    // Fetch the list of categories and indicate that a submission has occurred
+    const existingCategory = await Category.findOne({ name });
     const categories = await Category.find();
-    const isSubmitted = true;
-    const isError = ''
-    res.render("admin/categoryForm", { categories, isSubmitted ,isError });
-  }
+
+    if (existingCategory) {
+      const isError = "category already existed";
+      // Category with the same name exists, return an error
+      res.render("admin/categoryForm", { categories, isError });
+    } else {
+      const categoryData = {
+        name: req.body.name,
+        description: req.body.description,
+        image: req.file.filename,
+      };
+      const category = new Category(categoryData);
+      await category.save();
+
+      // Fetch the list of categories and indicate that a submission has occurred
+      const categories = await Category.find();
+      const isSubmitted = true;
+      const isError = "";
+      res.render("admin/categoryForm", { categories, isSubmitted, isError });
+    }
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "An error occurred" });
@@ -145,54 +143,87 @@ exports.listProduct = async (req, res) => {
 };
 
 //USERS
-exports.users= async(req,res)=>{
-  try{
-    const users = await User.find()
-    res.render('admin/users',{users})
-  }
-  catch(error){
+exports.users = async (req, res) => {
+  try {
+    const users = await User.find();
+    res.render("admin/users", { users });
+  } catch (error) {
     console.log(error);
-    res.status(500).json({ error: 'An error occurred' });
+    res.status(500).json({ error: "An error occurred" });
   }
-  
-}
+};
 
-
-exports.blockUser = async(req,res)=>{
-  try{
-    const userId = req.params.userId
-    const user = await User.findById(userId)
-    if(!user){
-      return res.status(404).json({ error: 'User not found' });
-    }else{
+exports.blockUser = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    } else {
       user.blocked = true; // Unblock the user
       await user.save();
-      res.redirect('/admin/users-list')
+      res.redirect("/admin/users-list");
     }
-  }
-  catch(error){
+  } catch (error) {
     console.log(error);
-    res.status(500).json({ error: 'An error occurred' });
+    res.status(500).json({ error: "An error occurred" });
   }
-}
+};
 
-exports.unblockUser = async(req,res)=>{
-  try{
-    const userId = req.params.userId
-    const user = await User.findById(userId)
-    if(!user){
-      return res.status(404).json({ error: 'User not found' });
-    }else{
+exports.unblockUser = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    } else {
       user.blocked = false; // unblock the user
       await user.save();
-      res.redirect('/admin/users-list')
+      res.redirect("/admin/users-list");
     }
-  }
-  catch(error){
+  } catch (error) {
     console.log(error);
-    res.status(500).json({ error: 'An error occurred' });
+    res.status(500).json({ error: "An error occurred" });
   }
-}
+};
+
+exports.editProductForm = async (req, res) => {
+  try {
+    const productId = req.params.productId;
+    const product = await Product.findById(productId);
+    const categories = await Category.find()
+    res.render("admin/edit-products", { product,categories});
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "An error occurred" });
+  }
+};
+
+exports.editedProducts = async (req, res) => {
+  try {
+    const productId = req.params.productId;
+    const product = await Product.findById(productId);
+    
+    if (!product) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+    product.name = req.body.name;
+    product.description = req.body.description;
+    product.category = req.body.category;
+    product.subCategory = req.body.subCategory;
+    product.regularPrice = req.body.regularPrice;
+    product.salePrice = req.body.salePrice;
+    product.taxRate = req.body.taxRate;
+    product.units = req.body.units;
+    product.image = req.files[0].filename;
+
+    await product.save();
+    res.redirect("/admin/product-list");
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "An error occurred" });
+  }
+};
 
 exports.logOut = (req, res) => {
   req.session.adminLoggedIn = null;

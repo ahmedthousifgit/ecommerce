@@ -36,6 +36,11 @@ router.post("/add-product",update.array("image",1),adminController.addProduct);
 
 router.get("/product-list", adminController.listProduct);
 
+//EDIT PRODUCTS
+router.get('/edit-products/:productId',adminController.editProductForm)
+
+router.post('/edit-products/:productId',update.array("image",1),adminController.editedProducts)
+
 //USERLIST
 router.get('/users-list',adminController.users)
 
