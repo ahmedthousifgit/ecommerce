@@ -15,6 +15,10 @@ const categoryModel = mongoose.Schema({
     verified:{
         type:String,
         default:0
+    },
+    isListed:{
+        type:Boolean,
+        default:true
     }
 })
 

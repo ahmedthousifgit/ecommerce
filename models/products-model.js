@@ -23,7 +23,7 @@ const productModel = mongoose.Schema({
   },
   regularPrice: {
     type: Number,
-    require: true,
+    required: true,
   },
   salePrice: {
     type: Number,
@@ -33,11 +33,11 @@ const productModel = mongoose.Schema({
     type: String,
     require: true,
   },
-  createdon: {
+  createdOn: {
     type: Date,
-    require: true,
+    required: true,
   },
-  taxrate: {
+  taxRate: {
     type: String,
     require: true,
   },
@@ -50,8 +50,8 @@ const productModel = mongoose.Schema({
     default: 0,
   },
   isListed: {
-    type: String,
-    default: 0,
+    type: Boolean,
+    default: true,
   },
 });
 module.exports = mongoose.model("products", productModel);

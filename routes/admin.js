@@ -29,6 +29,11 @@ router.get("/categories", adminController.adminCategoryForm);
 
 router.post("/categoryForm",upload.single("image"),adminController.submitCategory);
 
+router.get('/listCategory/:categoryId',adminController.listCategory)
+
+router.get('/unlistCategory/:categoryId',adminController.unlistCategory)
+
+
 //PRODUCT
 router.get("/add-product", adminController.addProductForm);
 
@@ -40,6 +45,8 @@ router.get("/product-list", adminController.listProduct);
 router.get('/edit-products/:productId',adminController.editProductForm)
 
 router.post('/edit-products/:productId',update.array("image",1),adminController.editedProducts)
+
+router.get('/deleteProduct/:productId',adminController.deleteProduct)
 
 //USERLIST
 router.get('/users-list',adminController.users)

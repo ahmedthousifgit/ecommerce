@@ -77,9 +77,15 @@
                                               <i class="material-icons md-more_horiz"></i>
                                             </a>
                                             <div class="dropdown-menu">
-                                              <a class="dropdown-item" href="#">List </a>
-                                              <a class="dropdown-item" href="#">Unlist</a>
-                                              <a class="dropdown-item text-danger" href="#">Delete</a>
+                                              <% if (category.isListed) { %>
+                                                <!-- Unlist Button -->
+                                                <a href="/admin/unlistCategory/<%= category._id %>" class="btn btn-sm btn-danger">Unlist</a>
+                                              <% } else { %>
+                                                <!-- List Button -->
+                                                <a href="/admin/listCategory/<%= category._id %>" class="btn btn-sm btn-success">List</a>
+                                              <% } %>
+                                              
+                                              <!-- <a class="dropdown-item text-danger" href="#">Delete</a> -->
                                             </div>
                                           </div>
                                         </td>

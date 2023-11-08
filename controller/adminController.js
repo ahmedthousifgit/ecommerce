@@ -98,6 +98,38 @@ exports.submitCategory = async (req, res) => {
   }
 };
 
+exports.listCategory = async(req,res)=>{
+  try{
+    const categoryId = req.params.categoryId
+    const category =  await Category.findByIdAndUpdate(categoryId, { isListed: true })
+    if (!category) {
+      return res.status(404).json({ error: 'Category not found' });
+    }
+
+    res.redirect('/admin/categories');
+  }
+  catch(error){
+    console.log(error);
+    res.status(500).json({ error: "An error occurred" });
+  }
+}
+
+exports.unlistCategory = async(req,res)=>{
+  try{
+    const categoryId = req.params.categoryId
+    const category =  await Category.findByIdAndUpdate(categoryId, { isListed: false })
+    if (!category) {
+      return res.status(404).json({ error: 'Category not found' });
+    }
+
+    res.redirect('/admin/categories');
+  }
+  catch(error){
+    console.log(error);
+    res.status(500).json({ error: "An error occurred" });
+  }
+}
+
 exports.addProductForm = async (req, res) => {
   try {
     const categories = await Category.find();
@@ -224,6 +256,21 @@ exports.editedProducts = async (req, res) => {
     res.status(500).json({ error: "An error occurred" });
   }
 };
+
+exports.deleteProduct = async(req,res)=>{
+  try{
+    const productId = req.params.productId
+    const product = await Product.findByIdAndRemove(productId)
+    if(!product){
+      return res.status(404).json({ error: 'Product not found' });
+    }
+    res.redirect('/admin/product-list')
+  }
+  catch(error){
+    console.log(error);
+    res.status(500).json({ error: "An error occurred" });
+  }
+}
 
 exports.logOut = (req, res) => {
   req.session.adminLoggedIn = null;
