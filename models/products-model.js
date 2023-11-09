@@ -35,7 +35,7 @@ const productModel = mongoose.Schema({
   },
   createdOn: {
     type: Date,
-    required: true,
+    require: true,
   },
   taxRate: {
     type: String,

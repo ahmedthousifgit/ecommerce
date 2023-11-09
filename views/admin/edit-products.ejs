@@ -10,6 +10,7 @@
         action="/admin/edit-products/<%= product._id %>"
         method="post"
         enctype="multipart/form-data"
+        onsubmit="return validatePrices()"
       >
         <div class="row">
           <div class="col-9">
@@ -42,14 +43,14 @@
                     <div class="mb-4">
                       <label class="form-label">Regular price</label>
                       <div class="row gx-2">
-                        <input type="text" class="form-control" name="regularPrice" value="<%= product.regularPrice %>" />
+                        <input type="text" class="form-control" name="regularPrice" id="regularPrice" value="<%= product.regularPrice %>" />
                       </div>
                     </div>
                   </div>
                   <div class="col-lg-4">
                     <div class="mb-4">
                       <label class="form-label">Sale price</label>
-                      <input type="text" class="form-control" name="salePrice" value="<%= product.salePrice %>" />
+                      <input type="text" class="form-control" name="salePrice" id="salePrice" value="<%= product.salePrice %>" />
                     </div>
                   </div>
                   <div class="col-lg-4">
@@ -110,6 +111,19 @@
         </div>
       </form>
     </section>
+    <script>
+      function validatePrices() {
+        var regularPrice = document.getElementById('regularPrice').value;
+        var salePrice = document.getElementById('salePrice').value;
+  
+        if (parseFloat(regularPrice) < 0 || parseFloat(salePrice) < 0) {
+          alert('Negative prices are not allowed!');
+          return false; // Prevent form submission
+        }
+  
+        return true; // Allow form submission
+      }
+    </script>
     <!-- content-main end// -->
     <%-include('../partials/adminfooter') %>
   </main>
