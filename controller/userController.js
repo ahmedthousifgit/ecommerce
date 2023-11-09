@@ -16,49 +16,40 @@ exports.home = async (req, res, next) => {
 };
 
 // signup process
-exports.registerUser = async (req, res, next) => {
+exports.registerUser = async (req, res) => {
   try {
-    const { username, email, password, name, mobile } = req.body;
-    // Check if the username or email already exists
-    const existingUser = await User.findOne({
-      $or: [{ username }, { email }],
-    }).exec();
-    if (existingUser) {
+    const emailCheck = req.body.email;
+    const checkData = await User.findOne({ email: emailCheck });
+    if (checkData) {
       return res.render("user/signup", {
-        errorMessage: "Username or email already exists",
+        userCheck: "User already exists, please try with a new email",
       });
+    } else {
+      const UserData = {
+        username: req.body.username,
+        email: req.body.email,
+        password: req.body.password,
+        name:req.body.name,
+        mobile:req.body.mobile
+      };
+
+      const OTP = generateOTP(); /* otp generating */
+
+      req.session.otpUser = { ...UserData, otp: OTP };
+      console.log(req.session.otpUser.otp);
+      // req.session.mail = req.body.email;
+
+      /** otp sending ***/
+      try {
+        sendOtp(req.body.email, OTP, req.body.username);
+        return res.redirect("/sendOTP");
+      } catch (error) {
+        console.error("Error sending OTP:", error);
+        return res.status(500).send("Error sending OTP");
+      }
     }
-
-    // Hash the password before saving it
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
-
-    // Create a new User instance
-    const newUser = new User({
-      username,
-      email,
-      password: hashedPassword,
-      name,
-      mobile,
-    });
-    const OTP = generateOTP()
-    req.session.otpUser = {...newUser,otp:OTP}
-    console.log(req.session.otpUser.otp);
-
-    try {
-      sendOtp(req.body.email, OTP, req.body.username);
-      return res.redirect('/sendOTP');
   } catch (error) {
-      console.error('Error sending OTP:', error);
-      return res.status(500).send('Error sending OTP');
-  } 
-    // Save the new user to the database
-    // await newUser.save();
-    // req.session.user = newUser;
-    // res.redirect('/men')
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ message: "Internal server error" }); // Handle other errors gracefully
+    throw new Error(error);
   }
 };
 
@@ -75,6 +66,9 @@ exports.sendOTPpage = async (req, res) => {
 
 exports.verifyOTP = async (req, res) => {
   try {
+    if(req.session.userId){
+      res.redirect('/men')
+    }else{
 
       const enteredOTP = req.body.otp;
       const email = req.session.otpUser.email
@@ -83,8 +77,8 @@ exports.verifyOTP = async (req, res) => {
       const user = req.session.otpUser;
 
       if (enteredOTP == storedOTP) {
+          user.password= await bcrypt.hash(user.password,10)
           const newUser = await User.create(user);
-        
           delete req.session.otpUser.otp;
          
           res.redirect('/login');
@@ -97,12 +91,71 @@ exports.verifyOTP = async (req, res) => {
       }
       res.render('user/verifyOTP', { email})
 
-
+  }
   } catch (error) {
       throw new Error(error);
   }
 };
 
+exports.reSendOTP = async (req, res) => {
+  try {
+    if(req.session.userId){
+      res.redirect('/men')
+    }
+    else{
+
+    
+      const OTP = generateOTP() /* otp generating */
+      req.session.otpUser.otp = { otp: OTP };
+      
+
+      const email = req.session.otpUser.email
+      const userName = req.session.otpUser.userName
+
+
+      /** otp resending ***/
+      try {
+          sendOtp(email, OTP, userName);
+          console.log('otp is sent');
+          console.log(OTP)
+          return res.render('user/reSendOTP', { email });
+      } catch (error) {
+          console.error('Error sending OTP:', error);
+          return res.status(500).send('Error sending OTP');
+      }
+  }
+
+  } catch (error) {
+      throw new Error(error)
+  }
+}
+
+
+exports.verifyResendOTP = async (req, res) => {
+  try {
+      const enteredOTP = req.body.otp;
+      console.log(enteredOTP);
+      const storedOTP = req.session.otpUser.otp;
+      console.log(storedOTP);
+
+      const user = req.session.otpUser;
+
+      if (enteredOTP == storedOTP.otp) {
+        user.password= await bcrypt.hash(user.password,10)
+          console.log('inside verification');
+          const newUser = await User.create(user);
+          if (newUser) {
+              console.log('new user insert in resend page', newUser);
+          } else { console.log('error in insert user') }
+          delete req.session.otpUser.otp;
+          res.redirect('/login');
+      } else {
+          console.log('verification failed');
+      }
+  } catch (error) {
+      throw new Error(error);
+  }
+};
 
 
 exports.showSignUp = async (req, res) => {

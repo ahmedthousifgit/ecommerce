@@ -25,13 +25,7 @@ const userSchema = new mongoose.Schema({
   blocked: {
     type: Boolean,
     default: false,
-  },
-  otp: {
-    type: String, 
-  },
-  otpExpiresAt: {
-    type: Date, 
-  },
+  }
 });
 userSchema.methods.verifyPassword = function (password) {
   return bcrypt.compareSync(password, this.password);

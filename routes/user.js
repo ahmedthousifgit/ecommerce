@@ -15,6 +15,10 @@ router.get('/sendOTP',userController.sendOTPpage)
 
 router.post('/sendOTP',userController.verifyOTP)
 
+router.get('/reSendOTP',userController.reSendOTP)
+
+router.post('/reSendOTP',userController.verifyResendOTP)
+
 //LOGIN
 router.get("/login", userController.showLogin);
 
