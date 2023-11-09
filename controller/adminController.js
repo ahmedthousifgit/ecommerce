@@ -6,8 +6,6 @@ const Product = require("../models/products-model");
 const User = require("../models/user");
 const category = require("../models/category");
 
-
-
 exports.authenticateAdmin = async (req, res) => {
   const { username, password } = req.body;
   try {
@@ -34,26 +32,24 @@ exports.authenticateAdmin = async (req, res) => {
 };
 
 exports.adminIndex = (req, res) => {
-   if(req.session.adminId){
-    res.redirect('/admin/dashboard')
-   }
-  const errorMessage = ''
-    res.render("admin/login",{errorMessage});
- 
+  if (req.session.adminId) {
+    res.redirect("/admin/dashboard");
+  }
+  const errorMessage = "";
+  res.render("admin/login", { errorMessage });
 };
 
 exports.adminLoggin = (req, res) => {
- try{
-  if (req.session.adminId) {
-    res.redirect("/dashboard");
-  } else {
-    res.render("admin/login");
-  }
- }
- catch(error){
+  try {
+    if (req.session.adminId) {
+      res.redirect("/dashboard");
+    } else {
+      res.render("admin/login");
+    }
+  } catch (error) {
     console.log(error);
     res.status(500).json({ error: "An error occurred" });
- }
+  }
 };
 
 exports.dashboard = async (req, res) => {
@@ -65,7 +61,7 @@ exports.dashboard = async (req, res) => {
   } else {
     res.redirect("/admin");
   }
-}
+};
 
 exports.adminCategoryForm = async (req, res) => {
   try {
@@ -119,63 +115,62 @@ exports.submitCategory = async (req, res) => {
   }
 };
 
-exports.listCategory = async(req,res)=>{
-  try{
-    const categoryId = req.params.categoryId
-    const category =  await Category.findByIdAndUpdate(categoryId, { isListed: true })
+exports.listCategory = async (req, res) => {
+  try {
+    const categoryId = req.params.categoryId;
+    const category = await Category.findByIdAndUpdate(categoryId, {
+      isListed: true,
+    });
     if (!category) {
-      return res.status(404).json({ error: 'Category not found' });
+      return res.status(404).json({ error: "Category not found" });
     }
 
-    res.redirect('/admin/categories');
-  }
-  catch(error){
+    res.redirect("/admin/categories");
+  } catch (error) {
     console.log(error);
     res.status(500).json({ error: "An error occurred" });
   }
-}
+};
 
-exports.unlistCategory = async(req,res)=>{
-  try{
-    const categoryId = req.params.categoryId
-    const category =  await Category.findByIdAndUpdate(categoryId, { isListed: false })
+exports.unlistCategory = async (req, res) => {
+  try {
+    const categoryId = req.params.categoryId;
+    const category = await Category.findByIdAndUpdate(categoryId, {
+      isListed: false,
+    });
     if (!category) {
-      return res.status(404).json({ error: 'Category not found' });
+      return res.status(404).json({ error: "Category not found" });
     }
 
-    res.redirect('/admin/categories');
-  }
-  catch(error){
+    res.redirect("/admin/categories");
+  } catch (error) {
     console.log(error);
     res.status(500).json({ error: "An error occurred" });
   }
-}
+};
 
-exports.deleteCategory = async(req,res)=>{
-  try{
-    const categoryId = req.params.categoryId
-    const category = await Category.findByIdAndRemove(categoryId)
-    if(!category){
-      return res.status(404).json({ error: 'Product not found' });
+exports.deleteCategory = async (req, res) => {
+  try {
+    const categoryId = req.params.categoryId;
+    const category = await Category.findByIdAndRemove(categoryId);
+    if (!category) {
+      return res.status(404).json({ error: "Product not found" });
     }
-    res.redirect('/admin/categories')
-  }
-  
-  catch(error){
+    res.redirect("/admin/categories");
+  } catch (error) {
     console.log(error);
     res.status(500).json({ error: "An error occurred" });
   }
-}
+};
 
 exports.addProductForm = async (req, res) => {
   try {
-    if(req.session.adminId){
-      const categories = await Category.find({isListed:true});
+    if (req.session.adminId) {
+      const categories = await Category.find({ isListed: true });
       res.render("admin/add-products", { categories });
-    }else{
-      res.redirect('/admin')
+    } else {
+      res.redirect("/admin");
     }
-    
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "An error occured" });
@@ -194,7 +189,12 @@ exports.addProduct = async (req, res) => {
       createdOn: Date.now(),
       taxRate: req.body.taxRate,
       units: req.body.units,
-      image: [req.files[0].filename],
+      image: [
+        req.files[0].filename,
+        req.files[1].filename,
+        req.files[2].filename,
+        req.files[3].filename,
+      ],
     };
 
     const product = new Product(productData);
@@ -208,8 +208,13 @@ exports.addProduct = async (req, res) => {
 
 exports.listProduct = async (req, res) => {
   try {
-    const products = await Product.find();
-    res.render("admin/product-list", { products });
+    if(req.session.adminId){
+      const products = await Product.find();
+      res.render("admin/product-list", { products });
+    }else{
+      res.redirect('/admin')
+    }
+    
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "An error occurred" });
@@ -219,13 +224,12 @@ exports.listProduct = async (req, res) => {
 //USERS
 exports.users = async (req, res) => {
   try {
-    if(req.session.adminId){
+    if (req.session.adminId) {
       const users = await User.find();
       res.render("admin/users", { users });
-    }else{
-      res.redirect('/admin')
+    } else {
+      res.redirect("/admin");
     }
-    
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "An error occurred" });
@@ -269,9 +273,10 @@ exports.unblockUser = async (req, res) => {
 exports.editProductForm = async (req, res) => {
   try {
     const productId = req.params.productId;
-    const product = await Product.findById(productId);
-    const categories = await Category.find()
-    res.render("admin/edit-products", { product,categories});
+    const products = await Product.findById(productId);
+    console.log(typeof products);
+    const categories = await Category.find({ isListed: true });
+    res.render("admin/edit-products", { products, categories });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "An error occurred" });
@@ -282,7 +287,7 @@ exports.editedProducts = async (req, res) => {
   try {
     const productId = req.params.productId;
     const product = await Product.findById(productId);
-    
+
     if (!product) {
       return res.status(404).json({ error: "Product not found" });
     }
@@ -294,8 +299,12 @@ exports.editedProducts = async (req, res) => {
     product.salePrice = req.body.salePrice;
     product.taxRate = req.body.taxRate;
     product.units = req.body.units;
-    product.image = req.files[0].filename;
-
+    product.image = [
+      req.files[0].filename,
+      req.files[1].filename,
+      req.files[2].filename,
+      req.files[3].filename,
+    ];
     await product.save();
     res.redirect("/admin/product-list");
   } catch (error) {
@@ -304,20 +313,19 @@ exports.editedProducts = async (req, res) => {
   }
 };
 
-exports.deleteProduct = async(req,res)=>{
-  try{
-    const productId = req.params.productId
-    const product = await Product.findByIdAndRemove(productId)
-    if(!product){
-      return res.status(404).json({ error: 'Product not found' });
+exports.deleteProduct = async (req, res) => {
+  try {
+    const productId = req.params.productId;
+    const product = await Product.findByIdAndRemove(productId);
+    if (!product) {
+      return res.status(404).json({ error: "Product not found" });
     }
-    res.redirect('/admin/product-list')
-  }
-  catch(error){
+    res.redirect("/admin/product-list");
+  } catch (error) {
     console.log(error);
     res.status(500).json({ error: "An error occurred" });
   }
-}
+};
 
 exports.logOut = (req, res) => {
   req.session.adminId = null;

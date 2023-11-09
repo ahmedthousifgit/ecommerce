@@ -7,7 +7,7 @@
     <%-include('../partials/adminNav') %>
     <section class="content-main">
       <form
-        action="/admin/edit-products/<%= product._id %>"
+        action="/admin/edit-products/<%= products._id %>"
         method="post"
         enctype="multipart/form-data"
         onsubmit="return validatePrices()"
@@ -27,40 +27,37 @@
                 <!-- Include input fields for editing product attributes, pre-populated with current values -->
                 <div class="mb-4">
                   <label for="product_name" class="form-label">Product title</label>
-                  <input type="text" class="form-control" id="product_name" name="name" value="<%= product.name %>" />
+                  <input type="text" class="form-control" id="product_name" name="name" value="<%= products.name %>" />
                 </div>
                 <!-- Other input fields for editing -->
                 <div class="mb-4">
                   <label class="form-label">Full description</label>
-                  <textarea class="form-control" rows="4" name="description"><%= product.description %></textarea>
+                  <textarea class="form-control" rows="4" name="description"><%= products.description %></textarea>
                 </div>
-                <div class="mb-4">
-                  <label class="form-label">Product Image</label>
-                  <input type="file" class="form-control" name="image" />
-                </div>
+                
                 <div class="row">
                   <div class="col-lg-4">
                     <div class="mb-4">
                       <label class="form-label">Regular price</label>
                       <div class="row gx-2">
-                        <input type="text" class="form-control" name="regularPrice" id="regularPrice" value="<%= product.regularPrice %>" />
+                        <input type="text" class="form-control" name="regularPrice" id="regularPrice" value="<%= products.regularPrice %>" />
                       </div>
                     </div>
                   </div>
                   <div class="col-lg-4">
                     <div class="mb-4">
                       <label class="form-label">Sale price</label>
-                      <input type="text" class="form-control" name="salePrice" id="salePrice" value="<%= product.salePrice %>" />
+                      <input type="text" class="form-control" name="salePrice" id="salePrice" value="<%= products.salePrice %>" />
                     </div>
                   </div>
                   <div class="col-lg-4">
                     <label class="form-label">Unit</label>
-                    <input type="text" class="form-control" name="units" value="<%= product.units %>" />
+                    <input type="text" class="form-control" name="units" value="<%= products.units %>" />
                   </div>
                 </div>
                 <div class="mb-4">
-                  <label class="form-label">Tax rate</label>
-                  <input type="text" class="form-control" name="taxRate" value="<%= product.taxRate %>" />
+ <label class="form-label">Tax rate</label>
+                  <input type="text" class="form-control" name="taxRate" value="<%= products.taxRate %>" />
                 </div>
                 
                 <!-- Other form fields for product details -->
@@ -74,6 +71,27 @@
           <div class="col-lg-3">
             <div class="card mb-4">
               <div class="card-header">
+                <h4>Media</h4>
+              </div>
+              <div class="card-body">
+                <p>Images</p>
+                <%for(i=0;i<products.image.length;i++){%>
+                  <img src="/uploads/products/<%=products.image[i]%>" alt="Something fishyy.." width="85" height="85" accept="image/*"
+                      onchange="validateImageFile(this)">
+                  <%}%>
+            </div>
+            <div class="card-body">
+              <small style="font-weight: bold;">Upload 4 images</small>
+              <div class="input-upload">
+                  <br>
+                  <input class="form-control" name="image" type="file" multiple >
+              </div>
+          </div>
+
+            </div>
+            <!-- card end// -->
+            <div class="card mb-4">
+              <div class="card-header">
                 <h4>Organization</h4>
               </div>
               <div class="card-body">
@@ -82,33 +100,27 @@
                     <label class="form-label">Category</label>
                     <select class="form-select" name="category">
                       <% categories.forEach(category => { %>
-                        <option value="<%= category._id %>"<% if (category._id.toString() === product.category.toString()) { %> selected<% } %>>
-                          <%= category.name %>
-                        </option>
+                      <option value="<%= category._id %>">
+                        <%= category.name %>
+                      </option>
                       <% }); %>
                     </select>
                   </div>
-                  <!-- Include selection for Sub-category -->
-                  <!-- Include selection for Sub-category -->
-<div class="col-sm-6 mb-3">
-  <label class="form-label">Sub-category</label>
-  <select class="form-select" name="subCategory">
-      <option value="Nike" <% if (product.subCategory === 'Nike') { %>selected<% } %>>Nike</option>
-      <option value="Adidas" <% if (product.subCategory === 'Adidas') { %>selected<% } %>>Adidas</option>
-      <option value="Puma" <% if (product.subCategory === 'Puma') { %>selected<% } %>>Puma</option>
-      <option value="Sketchers" <% if (product.subCategory === 'Sketchers') { %>selected<% } %>>Sketchers</option>
-  </select>
-</div>
-<!-- End selection for Sub-category -->
+                  <div class="col-sm-6 mb-3">
+                    <label class="form-label">Sub-category</label>
 
-                  <!-- End selection for Sub-category -->
+                      <select class="form-select" name="subCategory">
+                        <option value="Nike" <% if (products.subCategory === 'Nike') { %>selected<% } %>>Nike</option>
+                        <option value="Adidas" <% if (products.subCategory === 'Adidas') { %>selected<% } %>>Adidas</option>
+                        <option value="Puma" <% if (products.subCategory === 'Puma') { %>selected<% } %>>Puma</option>
+                        <option value="Sketchers" <% if (products.subCategory === 'Sketchers') { %>selected<% } %>>Sketchers</option>
+                    </select>
+                  </div>
                 </div>
-                <!-- row.// -->
               </div>
             </div>
-            <!-- card end// -->
           </div>
-        </div>
+         </div>      
       </form>
     </section>
     <script>
@@ -118,10 +130,10 @@
   
         if (parseFloat(regularPrice) < 0 || parseFloat(salePrice) < 0) {
           alert('Negative prices are not allowed!');
-          return false; // Prevent form submission
+          return false; 
         }
   
-        return true; // Allow form submission
+        return true; 
       }
     </script>
     <!-- content-main end// -->

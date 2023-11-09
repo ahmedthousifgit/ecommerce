@@ -33,14 +33,14 @@ router.get('/deleteCategory/:categoryId',adminController.deleteCategory)
 //PRODUCT
 router.get("/add-product", adminController.addProductForm);
 
-router.post("/add-product",update.array("image",1),adminController.addProduct);
+router.post("/add-product",update.array("image",4),adminController.addProduct);
 
 router.get("/product-list", adminController.listProduct);
 
 //EDIT PRODUCTS
 router.get('/edit-products/:productId',adminController.editProductForm)
 
-router.post('/edit-products/:productId',update.array("image",1),adminController.editedProducts)
+router.post('/edit-products/:productId',update.array("image",4),adminController.editedProducts)
 
 router.get('/deleteProduct/:productId',adminController.deleteProduct)
 

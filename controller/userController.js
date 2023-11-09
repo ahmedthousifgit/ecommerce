@@ -22,7 +22,7 @@ exports.registerUser = async (req, res) => {
     const checkData = await User.findOne({ email: emailCheck });
     if (checkData) {
       return res.render("user/signup", {
-        userCheck: "User already exists, please try with a new email",
+        errorMessage:"User already exists, please try with a new email",
       });
     } else {
       const UserData = {

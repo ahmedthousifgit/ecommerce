@@ -1,10 +1,10 @@
 const mongoose = require("mongoose");
 
 const productModel = mongoose.Schema({
-  image: {
+  image: [{
     type: Array,
     required: true,
-  },
+  },],
   name: {
     type: String,
     require: true,
