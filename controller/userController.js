@@ -3,6 +3,8 @@ const session = require("express-session");
 const bcrypt = require("bcrypt");
 const Product = require("../models/products-model");
 const Category = require("../models/category");
+const {sendOtp} = require('../utility/nodemailer')
+const {generateOTP} = require('../utility/nodemailer')
 
 
 exports.home = async (req, res, next) => {
@@ -39,16 +41,69 @@ exports.registerUser = async (req, res, next) => {
       name,
       mobile,
     });
+    const OTP = generateOTP()
+    req.session.otpUser = {...newUser,otp:OTP}
+    console.log(req.session.otpUser.otp);
 
+    try {
+      sendOtp(req.body.email, OTP, req.body.username);
+      return res.redirect('/sendOTP');
+  } catch (error) {
+      console.error('Error sending OTP:', error);
+      return res.status(500).send('Error sending OTP');
+  } 
     // Save the new user to the database
-    await newUser.save();
-    req.session.user = newUser;
-    res.redirect('/men')
+    // await newUser.save();
+    // req.session.user = newUser;
+    // res.redirect('/men')
   } catch (err) {
     console.error(err);
     return res.status(500).json({ message: "Internal server error" }); // Handle other errors gracefully
   }
 };
+
+
+exports.sendOTPpage = async (req, res) => {
+  try {
+      const email = req.session.otpUser.email
+      res.render('user/verifyOTP', { email })
+  } catch (error) {
+      throw new Error(error)
+  }
+
+}
+
+exports.verifyOTP = async (req, res) => {
+  try {
+
+      const enteredOTP = req.body.otp;
+      const email = req.session.otpUser.email
+      const storedOTP = req.session.otpUser.otp; // Getting the stored OTP from the session
+      // console.log(storedOTP);
+      const user = req.session.otpUser;
+
+      if (enteredOTP == storedOTP) {
+          const newUser = await User.create(user);
+        
+          delete req.session.otpUser.otp;
+         
+          res.redirect('/login');
+       
+      } else {
+          
+          messages = 'Verification failed, please check the OTP or resend it.';
+          console.log('verification failed');
+
+      }
+      res.render('user/verifyOTP', { email})
+
+
+  } catch (error) {
+      throw new Error(error);
+  }
+};
+
+
 
 exports.showSignUp = async (req, res) => {
   if (req.session.userId) {

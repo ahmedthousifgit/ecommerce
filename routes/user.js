@@ -11,6 +11,10 @@ router.get("/signup", userController.showSignUp);
 
 router.post("/signup", userController.registerUser);
 
+router.get('/sendOTP',userController.sendOTPpage)
+
+router.post('/sendOTP',userController.verifyOTP)
+
 //LOGIN
 router.get("/login", userController.showLogin);
 

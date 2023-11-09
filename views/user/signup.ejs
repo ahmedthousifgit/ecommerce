@@ -8,7 +8,7 @@
 </head>
 <body>
     <div class="signup-container">
-        <form action="/signup" method="POST" onsubmit="validateForm(event)">
+        <form action="/signup" method="POST" id="#signup-form" >
             <div class="error-message">
                 <% if (errorMessage ) { %>
                   <p style="color: red;"><%= errorMessage %></p>
@@ -45,19 +45,6 @@
             <button type="submit" >Sign Up</button>
         </form>
 
-  <script>
-    function validateForm(event) {
-       event.preventDefault(); // Prevent the default form submission   
-       const password = document.getElementById("password").value;
-       const confirmPassword = document.getElementById("confirm-password").value;
-       const passwordError = document.getElementById("passwordError");
-       if (password !== confirmPassword) {
-          passwordError.textContent = "Passwords do not match"; // Display the error message
-       } else {
-          passwordError.textContent = ""; // Clear the error message
-          event.target.submit(); // Submit the form if passwords match
-       }
-    }
- </script>
+ 
 </body>
 </html>
