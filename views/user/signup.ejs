@@ -8,43 +8,106 @@
 </head>
 <body>
     <div class="signup-container">
-        <form action="/signup" method="POST" id="#signup-form" >
+        <form action="/signup" method="POST" id="signup-form">
             <div class="error-message">
-                <% if (errorMessage ) { %>
-                  <p style="color: red;"><%= errorMessage %></p>
-                  
+                <% if (errorMessage) { %>
+                    <p style="color: red;"><%= errorMessage %></p>
                 <% } %>
-              </div>
+            </div>
             <h2>Sign Up</h2>
             <div class="form-group">
                 <label for="name">Name:</label>
-                <input type="text" id="name" name="name" required>
+                <input type="text" id="name" name="name" pattern="^[a-zA-Z\s]+$" required>
+                <small id="name-error" class="error-message"></small>
             </div>
             <div class="form-group">
                 <label for="username">Username:</label>
-                <input type="text" id="username" name="username" required>
+                <input type="text" id="username" name="username" pattern="^[a-zA-Z]+$" required>
+                <small id="username-error" class="error-message"></small>
             </div>
             <div class="form-group">
                 <label for="email">Email:</label>
                 <input type="email" id="email" name="email" required>
+                <small id="email-error" class="error-message"></small>
             </div>
             <div class="form-group">
                 <label for="mobile">Mobile Number:</label>
-                <input type="tel" id="mobile" name="mobile" required>
+                <input type="tel" id="mobile" name="mobile" pattern="\d{10}" required>
+                <small id="mobile-error" class="error-message"></small>
             </div>
             <div class="form-group">
                 <label for="password">Password:</label>
                 <p id="passwordError" style="color: red;"></p>
-            
-                <input type="password" id="password" name="password" required>
+                <input type="password" id="password" name="password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" required>
+                <small id="password-error" class="error-message"></small>
             </div>
             <div class="form-group">
                 <label for="confirm-password">Confirm Password:</label>
                 <input type="password" id="confirm-password" name="confirm-password" required>
+                <small id="confirm-password-error" class="error-message"></small>
             </div>
-            <button type="submit" >Sign Up</button>
+            <button type="submit">Sign Up</button>
+        
+            <script>
+                function showError(input, errorId, errorMessage) {
+                    var errorElement = document.getElementById(errorId);
+                    if (input.validity.patternMismatch) {
+                        errorElement.textContent = errorMessage;
+                        errorElement.style.color = 'red';
+                    } else {
+                        errorElement.textContent = '';
+                    }
+                }
+        
+                document.getElementById('name').addEventListener('input', function () {
+                    showError(this, 'name-error', 'Only alphabetical characters and spaces are allowed');
+                });
+        
+                document.getElementById('username').addEventListener('input', function () {
+                    showError(this, 'username-error', 'Only alphabetical characters are allowed');
+                });
+        
+                document.getElementById('email').addEventListener('input', function () {
+                    showError(this, 'email-error', 'Invalid email address');
+                });
+        
+                document.getElementById('mobile').addEventListener('input', function () {
+                    showError(this, 'mobile-error', 'Enter a 10-digit mobile number');
+                });
+        
+                document.getElementById('password').addEventListener('input', function () {
+                    showError(this, 'password-error', 'Password must contain at least 8 characters, including one uppercase letter, one lowercase letter, and one digit.');
+                });
+        
+                document.getElementById('confirm-password').addEventListener('input', function () {
+                    var confirmPasswordInput = this;
+                    var passwordInput = document.getElementById('password');
+                    var errorElement = document.getElementById('confirm-password-error');
+        
+                    if (confirmPasswordInput.validity.patternMismatch || confirmPasswordInput.value !== passwordInput.value) {
+                        errorElement.textContent = 'Passwords do not match';
+                        errorElement.style.color = 'red';
+                    } else {
+                        errorElement.textContent = '';
+                    }
+                });
+            </script>
         </form>
+        
+  </div>
+  <script>
+    document.getElementById('signup-form').addEventListener('submit', function (event) {
+        // Validate password match
+        var password = document.getElementById('password').value;
+        var confirmPassword = document.getElementById('confirm-password').value;
 
- 
+        if (password !== confirmPassword) {
+            event.preventDefault();
+            document.getElementById('passwordError').textContent = 'Passwords do not match';
+        } else {
+            document.getElementById('passwordError').textContent = '';
+        }
+    });
+</script>
 </body>
 </html>

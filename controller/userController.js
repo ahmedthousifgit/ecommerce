@@ -56,8 +56,12 @@ exports.registerUser = async (req, res) => {
 
 exports.sendOTPpage = async (req, res) => {
   try {
+    if(req.session.userId){
+      res.redirect('/men')
+    }else{
       const email = req.session.otpUser.email
       res.render('user/verifyOTP', { email })
+    }
   } catch (error) {
       throw new Error(error)
   }

@@ -14,19 +14,34 @@
             <p>Please enter your credentials to login.</p>
           </div>
         </div>
-        <form class="login-form" action="/login" method="post"> 
-          <input type="text" placeholder="username" name="name"/>
-          <input type="password" placeholder="password" name="password"/>
-          <button type="submit">login</button>
+        <form class="login-form" action="/login" method="post" id="login-form">
+          <input type="text" placeholder="username" name="name" required>
+          <input type="password" placeholder="password" name="password" required>
+          <button type="submit">Login</button>
           <div class="error-message">
-            <% if (errorMessage) { %>
-              <p style="color: red;"><%= errorMessage %></p>
-            <% } %>
-            </div>       
-            <p class="message">Forgot your password? <a href="/forgotpassword">Reset it here</a></p>
+              <% if (errorMessage) { %>
+                  <p style="color: red;"><%= errorMessage %></p>
+              <% } %>
+          </div>
+          <p class="message">Forgot your password? <a href="/forgotpassword">Reset it here</a></p>
           <p class="message">Not registered? <a href="/signup">Create an account</a></p>
-        </form>
-        
+      
+          <script>
+              document.getElementById('login-form').addEventListener('submit', function (event) {
+                  var usernameInput = document.getElementsByName('name')[0];
+                  var passwordInput = document.getElementsByName('password')[0];
+                  var errorElement = document.querySelector('.error-message');
+      
+                  // Validate username (allow only alphabetical characters)
+                  if (!/^[a-zA-Z]+$/.test(usernameInput.value)) {
+                      event.preventDefault();
+                      errorElement.innerHTML = '<p style="color: red;">Invalid username. Only alphabetical characters are allowed.</p>';
+                      return;
+                  }
+                  errorElement.innerHTML = '';
+              });
+          </script>
+      </form>  
       </div>
     </div>
 </body>
