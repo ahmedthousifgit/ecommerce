@@ -222,7 +222,12 @@ exports.menPage = async (req, res) => {
 exports.productDetail= async(req,res)=>{
   try{
     if(req.session.userId){
-      res.render('user/product-details')
+      const productId = req.query.productId
+      const products = await Product.findById(productId)
+      if(!products){
+        return res.status(404).json({ error: "Product not found" });
+      }
+      res.render('user/product-details',{products})
     }else{
       res.redirect('/login')
     }

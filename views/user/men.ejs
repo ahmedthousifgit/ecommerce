@@ -112,7 +112,7 @@
 							<img src="/uploads/products/<%= product.image[0] %>" class="img-fluid" alt="<%= product.name %>">
 						  </a>
 						  <div class="desc">
-							<h2><a href="#"><%= product.name %></a></h2>
+							<h2><a href="/product-details?productId=<%= product._id %>"><%= product.name %></a></h2>
 							<span class="price">$<%= product.regularPrice %></span>
 						  </div>
 						</div>

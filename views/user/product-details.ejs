@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Product details</title>
+    <title>Evara - eCommerce HTML Template</title>
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -37,7 +37,7 @@
                 </div>
             </div>
         </div>
-        <sect ion class="mt-50 mb-50">
+        <section class="mt-50 mb-50">
             <div class="container">
                 <div class="row">
                     <div class="col-lg-9">
@@ -49,7 +49,7 @@
                                         <!-- MAIN SLIDES -->
                                         <div class="product-image-slider">
                                             <figure class="border-radius-10">
-                                                <img src="frontendassets/imgs/shop/product-16-2.jpg" alt="product image">
+                                                <img src="/uploads/products/<%= products.image[0] %>" alt="product image">
                                             </figure>
                                             <figure class="border-radius-10">
                                                 <img src="frontendassets/imgs/shop/product-16-1.jpg" alt="product image">
@@ -60,25 +60,14 @@
                                             <figure class="border-radius-10">
                                                 <img src="frontendassets/imgs/shop/product-16-4.jpg" alt="product image">
                                             </figure>
-                                            <figure class="border-radius-10">
-                                                <img src="frontendassets/imgs/shop/product-16-5.jpg" alt="product image">
-                                            </figure>
-                                            <figure class="border-radius-10">
-                                                <img src="frontendassets/imgs/shop/product-16-6.jpg" alt="product image">
-                                            </figure>
-                                            <figure class="border-radius-10">
-                                                <img src="frontendassets/imgs/shop/product-16-7.jpg" alt="product image">
-                                            </figure>
                                         </div>
                                         <!-- THUMBNAILS -->
                                         <div class="slider-nav-thumbnails pl-15 pr-15">
-                                            <div><img src="frontendassets/imgs/shop/thumbnail-3.jpg" alt="product image"></div>
-                                            <div><img src="frontendassets/imgs/shop/thumbnail-4.jpg" alt="product image"></div>
-                                            <div><img src="frontendassets/imgs/shop/thumbnail-5.jpg" alt="product image"></div>
-                                            <div><img src="frontendassets/imgs/shop/thumbnail-6.jpg" alt="product image"></div>
-                                            <div><img src="frontendassets/imgs/shop/thumbnail-7.jpg" alt="product image"></div>
-                                            <div><img src="frontendassets/imgs/shop/thumbnail-8.jpg" alt="product image"></div>
-                                            <div><img src="frontendassets/imgs/shop/thumbnail-9.jpg" alt="product image"></div>
+                                            <div><img src="/uploads/products/<%= products.image[1] %>" alt="product image"></div>
+                                            <div><img src="/uploads/products/<%= products.image[2] %>" alt="product image"></div>
+                                            <div><img src="/uploads/products/<%= products.image[3] %>" alt="product image"></div>
+                                            <div><img src="/uploads/products/<%= products.image[0] %>" alt="product image"></div>
+                                            
                                         </div>
                                     </div>
                                     <!-- End Gallery -->
