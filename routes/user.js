@@ -24,6 +24,9 @@ router.get("/login", userController.showLogin);
 
 router.post("/login", userController.login);
 
+//SHOW PRODUCT
+router.get('/product-details',userController.productDetail)
+
 // HOME PAGE NAV
 
 router.get("/men", userController.menPage);

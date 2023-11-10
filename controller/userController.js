@@ -206,9 +206,9 @@ exports.login = async (req, res) => {
 exports.menPage = async (req, res) => {
   try {
     if(req.session.userId){
-      const menProducts = await Product.find();
-      console.log(menProducts);
-      res.render("user/men", { products: menProducts });
+      const products = await Product.find();
+      
+      res.render("user/men", { products });
     }else{
       res.redirect('/login')
     }
@@ -218,6 +218,20 @@ exports.menPage = async (req, res) => {
     res.status(500).json({ error: "An error occurred" });
   }
 };
+
+exports.productDetail= async(req,res)=>{
+  try{
+    if(req.session.userId){
+      res.render('user/product-details')
+    }else{
+      res.redirect('/login')
+    }
+  }
+  catch(error){
+    console.log(error);
+    res.status(500).json({ error: "An error occurred" });
+  }
+}
 
 exports.womenPage = async (req, res) => {
   if (req.session.userId) {
