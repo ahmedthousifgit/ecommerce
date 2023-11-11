@@ -244,6 +244,7 @@ exports.productDetail= async(req,res)=>{
         return res.status(404).json({ error: "Product not found" });
       }
       res.render('user/product-details',{products})
+      
     }else{
       res.redirect('/login')
     }
