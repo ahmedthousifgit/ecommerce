@@ -40,25 +40,73 @@
             <div class="card mx-auto card-login">
                 <div class="card-body">
                     <h4 class="card-title mb-4">Sign in</h4>
-                    <form action="/admin/admin" method="post">
+                    <form action="/admin/admin" method="post" id="admin-login-form">
                         <div class="mb-3">
-                            <input class="form-control" placeholder="Username" type="text" name="username">
+                            <input class="form-control" placeholder="Username" type="text" name="username" required>
+                            <small id="username-error" class="error-message"></small>
                         </div> <!-- form-group// -->
                         <div class="mb-3">
-                            <input class="form-control" placeholder="Password" type="password" name="password">
+                            <input class="form-control" placeholder="Password" type="password" name="password" required>
+                            <small id="password-error" class="error-message"></small>
                         </div> <!-- form-group// -->
-                        
+                
                         <div class="mb-4">
-                            <button type="submit" class="btn btn-primary w-100"> Login </button>
+                            <button type="submit" class="btn btn-primary w-100">Login</button>
                         </div> <!-- form-group// -->
                     </form>
                     <div class="error-message">
                         <% if (errorMessage) { %>
-                          <p style="color: red;"><%= errorMessage %></p>
+                            <p style="color: red;"><%= errorMessage %></p>
                         <% } %>
-                        </div>       
+                    </div>
+                
+                    <script>
+                        document.getElementById('admin-login-form').addEventListener('submit', function (event) {
+                            var usernameInput = document.getElementsByName('username')[0];
+                            var passwordInput = document.getElementsByName('password')[0];
+                            var usernameError = document.getElementById('username-error');
+                            var passwordError = document.getElementById('password-error');
+                            var errorElement = document.querySelector('.error-message');
+                
+                            // Validate username (allow only alphabetical characters)
+                            if (!/^[a-zA-Z]+$/.test(usernameInput.value)) {
+                                event.preventDefault();
+                                usernameError.textContent = 'Username must contain only alphabetical characters.';
+                                usernameError.style.color = 'red';
+                            } else {
+                                usernameError.textContent = '';
+                            }
+                
+                            // Validate password (add your password validation logic here if needed)
+                            if (passwordInput.value.length < 8) {
+                                event.preventDefault();
+                                passwordError.textContent = 'Password must be at least 8 characters long.';
+                                passwordError.style.color = 'red';
+                            } else {
+                                passwordError.textContent = '';
+                            }
+                
+                            // Clear any previous error messages
+                            errorElement.innerHTML = '';
+                        });
+                
+                        // Add input event listeners to dynamically clear the error messages when the user corrects the input
+                        document.getElementsByName('username')[0].addEventListener('input', function () {
+                            var usernameError = document.getElementById('username-error');
+                            if (usernameError.textContent) {
+                                usernameError.textContent = '';
+                            }
+                        });
+                
+                        document.getElementsByName('password')[0].addEventListener('input', function () {
+                            var passwordError = document.getElementById('password-error');
+                            if (passwordError.textContent) {
+                                passwordError.textContent = '';
+                            }
+                        });
+                    </script>
                 </div>
-                   
+  
                 </div>
             </div>
         </section>

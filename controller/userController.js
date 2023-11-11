@@ -7,12 +7,24 @@ const {sendOtp} = require('../utility/nodemailer')
 const {generateOTP} = require('../utility/nodemailer')
 
 
-exports.home = async (req, res, next) => {
-  if(req.session.userId){
-    res.redirect('/men')
+exports.home = async (req, res) => {
+  try{
+    if(req.session.userId){
+      const user = await User.findById(req.session.userId)
+      if(user && user.blocked){
+        res.redirect('/login')
+      }else{
+        res.redirect('/men')
+      }
+    }else{
+    const products = await Product.find();
+    res.render("user/index", { title: "Express", products });
+    }  
+  }catch(error){
+    console.error('Error rendering home page:', error);
+    res.redirect('/login')
   }
-  const products = await Product.find();
-  res.render("user/index", { title: "Express", products });
+  
 };
 
 // signup process

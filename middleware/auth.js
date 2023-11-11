@@ -26,3 +26,28 @@ exports.adminLoggedIn = (req, res, next) => {
       res.render('admin/login',{ title: 'Admin dashboard', errorMessage: '' });
     }
   };
+
+
+
+
+// async function checkBlockedStatus(req, res, next) {
+//   try {
+//     if (req.session.userId) {
+//       const user = await User.findById(req.session.userId);
+
+//       if (user) {
+//         if (user.blocked) {
+//           return res.redirect('/login');
+//         } else {
+//           return res.redirect('/men');
+//         }
+//       }
+//     }
+//     next();
+//   } catch (error) {
+//     console.error('Error checking blocked status:', error);
+//     res.redirect('/login');
+//   }
+// }
+
+// module.exports = { checkBlockedStatus };

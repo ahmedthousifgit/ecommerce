@@ -5,12 +5,13 @@
   <%-include('../partials/adminaside') %>
   <main class="main-wrap">
     <%-include('../partials/adminNav') %>
+
     <section class="content-main">
       <form
         action="/admin/edit-products/<%= products._id %>"
         method="post"
         enctype="multipart/form-data"
-        onsubmit="return validatePrices()"
+        onsubmit="return validateEditProductForm()"
       >
         <div class="row">
           <div class="col-9">
@@ -27,7 +28,8 @@
                 <!-- Include input fields for editing product attributes, pre-populated with current values -->
                 <div class="mb-4">
                   <label for="product_name" class="form-label">Product title</label>
-                  <input type="text" class="form-control" id="product_name" name="name" value="<%= products.name %>" />
+                  <input type="text" class="form-control" id="product_name" name="name" value="<%= products.name %>" required pattern="^[a-zA-Z\s]+$" />
+                  <small id="name-error" class="error-message"></small>
                 </div>
                 <!-- Other input fields for editing -->
                 <div class="mb-4">
@@ -36,27 +38,22 @@
                 </div>
                 
                 <div class="row">
-                  <div class="col-lg-4">
-                    <div class="mb-4">
-                      <label class="form-label">Regular price</label>
-                      <div class="row gx-2">
-                        <input type="text" class="form-control" name="regularPrice" id="regularPrice" value="<%= products.regularPrice %>" />
-                      </div>
-                    </div>
-                  </div>
+                  
                   <div class="col-lg-4">
                     <div class="mb-4">
                       <label class="form-label">Sale price</label>
                       <input type="text" class="form-control" name="salePrice" id="salePrice" value="<%= products.salePrice %>" />
+                      <small id="salePrice-error" class="error-message"></small>
                     </div>
                   </div>
                   <div class="col-lg-4">
                     <label class="form-label">Unit</label>
                     <input type="text" class="form-control" name="units" value="<%= products.units %>" />
+                    <small id="units-error" class="error-message"></small>
                   </div>
                 </div>
                 <div class="mb-4">
- <label class="form-label">Tax rate</label>
+                  <label class="form-label">Tax rate</label>
                   <input type="text" class="form-control" name="taxRate" value="<%= products.taxRate %>" />
                 </div>
                 
@@ -77,17 +74,17 @@
                 <p>Images</p>
                 <%for(i=0;i<products.image.length;i++){%>
                   <img src="/uploads/products/<%=products.image[i]%>" alt="Something fishyy.." width="85" height="85" accept="image/*"
-                      onchange="validateImageFile(this)">
+                    onchange="validateImageFile(this)">
                   <%}%>
-            </div>
-            <div class="card-body">
-              <small style="font-weight: bold;">Upload 4 images</small>
-              <div class="input-upload">
-                  <br>
-                  <input class="form-control" name="image" type="file" multiple >
               </div>
-          </div>
-
+              <div class="card-body">
+                <small style="font-weight: bold;">Upload 4 images</small>
+                <div class="input-upload">
+                  <br>
+                  <input class="form-control" name="image" type="file" multiple accept=".jpg, .jpeg, .webp, .png, .gif" />
+                  <small id="image-error" class="error-message"></small>
+                </div>
+              </div>
             </div>
             <!-- card end// -->
             <div class="card mb-4">
@@ -108,34 +105,87 @@
                   </div>
                   <div class="col-sm-6 mb-3">
                     <label class="form-label">Sub-category</label>
-
-                      <select class="form-select" name="subCategory">
-                        <option value="Nike" <% if (products.subCategory === 'Nike') { %>selected<% } %>>Nike</option>
-                        <option value="Adidas" <% if (products.subCategory === 'Adidas') { %>selected<% } %>>Adidas</option>
-                        <option value="Puma" <% if (products.subCategory === 'Puma') { %>selected<% } %>>Puma</option>
-                        <option value="Sketchers" <% if (products.subCategory === 'Sketchers') { %>selected<% } %>>Sketchers</option>
+    
+                    <select class="form-select" name="subCategory">
+                      <option value="Nike" <% if (products.subCategory === 'Nike') { %>selected<% } %>>Nike</option>
+                      <option value="Adidas" <% if (products.subCategory === 'Adidas') { %>selected<% } %>>Adidas</option>
+                      <option value="Puma" <% if (products.subCategory === 'Puma') { %>selected<% } %>>Puma</option>
+                      <option value="Sketchers" <% if (products.subCategory === 'Sketchers') { %>selected<% } %>>Sketchers</option>
                     </select>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-         </div>      
+        </div>      
       </form>
-    </section>
-    <script>
-      function validatePrices() {
-        var regularPrice = document.getElementById('regularPrice').value;
-        var salePrice = document.getElementById('salePrice').value;
-  
-        if (parseFloat(regularPrice) < 0 || parseFloat(salePrice) < 0) {
-          alert('Negative prices are not allowed!');
-          return false; 
+    
+      <script>
+        function validateEditProductForm() {
+          var isValid = true;
+    
+          // Validate product title (allow only alphabetical characters)
+          var nameInput = document.getElementById('product_name');
+          var nameError = document.getElementById('name-error');
+          if (!/^[a-zA-Z\s]+$/.test(nameInput.value)) {
+            isValid = false;
+            nameInput.setCustomValidity('Only alphabetical characters are allowed.');
+            nameError.textContent = 'Only alphabetical characters are allowed.';
+            nameError.style.color = 'red';
+          } else {
+            nameInput.setCustomValidity('');
+            nameError.textContent = '';
+          }
+    
+          // Validate sale price (non-negative number with up to two decimal places)
+          var salePriceInput = document.getElementById('salePrice');
+          var salePriceError = document.getElementById('salePrice-error');
+          if (parseFloat(salePriceInput.value) < 0 || !/^\d+(\.\d{1,2})?$/.test(salePriceInput.value)) {
+            isValid = false;
+            salePriceInput.setCustomValidity('Invalid sale price. Please enter a non-negative number.');
+            salePriceError.textContent = 'Invalid sale price. Please enter a non-negative number.';
+            salePriceError.style.color = 'red';
+          } else {
+            salePriceInput.setCustomValidity('');
+            salePriceError.textContent = '';
+          }
+    
+          // Validate units (non-negative integer)
+          var unitsInput = document.getElementsByName('units')[0];
+          var unitsError = document.getElementById('units-error');
+          if (parseInt(unitsInput.value) < 0 || !/^\d+$/.test(unitsInput.value)) {
+            isValid = false;
+            unitsInput.setCustomValidity('Invalid units value. Please enter a non-negative integer.');
+            unitsError.textContent = 'Invalid units value. Please enter a non-negative integer.';
+            unitsError.style.color = 'red';
+          } else {
+            unitsInput.setCustomValidity('');
+            unitsError.textContent = '';
+          }
+    
+          // Validate image file format
+          var imageInput = document.getElementsByName('image')[0];
+          var imageError = document.getElementById('image-error');
+          if (imageInput.files.length > 0) {
+            var allowedFormats = ['.jpg', '.jpeg', '.webp', '.png', '.gif'];
+            var fileName = imageInput.files[0].name;
+            var fileExtension = fileName.substring(fileName.lastIndexOf('.')).toLowerCase();
+            if (!allowedFormats.includes(fileExtension)) {
+              isValid = false;
+              imageInput.setCustomValidity('Invalid image file format. Allowed formats: ' + allowedFormats.join(', '));
+              imageError.textContent = 'Invalid image file format. Allowed formats: ' + allowedFormats.join(', ');
+              imageError.style.color = 'red';
+            } else {
+              imageInput.setCustomValidity('');
+              imageError.textContent = '';
+            }
+          }
+    
+          return isValid;
         }
-  
-        return true; 
-      }
-    </script>
+      </script>
+    </section>
+    
     <!-- content-main end// -->
     <%-include('../partials/adminfooter') %>
   </main>
