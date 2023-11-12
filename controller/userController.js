@@ -303,6 +303,30 @@ exports.addAddress = async (req, res) => {
   }
 };
 
+
+exports.removeAddress= async(req,res)=>{
+  try{
+    if(req.session.userId){
+      const {userId,addressId} = req.params
+      const user = await User.findById(userId)
+      if(!user){
+        return res.status(404).json({ success: false, error: 'User not found' });
+      }
+      await Address.findByIdAndRemove(addressId)
+      user.addresses = user.addresses.filter(address => address.toString() !== addressId)
+      await user.save()
+      res.redirect('/account')
+    }else{
+      res.redirect('/men')
+    }
+
+  }
+  catch(error){
+    console.log(error);
+    res.status(500).json({ error: "An error occurred" });
+  }
+}
+
 exports.productDetail= async(req,res)=>{
   try{
     if(req.session.userId){

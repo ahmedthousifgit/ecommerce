@@ -36,6 +36,8 @@ router.get('/add-address',userController.addressForm)
 
 router.post('/add-address',userController.addAddress)
 
+router.post('/remove-address/:userId/:addressId',userController.removeAddress)
+
 // HOME PAGE NAV
 
 router.get("/men", userController.menPage);
