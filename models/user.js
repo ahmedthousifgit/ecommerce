@@ -25,7 +25,13 @@ const userSchema = new mongoose.Schema({
   blocked: {
     type: Boolean,
     default: false,
-  }
+  },
+  addresses: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Address",
+    },
+  ],
 });
 userSchema.methods.verifyPassword = function (password) {
   return bcrypt.compareSync(password, this.password);

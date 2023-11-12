@@ -5,6 +5,7 @@ const Product = require("../models/products-model");
 const Category = require("../models/category");
 const {sendOtp} = require('../utility/nodemailer')
 const {generateOTP} = require('../utility/nodemailer')
+const Address = require('../models/address-model')
 
 
 exports.home = async (req, res) => {
@@ -229,6 +230,73 @@ exports.menPage = async (req, res) => {
       res.redirect('/login')
     }
     
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "An error occurred" });
+  }
+};
+
+exports.account= async(req,res)=>{
+  try{
+    if(req.session.userId){
+      const user = await User.findById(req.session.userId).populate('addresses')
+      if(user && !user.blocked){
+        res.render('user/account',{user})
+      }else{
+        res.redirect('/login')
+      }
+    }else{
+      res.redirect('/login')
+    }
+  }
+  catch(error){
+    console.log(error);
+    res.status(500).json({ error: "An error occurred" });
+
+  }
+}
+
+exports.addressForm = async(req,res)=>{
+  try{
+    if(req.session.userId){
+      res.render('user/add-address')
+    }else{
+      res.redirect('/login')
+    }
+  }catch(error){
+    console.log(error);
+    res.status(500).json({ error: "An error occurred" });
+  }
+}
+
+exports.addAddress = async (req, res) => {
+  try {
+    const { name, number, altNumber, pinCode, house, area, landmark, town, state } = req.body;
+    const user = await User.findById(req.session.userId);
+
+    if (user) {
+      const address = new Address({
+        user: user._id,
+        name,
+        number,
+        altNumber,
+        pinCode,
+        house,
+        area,
+        landmark,
+        town,
+        state,
+      });
+
+      await address.save();
+
+      user.addresses.push(address);
+      await user.save();
+
+      res.redirect('/account')
+    } else {
+      res.redirect('/login');
+    }
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "An error occurred" });

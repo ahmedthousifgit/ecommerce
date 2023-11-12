@@ -28,6 +28,14 @@ router.post("/login", userController.login);
 //SHOW PRODUCT
 router.get('/product-details',userController.productDetail)
 
+
+//PROFILE
+router.get('/account',userController.account)
+
+router.get('/add-address',userController.addressForm)
+
+router.post('/add-address',userController.addAddress)
+
 // HOME PAGE NAV
 
 router.get("/men", userController.menPage);
