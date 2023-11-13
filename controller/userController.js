@@ -312,10 +312,11 @@ exports.removeAddress= async(req,res)=>{
       if(!user){
         return res.status(404).json({ success: false, error: 'User not found' });
       }
-      await Address.findByIdAndRemove(addressId)
-      user.addresses = user.addresses.filter(address => address.toString() !== addressId)
-      await user.save()
-      res.redirect('/account')
+      await Address.findByIdAndRemove({user:userId,_id:addressId})
+      user.addresses.pull(addressId);
+      await user.save();
+      res.json(true);
+      // res.redirect('/account')
     }else{
       res.redirect('/men')
     }
