@@ -174,7 +174,7 @@
 				  <div class="mt-3 mb-3 bg-light p-2 rounded text-dark" id="div_<%= address._id %>">
 					<div class="d-flex align-items-center">
 					  <small class="me-4">FullName:<%= address.name %></small>
-					  <a href="#" class="ms-auto text-dark mt-0" style="margin-left: auto;">
+					  <a href="/edit-address?id=<%= address._id %>" class="ms-auto text-dark mt-0" style="margin-left: auto;">
 						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
 						  <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
 						</svg>
@@ -228,51 +228,53 @@
     crossorigin="anonymous"></script>
   
   <script>
-    //    function removeAddress(userId,addressId){
-	// 	alert(userId)
-	// 	alert(addressId)
-    //     $.ajax({
-    //         url: '/remove-address/' + userId + '/' + addressId,
-    //         method:'post',
-    //         data:{
-    //             userId:userId,
-    //             addressId:addressId,
-    //         },
-    //         success:(response)=>{
-	// 			console.log(response);
-	// 			alert('hi')
-	// 			alert(response)
-    //             if(response === true){
-	// 				location.reload();
-    //             }else{
-	// 				location.reload();
-    //             }
+       function removeAddress(userId,addressId){
+		alert(userId)
+		alert(addressId)
+        $.ajax({
+            url: '/remove-address/',
+            method:'post',
+            data:{
+                userId:userId,
+                addressId:addressId,
+            },
+            success:(response)=>{
+				console.log(response);
+				alert('hi')
+				alert(response)
+                if(response === true){
+					location.reload();
+                }else{
+					location.reload();
+                }
                 
-    //         }
-    //     })
-    // }
+            }
+        })
+    }
 
 
-	async function removeAddress(userId, addressId) {
-    alert(userId);
-    alert(addressId);
+// 	async function removeAddress(userId, addressId) {
+//     alert(userId);
+//     alert(addressId);
 
-    const response = fetch('/remove-address/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        userId: userId,
-        addressId: addressId,
-      }),
-    })
-	if(response.status === 200) {
-		document.getElementById('div_'+addressId).remove()
-	} else {
-		location.reload()
-	}
-  }
+//     const response = fetch('/remove-address/', {
+//       method: 'POST',
+//       headers: {
+//         'Content-Type': 'application/json',
+//       },
+//       body: JSON.stringify({
+//         userId: userId,
+//         addressId: addressId,
+//       }),
+//     })
+// 	if(response.status === 200) {
+// 		document.getElementById('div_'+addressId).remove()
+// 	} else {
+// 		location.reload()
+// 	}
+//   }
+
+
 
   </script>
 

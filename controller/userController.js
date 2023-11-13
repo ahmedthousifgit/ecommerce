@@ -307,23 +307,17 @@ exports.addAddress = async (req, res) => {
 
 exports.removeAddress= async(req,res)=>{
   try{
-    console.log('sjkdfh');
     if(req.session.userId){
       const {userId,addressId} = req.body
-      console.log(userId);
-      console.log(addressId);
       const user = await User.findById(userId)
       if(!user){
         return res.status(404).json({ success: false, error: 'User not found' });
       }
-      await Address.findByIdAndRemove({user:userId,_id:addressId}).then((data)=>{
-        console.log(data,"data");
-      })
+      await Address.findByIdAndRemove({user:userId,_id:addressId})
+      
       user.addresses.pull(addressId);
       await user.save();
-      console.log('jskdf');
-      console.log(user);
-      res.status(200).json();
+      res.json(true);
       
     }else{
       res.redirect('/login')
@@ -331,11 +325,50 @@ exports.removeAddress= async(req,res)=>{
 
   }
   catch(error){
-    // console.log(error);
-    // res.status(500).json({ error: "An error occurred" });
     json(false)
   }
 }
+
+exports.editAddress = async(req,res)=>{
+  try{
+    const addressId = req.query.id
+    const address = await Address.findById(addressId)
+    if(!address){
+      return res.status(404).json({ success: false, error: 'Address not found' });
+    }
+    res.render('user/edit-address',{address,addressId})
+  }
+  catch(error){
+    console.log(error);
+    res.status(500).json({ error: "An error occurred" });
+  }
+}
+
+exports.updateAddress= async(req,res)=>{
+  try{
+    const {id, name, number, altNumber, pinCode, house, area, landmark, town, state }= req.body
+    const address = await Address.findById(id)
+    if(!address){
+      return res.status(404).json({ success: false, error: 'Address not found' });
+    }
+    address.name = name;
+    address.number = number;
+    address.altNumber = altNumber;
+    address.pinCode = pinCode;
+    address.house = house;
+    address.area = area;
+    address.landmark = landmark;
+    address.town = town;
+    address.state = state;
+    await address.save()
+    res.redirect('/account')
+  }
+  catch(error){
+    console.log(error);
+    res.status(500).json({ error: "An error occurred" });
+  }
+}
+
 
 exports.productDetail= async(req,res)=>{
   try{
