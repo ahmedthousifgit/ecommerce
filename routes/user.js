@@ -36,7 +36,7 @@ router.get('/add-address',userController.addressForm)
 
 router.post('/add-address',userController.addAddress)
 
-router.post('/remove-address/:userId/:addressId',userController.removeAddress)
+router.post('/remove-address/',userController.removeAddress)
 
 // HOME PAGE NAV
 

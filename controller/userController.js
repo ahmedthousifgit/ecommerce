@@ -5,7 +5,8 @@ const Product = require("../models/products-model");
 const Category = require("../models/category");
 const {sendOtp} = require('../utility/nodemailer')
 const {generateOTP} = require('../utility/nodemailer')
-const Address = require('../models/address-model')
+const Address = require('../models/address-model');
+const { json } = require("express");
 
 
 exports.home = async (req, res) => {
@@ -306,25 +307,33 @@ exports.addAddress = async (req, res) => {
 
 exports.removeAddress= async(req,res)=>{
   try{
+    console.log('sjkdfh');
     if(req.session.userId){
-      const {userId,addressId} = req.params
+      const {userId,addressId} = req.body
+      console.log(userId);
+      console.log(addressId);
       const user = await User.findById(userId)
       if(!user){
         return res.status(404).json({ success: false, error: 'User not found' });
       }
-      await Address.findByIdAndRemove({user:userId,_id:addressId})
+      await Address.findByIdAndRemove({user:userId,_id:addressId}).then((data)=>{
+        console.log(data,"data");
+      })
       user.addresses.pull(addressId);
       await user.save();
-      res.json(true);
-      // res.redirect('/account')
+      console.log('jskdf');
+      console.log(user);
+      res.status(200).json();
+      
     }else{
-      res.redirect('/men')
+      res.redirect('/login')
     }
 
   }
   catch(error){
-    console.log(error);
-    res.status(500).json({ error: "An error occurred" });
+    // console.log(error);
+    // res.status(500).json({ error: "An error occurred" });
+    json(false)
   }
 }
 
