@@ -50,17 +50,16 @@
 						</div>
 					<div class="col-lg-2 col-sm-6 col-6 d-flex flex-row flex-lg-column flex-xl-row text-nowrap">
 						<div class="">₹
-							<text id="pro-total" class="h6">
+							<text id="pro-total-<%= item.productId %>" class="h6">
 								<%= item.product.salePrice * item.quantity %>
 							</text> <br />
-							<small class="text-muted text-nowrap">₹<span id="price"></span> <%= item.product.salePrice %>/ per item </small>
+							<small class="text-muted text-nowrap">₹<span id="price-<%= item.productId %>"></span> <%= item.product.salePrice %>/ per item </small>
 						</div>
 					</div>
 					<div
 						class="col-lg col-sm-6 d-flex justify-content-sm-center justify-content-md-start justify-content-lg-center justify-content-xl-end mb-2">
 						<div class="float-md-end">
-							<!-- <a href="#!" class="btn btn-light border px-2 icon-hover-primary"><i
-									class="fas fa-heart fa-lg px-1 text-secondary"></i></a> -->
+							
 							<a href="#" class="btn btn-light border text-danger icon-hover-danger" onclick="removeFromCart('<%= item.productId %>')"> Remove</a>
 						</div>
 					</div>
@@ -107,12 +106,12 @@
 				<li
 				  class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-0">
 				  Total price
-				  <span>₹ 3900.98</span>
+				  <span>₹ <%=totalAmount.toFixed(2)%></span>
 				</li>
-				<li class="list-group-item d-flex justify-content-between align-items-center px-0">
+				<!-- <li class="list-group-item d-flex justify-content-between align-items-center px-0">
 				  Wallet
 				  <span>₹ 1900.98</span>
-				</li>
+				</li> -->
 				<li
 				  class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 mb-3">
 				  <div>
@@ -121,13 +120,17 @@
 					  <p class="mb-0">(including GST)</p>
 					</strong>
 				  </div>
-				  <span><strong>₹ 4900.98</strong></span>
+				  <span><strong>₹ <%=totalAmount.toFixed(2)%></strong></span>
 				</li>
 			  </ul>
-
-
+			  <form action="/buy-now" method="get">
+			  <%if(totalAmount==0){%>
+				<button type="submit" class="btn btn-success w-100 shadow-0 mb-2" disabled> Make purchase</button> 
+				<%}else{%>
 			  <button type="submit" class="btn btn-success w-100 shadow-0 mb-2"> Make Purchase</button> 
-			  <a href="/show-products" class="btn btn-light w-100 border mt-2"> Back to shop </a>
+			  <%}%>
+			  <a href="/men" class="btn btn-light w-100 border mt-2"> Back to shop </a>
+			</form>
 			</div>
 		  </div>
 		</div>
@@ -152,8 +155,8 @@
       .then(response => response.json())
       .then(data => {
 		const quantityElement = document.getElementById(`${productId}`);
-        const totalElement = document.getElementById('pro-total');
-        const priceElement = document.getElementById('price');
+        const totalElement = document.getElementById(`pro-total-${productId}`);
+        const priceElement = document.getElementById(`price-${productId}`);
 
 		const updatedCart = data.cart;
 
@@ -164,7 +167,7 @@
         if (updatedItem) {
           quantityElement.value = updatedItem.quantity;
           totalElement.textContent = `₹ ${updatedItem.product.salePrice * updatedItem.quantity}`;
-          priceElement.textContent = updatedItem.product.salePrice;
+          priceElement.textContent = `₹ ${updatedItem.product.salePrice}`;
         }
 
         console.log(data.cart);

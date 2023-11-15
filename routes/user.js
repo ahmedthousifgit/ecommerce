@@ -68,7 +68,7 @@ router.get("/items", userController.productPage);
 
 router.get("/account", userController.accoutPage);
 
-// router.get("/cart", userController.cartPage);
+
 
 //LOGOUT
 router.get("/logout", userController.logOut);
