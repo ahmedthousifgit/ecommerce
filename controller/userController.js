@@ -20,7 +20,7 @@ exports.home = async (req, res) => {
       }
     }else{
     const products = await Product.find();
-    res.render("user/index", { products });
+    res.render("user/index", { products});
     }  
   }catch(error){
     console.error('Error rendering home page:', error);
@@ -225,7 +225,8 @@ exports.menPage = async (req, res) => {
   try {
     if(req.session.userId){
       const products = await Product.find();
-      res.render("user/men", { products });
+      const user = await User.findById(req.session.userId)
+      res.render("user/men", { products,username:user.name });
     }else{
       res.redirect('/login')
     }
@@ -438,7 +439,10 @@ exports.productDetail= async(req,res)=>{
 
 exports.womenPage = async (req, res) => {
   if (req.session.userId) {
-    res.render("user/women", { title: "Express" });
+
+    const user = await User.findById(req.session.userId)
+      res.render("user/women", { username:user.name });
+    
   } else {
     res.redirect("/login");
   }
@@ -446,7 +450,8 @@ exports.womenPage = async (req, res) => {
 
 exports.kidPage = async (req, res) => {
   if (req.session.userId) {
-    res.render("user/kids", { title: "Express" });
+    const user = await User.findById(req.session.userId)
+      res.render("user/kids", { username:user.name });
   } else {
     res.redirect("/login");
   }
@@ -460,17 +465,13 @@ exports.accoutPage = async (req, res) => {
   }
 };
 
-exports.cartPage = async (req, res, next) => {
-  if (req.session.userId) {
-    res.render("user/cart", { title: "Express" });
-  } else {
-    res.redirect("/login");
-  }
-};
+
 
 exports.productPage = async (req, res, next) => {
   if (req.session.userId) {
-    res.render("user/product", { title: "Express" });
+    const user = await User.findById(req.session.userId)
+    res.render("user/items", { username:user.name });
+    
   } else {
     res.redirect("/login");
   }

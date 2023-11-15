@@ -64,11 +64,11 @@ router.get("/women", userController.womenPage);
 
 router.get("/kids", userController.kidPage);
 
-router.get("/product", userController.productPage);
+router.get("/items", userController.productPage);
 
 router.get("/account", userController.accoutPage);
 
-router.get("/cart", userController.cartPage);
+// router.get("/cart", userController.cartPage);
 
 //LOGOUT
 router.get("/logout", userController.logOut);

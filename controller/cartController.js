@@ -6,7 +6,8 @@ exports.showCart = async(req,res)=>{
     try{
        const userId = req.session.userId
        const user = await User.findById(userId).populate('cart.productId')
-       res.render('user/cart',{cart : user.cart})  
+       
+       res.render('user/cart',{cart : user.cart, username:user.name  })  
     }
     catch(error){
         console.log(error);
@@ -61,7 +62,7 @@ exports.removeFromCart= async(req,res)=>{
         const user = await User.findOneAndUpdate(
           { _id: userId },
           { $pull: { cart: { productId: productId } } },
-          { new: true }
+          { new: true } 
         );
     
         // Check if the item was successfully removed
