@@ -1,8 +1,8 @@
 var express = require("express");
 var router = express.Router();
 const userController = require("../controller/userController");
+const cartController = require('../controller/cartController')
 const User = require("../models/user");
-
 
 // GET home page
 router.get("/",userController.home);
@@ -32,6 +32,10 @@ router.get('/product-details',userController.productDetail)
 //PROFILE
 router.get('/account',userController.account)
 
+router.get('/edit-profile',userController.editProfile)
+
+router.post('/edit-profile',userController.updateProfile)
+
 router.get('/add-address',userController.addressForm)
 
 router.post('/add-address',userController.addAddress)
@@ -41,6 +45,16 @@ router.post('/remove-address/',userController.removeAddress)
 router.get('/edit-address',userController.editAddress)
 
 router.post('/edit-address',userController.updateAddress)
+
+
+//CART
+router.get('/cart', cartController.showCart )
+
+router.post('/cart',cartController.addToCart)
+
+router.post('/update-quantity', cartController.updateQuantity);
+
+router.post('/removeFromCart',cartController.removeFromCart)
 
 // HOME PAGE NAV
 

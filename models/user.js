@@ -26,6 +26,12 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  cart:{
+    type:Array
+  } ,
+  wishList:{
+    type:Array,
+  },
   addresses: [
     {
       type: mongoose.Schema.Types.ObjectId,

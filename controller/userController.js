@@ -20,7 +20,7 @@ exports.home = async (req, res) => {
       }
     }else{
     const products = await Product.find();
-    res.render("user/index", { title: "Express", products });
+    res.render("user/index", { products });
     }  
   }catch(error){
     console.error('Error rendering home page:', error);
@@ -225,7 +225,6 @@ exports.menPage = async (req, res) => {
   try {
     if(req.session.userId){
       const products = await Product.find();
-      
       res.render("user/men", { products });
     }else{
       res.redirect('/login')
@@ -336,13 +335,60 @@ exports.editAddress = async(req,res)=>{
     if(!address){
       return res.status(404).json({ success: false, error: 'Address not found' });
     }
+    if ( req.query.id) {
+
     res.render('user/edit-address',{address,addressId})
+  } else { 
+    res.redirect('/account')
+  }
+  
   }
   catch(error){
     console.log(error);
     res.status(500).json({ error: "An error occurred" });
   }
 }
+
+exports.editProfile = async (req, res) => {
+  try {
+    if (req.session.userId) {
+      const userId = req.session.userId;
+      const user = await User.findById(userId);
+      
+      if (user && !user.blocked) {
+        res.render('user/edit-profile', { user });
+      } else {
+        res.redirect('/login');
+      }
+    } else {
+      res.redirect('/login');
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "An error occurred" });
+  }
+};
+
+exports.updateProfile = async (req,res)=>{
+  try{
+   const userId = req.session.userId
+   const user = await User.findById(userId)
+   if(!user){
+    return res.status(404).json({ success: false, error: 'User not found' });
+   }
+   user.name = req.body.name
+   user.mobile = req.body.mobile
+   await user.save()
+   res.redirect('/account')
+
+  }
+  catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "An error occurred" });
+  }
+
+}
+
 
 exports.updateAddress= async(req,res)=>{
   try{
