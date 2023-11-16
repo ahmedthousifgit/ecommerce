@@ -1,7 +1,7 @@
 <%-include('../partials/header') %>
 <body>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <%-include('../partials/nav') %>
 
 <section class="h-100 gradient-custom">
@@ -106,7 +106,7 @@
 				<li
 				  class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-0">
 				  Total price
-				  <span>₹ <%=totalAmount.toFixed(2)%></span>
+				  <span id="totalPrice">₹ <%=totalPrice.toFixed(2)%></span>
 				</li>
 				<!-- <li class="list-group-item d-flex justify-content-between align-items-center px-0">
 				  Wallet
@@ -120,7 +120,7 @@
 					  <p class="mb-0">(including GST)</p>
 					</strong>
 				  </div>
-				  <span><strong>₹ <%=totalAmount.toFixed(2)%></strong></span>
+				  <span id="totalAmount"><strong>₹ <%=totalAmount.toFixed(2)%></strong></span>
 				</li>
 			  </ul>
 			  <form action="/buy-now" method="get">
@@ -146,36 +146,43 @@
 <script>
   function changeQuantity(productId, action) {
     fetch('/update-quantity', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ productId, action }),
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ productId, action }),
     })
-      .then(response => response.json())
-      .then(data => {
-		const quantityElement = document.getElementById(`${productId}`);
-        const totalElement = document.getElementById(`pro-total-${productId}`);
-        const priceElement = document.getElementById(`price-${productId}`);
+        .then(response => response.json())
+        .then(data => {
+            const quantityElement = document.getElementById(`${productId}`);
+            const totalElement = document.getElementById(`pro-total-${productId}`);
+            const priceElement = document.getElementById(`price-${productId}`);
+			const totalPriceElement = document.getElementById('totalPrice');
+            const totalAmountElement = document.getElementById('totalAmount'); 
 
-		const updatedCart = data.cart;
+            const updatedCart = data.cart;
 
-        // Find the item in the updated cart array
-        const updatedItem = updatedCart.find(item => item.productId === productId);
+            // Find the item in the updated cart array
+            const updatedItem = updatedCart.find(item => item.productId === productId);
 
-        // Update the quantity input field, the total price, and the price per item
-        if (updatedItem) {
-          quantityElement.value = updatedItem.quantity;
-          totalElement.textContent = `₹ ${updatedItem.product.salePrice * updatedItem.quantity}`;
-          priceElement.textContent = `₹ ${updatedItem.product.salePrice}`;
-        }
+            // Update the quantity input field, the total price, and the price per item
+            if (updatedItem) {
+                quantityElement.value = updatedItem.quantity;
+                totalElement.textContent = `₹ ${updatedItem.product.salePrice * updatedItem.quantity}`;
+                priceElement.textContent = `₹ ${updatedItem.product.salePrice}`;
+            }
+			const newTotalPrice = updatedCart.reduce((total, item) => total + (item.product.salePrice * item.quantity), 0);
+             totalPriceElement.textContent = `₹ ${newTotalPrice.toFixed(2)}`;
+            // Update the total amount in the summary section
+            const newTotalAmount = updatedCart.reduce((total, item) => total + (item.product.salePrice * item.quantity), 0);
+            totalAmountElement.textContent = `₹ ${newTotalAmount.toFixed(2)}`;
 
-        console.log(data.cart);
-      })
-      .catch(error => {
-        console.error('Error:', error);
-      });
-  }
+            console.log(data.cart);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+}
   function removeFromCart(productId) {
     fetch('/removeFromCart', {
       method: 'POST',
@@ -198,6 +205,8 @@
         console.error('Error:', error);
       });
   }
+  
+
 </script>
 
 

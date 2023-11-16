@@ -6,11 +6,20 @@ exports.showCart = async(req,res)=>{
     try{
        const userId = req.session.userId
        const user = await User.findById(userId).populate('cart.productId')
-       const totalAmount = user.cart.reduce((total, item) => {
-        return total + item.product.salePrice * item.quantity;
+        
+       const totalPrice = user.cart.reduce((total, item) => {
+        // Check if item.product is not null before accessing properties
+        if (item.product && item.product.salePrice) {
+            return total + item.product.salePrice * item.quantity;
+        }
+        return total;
     }, 0);
+   
+    const totalAmount = totalPrice;
+    
 
-       res.render('user/cart',{cart : user.cart, username:user.name ,totalAmount })  
+
+       res.render('user/cart',{cart : user.cart, username:user.name ,totalPrice,totalAmount })  
     }
     catch(error){
         console.log(error);
@@ -54,26 +63,6 @@ exports.addToCart = async(req,res)=>{
     }
 }
 
-// exports.updateQuantity= async(req,res)=>{
-//     try{
-//      const {productId,action}=req.body
-//      const userId = req.session.userId
-
-//      const user = await User.findOneAndUpdate(
-//         { _id: userId, 'cart.productId': productId },
-//         {
-//           $inc: { 'cart.$.quantity': action === 'increment' ? 1 : -1 },
-//         },
-//         { new: true }
-//       );
-//       res.json({cart:user.cart })
-//     }
-//     catch(error){
-//         console.log(error);
-//         res.status(500).json({ error: "An error occurred" });
-//         }
-// }
-
 
 exports.updateQuantity = async (req, res) => {
   try {
@@ -102,8 +91,8 @@ exports.updateQuantity = async (req, res) => {
               { $set: { 'cart.$.quantity': newQuantity } },
               { new: true }
           );
-
-          res.json({ cart: updatedUser.cart });
+          const totalAmount = updatedUser.cart.reduce((total, item) => total + (item.product.salePrice * item.quantity), 0);
+          res.json({ cart: updatedUser.cart,totalAmount });
       } else {
           res.status(404).json({ message: 'Item not found in the cart' });
       }

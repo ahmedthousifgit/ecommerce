@@ -15,6 +15,8 @@
     <link rel="shortcut icon" type="image/x-icon" href="frontendassets/imgs/theme/favicon.svg">
     <!-- Template CSS -->
     <link rel="stylesheet" href="frontendassets/css/main.css?v=3.4">
+    
+    
 </head>
 
 <body>
@@ -76,7 +78,7 @@
                                 </div>
                                 <div class="col-md-6 col-sm-12 col-xs-12">
                                     <div class="detail-info">
-                                        <form action="/cart" method="post">
+                                        <form action="/cart" id="addToCartForm" method="post">
                                         <input type="hidden" name="productId" value="<%= products._id %>">
                                         <h2 class="title-detail"><%= products.name %></h2>
                                         <div class="product-detail-rating">
@@ -136,7 +138,7 @@
                                                 <a href="#" class="qty-up"><i class="fi-rs-angle-small-up"></i></a>
                                             </div>
                                             <div class="product-extra-link2">
-                                                <button type="submit" class="button button-add-to-cart">Add to cart</button>
+                                                <button type="submit"  class="button button-add-to-cart">Add to cart</button>
                                                 <a aria-label="Add To Wishlist" class="action-btn hover-up" href="shop-wishlist.html"><i class="fi-rs-heart"></i></a>
                                                 
                                             </div>
@@ -181,6 +183,20 @@
     <!-- Template  JS -->
     <script src="/frontendassets/js/main.js?v=3.4"></script>
     <script src="/frontendassets/js/shop.js?v=3.4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>.
 </body>
 
 </html>
+
+<!-- Include SweetAlert library -->
+
+
+
+
+
+
+
+
+
+
+   
