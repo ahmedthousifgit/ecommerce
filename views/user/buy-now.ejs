@@ -287,8 +287,19 @@
                             font-weight: bolder;" class="card-title mb-4">
                                 Selected Products
                             </h1>
-                           
-  
+                            <% cart.forEach(item => { %>
+                                <div class="d-flex mb-3 border border-success rounded p-3">
+                                <img class="img-fluid" width="100px" src="/uploads/products/<%= item.product.image[0] %>" alt="product-img">
+                                <p for="name" class="ms-4">
+                                    <%= item.product.name %> <br>
+                               Price: ₹<%= item.product.salePrice %> <br>
+                                Quantity: <%= item.quantity %>
+                            </p>
+                        </div>
+                                <!-- Add more details as needed -->
+                            <% }); %>
+                            <h2>Total Price: ₹<%= totalPrice %></h2>
+                        
   
                               <br><br>
                              
@@ -343,11 +354,17 @@
                         
   
                         <div class="mt-3">
-                            
+                            <form action="/buy-now" method="get">
+                                
+                                
+                                <button type="submit" class="btn btn-success w-100 shadow-0 mb-2"> Make Purchase</button> 
+                                
+                                <a href="/men" class="btn btn-light w-100 border mt-2"> Back to shop </a>
+                              </form>
                                 
                             
                             
-                            <a href="/show-products" class="btn btn-light w-100 border mt-2"> Back to shop </a>
+                            
                             <input type="hidden" id="walletAdded" value="0">
                         </div>
                     </div>
@@ -391,63 +408,4 @@
   
     
   
-  <script>
   
-    
-  function makePurchase(total, user, status) {
-    let quantity = document.getElementById('qtyValue').value;
-    let size = document.getElementById('sizeValue').value;
-    let proId = document.getElementById('proId').value;
-    const totalPrice = parseInt(document.getElementById('gt').innerHTML)
-    
-    let address = $('.address:checked').val();
-    let payment = $('.payment:checked').val();
-    
-    let data = {
-        userId: user,
-        totalPrice,
-        addressId: address,
-        payment,
-    };
-    if (status) {
-        data.proId = proId;
-        data.quantity = quantity; 
-        data.size = size;
-    }
-    $.ajax({
-        url: '/makePurchase',
-        method: 'post',
-        data: data,
-        success: function (response) {
-            if (response.status === "cod") {
-                Swal.fire({
-                    title: "Order Completed",
-                    text: "Enjoy Here",
-                    icon: "success",
-                    showCancelButton: true,
-                    confirmButtonText: "Orders",
-                    cancelButtonText: "Home",
-                    reverseButtons: true
-                }).then(function (result) {
-                    if (result.value) {
-                        location.href = '/orderDetails';
-                    } else if (result.dismiss === "cancel") {
-                        location.href = "/";
-                    }
-                });
-            }else {
-                 Swal.fire({
-                     title: 'Error Occured',
-                     text: "Can't process order error occured",
-                     icon: 'error',
-                     timer: 5000
-                 })
-  
-             }
-        }
-    })
-  }
-  
-  
-  
-  </script>

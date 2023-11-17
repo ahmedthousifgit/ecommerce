@@ -150,22 +150,49 @@ exports.removeFromCart= async(req,res)=>{
 }
 
 
-exports.buyNow = async(req,res)=>{
-    try{
+
+
+
+exports.buyNow = async (req, res) => {
+    try {
         if (req.session.userId) {
-            const user = await User.findById(req.session.userId).populate('addresses');
-            
+            const userId = req.session.userId;
+            const user = await User.findById(userId).populate('addresses');
+
             if (user && !user.blocked) {
-                res.render('user/buy-now', { user , username:user.name});
+                // Check if the user has items in the cart
+                if (!user.cart || user.cart.length === 0) {
+                    return res.redirect('/cart'); // Redirect to the cart page if the cart is empty
+                }
+
+                // Calculate total price
+                let totalPrice = 0;
+                for (const item of user.cart) {
+                    const product = await Product.findById(item.productId);
+                    if (!product) {
+                        // Handle the case where a product in the cart is not found
+                        console.error(`Product with ID ${item.productId} not found`);
+                        continue;
+                    }
+
+                    if (item.quantity > product.units) {
+                        req.session.unitErr = true;
+                        return res.redirect('/cart');
+                    }
+                    req.session.unitErr = false;
+
+                    totalPrice += item.quantity * product.salePrice;
+                }
+
+                res.render('user/buy-now', { user, username: user.name, cart: user.cart, totalPrice });
             } else {
                 res.redirect('/login');
             }
         } else {
             res.redirect('/login');
         }
-
-    }catch(error){
-        console.log(error);
+    } catch (error) {
+        console.error('Error in buyNow controller:', error);
         res.status(500).json({ error: "An error occurred" });
     }
-}
+};
