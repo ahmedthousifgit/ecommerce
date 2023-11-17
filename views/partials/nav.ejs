@@ -6,7 +6,7 @@
     <div class="container">
       <div class="row">
         <div class="col-sm-7 col-md-9">
-          <div id="colorlib-logo"><a href="index.html">Shoes.in</a></div>
+          <div id="colorlib-logo"><a href="/">Shoes.in</a></div>
         </div>
         <div class="col-sm-5 col-md-3">
           <form action="#" class="search-wrap">
@@ -38,7 +38,7 @@
               <li><a href="/kids">Kids</a></li>
               <li><a href="/items">products</a></li>
               <li>
-                <a href="/cart"><i class="icon-shopping-cart"></i>Cart [0]</a>
+                <a href="/cart" ><i class="icon-shopping-cart"></i>Cart <span id="cartCount" style="color: rgb(7, 202, 14); font-family:Arial, Helvetica, sans-serif; font: bolder;" >[0] </span></a>
               </li>
 
               <li class="has-dropdown">
@@ -68,3 +68,21 @@
     </div>
   </div>
 </nav>
+
+
+<script>
+   function updateCartCount() {
+    fetch('/cart-count') // Assuming you have a route to fetch the cart count
+      .then(response => response.json())
+      .then(data => {
+        const cartCountElement = document.getElementById('cartCount');
+        cartCountElement.textContent = `[${data.cartCount}]`;
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+  }
+
+  // Call this function initially to set the initial cart count
+  updateCartCount();
+</script>

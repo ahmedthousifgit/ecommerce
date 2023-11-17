@@ -56,6 +56,8 @@ router.post('/update-quantity', cartController.updateQuantity);
 
 router.post('/removeFromCart',cartController.removeFromCart)
 
+router.get('/cart-count',cartController.cartCount)
+
 // HOME PAGE NAV
 
 router.get("/men", userController.menPage);

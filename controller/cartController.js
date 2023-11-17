@@ -45,7 +45,7 @@ exports.addToCart = async(req,res)=>{
             { $inc: { 'cart.$.quantity': 1 } },
             { new: true }
         );
-        res.redirect('/cart');
+        res.redirect('/cart'); 
     } else {
         // If the product is not in the cart, add it as a new item
         const product = await Product.findById(productId);
@@ -100,6 +100,26 @@ exports.updateQuantity = async (req, res) => {
       console.log(error);
       res.status(500).json({ error: "An error occurred" });
   }
+}
+
+exports.cartCount= async(req,res)=>{
+    try{
+     const userId = req.session.userId
+     const user = await User.findById(userId)
+     if(user && user.cart){
+        const cartCount = user.cart.reduce((count,item)=>{
+            return count+item.quantity
+           
+        },0)
+        res.json({cartCount})
+     }else{
+        res.json({cartCount:0})
+     }
+    }
+    catch(error){
+        console.log(error);
+        res.status(500).json({ error: "An error occurred" });    
+    }
 }
 
 
