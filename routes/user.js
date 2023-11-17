@@ -40,12 +40,11 @@ router.get('/add-address',userController.addressForm)
 
 router.post('/add-address',userController.addAddress)
 
-router.post('/remove-address/',userController.removeAddress)
-
 router.get('/edit-address',userController.editAddress)
 
 router.post('/edit-address',userController.updateAddress)
 
+router.post('/remove-address/',userController.removeAddress)
 
 //CART
 router.get('/cart', cartController.showCart )
@@ -57,6 +56,8 @@ router.post('/update-quantity', cartController.updateQuantity);
 router.post('/removeFromCart',cartController.removeFromCart)
 
 router.get('/cart-count',cartController.cartCount)
+
+router.get('/buy-now',cartController.buyNow)
 
 // HOME PAGE NAV
 

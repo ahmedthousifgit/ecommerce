@@ -148,3 +148,24 @@ exports.removeFromCart= async(req,res)=>{
         res.status(500).json({ error: "An error occurred" });
     }
 }
+
+
+exports.buyNow = async(req,res)=>{
+    try{
+        if (req.session.userId) {
+            const user = await User.findById(req.session.userId).populate('addresses');
+            
+            if (user && !user.blocked) {
+                res.render('user/buy-now', { user , username:user.name});
+            } else {
+                res.redirect('/login');
+            }
+        } else {
+            res.redirect('/login');
+        }
+
+    }catch(error){
+        console.log(error);
+        res.status(500).json({ error: "An error occurred" });
+    }
+}
