@@ -59,6 +59,8 @@ router.get('/cart-count',cartController.cartCount)
 
 router.get('/buy-now',cartController.buyNow)
 
+router.get('/buy',cartController.buy)
+
 // HOME PAGE NAV
 
 router.get("/men", userController.menPage);

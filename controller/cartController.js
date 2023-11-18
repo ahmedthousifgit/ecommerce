@@ -1,5 +1,6 @@
 const User = require('../models/user')
 const Product= require('../models/products-model')
+const Order = require('../models/order-model')
 
 
 exports.showCart = async(req,res)=>{
@@ -183,8 +184,33 @@ exports.buyNow = async (req, res) => {
 
                     totalPrice += item.quantity * product.salePrice;
                 }
+                const selectedAddressId = req.body.address;
+                const selectedAddress =  user.addresses.find(address=>address._id.toString()===selectedAddressId)
+                const productIds = user.cart.map(item => item.productId);
+                const selectedProducts = await Product.find({ _id: { $in: productIds } });
+  
+                const newOrder = new Order({
+                    totalPrice,
+                    address: selectedAddress,
+                    product:selectedProducts,
+                    userId,
+                    paymentMethod:req.body.paymentMethod || 'cod'
+                    
+                })
 
-                res.render('user/buy-now', { user, username: user.name, cart: user.cart, totalPrice });
+                const saveOrder = await newOrder.save()
+                user.cart=[];
+                await user.save()
+
+                res.render('user/buy-now', {
+                    user, 
+                    username: user.name,
+                    cart: user.cart,
+                    totalPrice,
+                    paymentMethod : req.body.paymentMethod || 'cod',
+                    order :saveOrder,
+                    showOrderConfirmation: true
+                });
             } else {
                 res.redirect('/login');
             }
@@ -193,6 +219,44 @@ exports.buyNow = async (req, res) => {
         }
     } catch (error) {
         console.error('Error in buyNow controller:', error);
+        res.status(500).json({ error: "An error occurred" });
+    }
+};
+
+
+exports.buy = async (req, res) => {
+    try {
+        if (req.session.userId) {
+            const userId = req.session.userId;
+            const user = await User.findById(userId).populate('addresses');
+
+            if (user && !user.blocked) {
+                // Assuming orderId is passed in the query parameter
+                const orderId = req.query.orderId;
+
+                if (!orderId) {
+                    // If orderId is not provided, redirect to an appropriate page or handle the error
+                    return res.redirect('/'); // Update the redirect URL as needed
+                }
+
+                // Retrieve order details from the database
+                const order = await Order.findById(orderId);
+
+                if (!order || order.userId.toString() !== userId) {
+                    // If the order is not found or does not belong to the current user, handle the error
+                    return res.redirect('/'); // Update the redirect URL as needed
+                }
+
+                // Render the order confirmation page with order details
+                res.render('user/order-details', { user, order });
+            } else {
+                res.redirect('/login');
+            }
+        } else {
+            res.redirect('/login');
+        }
+    } catch (error) {
+        console.error('Error in buy controller:', error);
         res.status(500).json({ error: "An error occurred" });
     }
 };
