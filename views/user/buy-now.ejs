@@ -252,9 +252,9 @@
   
   <!-- cart + summary -->
  
-    <%-include('../partials/header')%>
+ <%-include('../partials/header')%>
  <%-include('../partials/nav') %>
-  <section class="bg-light my-5">
+  <section class="bg-light my-5">   
     <div class="container">
         <div class="row">
             <!-- cart -->
@@ -267,9 +267,9 @@
                         </h1>
                         <a href="/add-address" class="btn btn-info" style="margin-left: 85%;">Add Address</a>
   
-                        <form class="boxed" action="/buy-now" method="post">
+                        <form class="boxed" action="/checkout" method="post">
                           <% user.addresses.forEach(address => { %>
-                            <input type="radio" id="<%= address._id %>" name="address" class="address" required="true" value="<%= address._id %>" checked>
+                            <input type="radio" id="<%= address._id %>" name="selectedAddress" class="address" required="true" value="<%= address._id %>" checked>
                             <label for="<%= address._id %>" class="d-flex">
                                 <%= address.name %><br>
                                 <%= address.number %> &nbsp; &nbsp;
@@ -289,6 +289,7 @@
                             </h1>
                             <% cart.forEach(item => { %>
                                 <div class="d-flex mb-3 border border-success rounded p-3">
+                                <input type="hidden" name="cart[<%= item.product._id %>]" value="<%= item.product._id %>|<%= item.quantity %>">
                                 <img class="img-fluid" width="100px" src="/uploads/products/<%= item.product.image[0] %>" alt="product-img">
                                 <p for="name" class="ms-4">
                                     <%= item.product.name %> <br>
@@ -298,9 +299,7 @@
                         </div>
                                 <!-- Add more details as needed -->
                             <% }); %>
-                            <h2>Total Price: ₹<%= totalPrice %></h2>
-                        
-  
+                                        
                               <br><br>
                              
                             <h2>Select Payment method</h2>  
@@ -312,64 +311,43 @@
                                   <span class="plan-details">
                                     <img src="/images/cod.jpeg" alt="cod-img">
                                   </span>
-                                </label>
-  
-                                
-  
-                                
-  
+                                </label> 
+
                               </div>
-                              
+                              <div class="col-lg-3">
+                 
+                                <div class="card shadow-0 border">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between">
+                                            <p class="mb-2">Total price:</p>
+                                            <input type="hidden" name="totalPrice" value="<%= totalPrice %>">
+                                            <p class="mb-2">
+                                        ₹ <b><%=totalPrice.toFixed(2) %> </b>
+                                            </p>
+                                        </div>
+                                        <hr>
+                                        
+                                        <div class="mt-3">
+                                              <button type="submit" class="btn btn-success w-100 shadow-0 mb-2">complete checkout</button> 
+                                            <!-- <a href="#" onclick="makePurchase('')" class="btn btn-success w-100 shadow-0 mb-2">complete checkout </a>   -->
+                                                <a href="/product-details" class="btn btn-light w-100 border mt-2"> Back to shop </a>
+                                            
+                                            <input type="hidden" id="walletAdded" value="0">
+                                        </div>
+                
+                                    </div>
+                                </div>
+                            </div>
                             </form>  
                     </div>
                 </div>
             </div>
             <!-- cart -->
             <!-- summary -->
-  <div class="modal fade top" id="modalCoupon" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true"
-    data-bs-backdrop="true">
-    <div class="modal-dialog modal-frame modal-top modal-notify modal-success" role="document">
-      <!--Content-->
-      <div class="modal-content">
-        <!--Body-->
-        <div class="modal-body">
-          <h1></h1>
-          
+            <!-- idk -->
   
-              <div class="close-container d-flex justify-content-end mt-2">
-                <button type="button" class="btn btn-outline-success" data-bs-dismiss="modal">No, thanks</button>
-              </div>
-        </div>
-      </div>
-      <!--/.Content-->
-    </div>
-  </div>
-            <div class="col-lg-3">
-              
-              
-  
-                <div class="card shadow-0 border">
-                    <div class="card-body">
-                      
-                        
-  
-                        <div class="mt-3">
-                            <form action="/buy?orderId=<% order._id %>" method="get">
-                                
-                                
-                                <button type="submit" class="btn btn-success w-100 shadow-0 mb-2"> Make Purchase</button> 
-                                
-                                <a href="/men" class="btn btn-light w-100 border mt-2"> Back to shop </a>
-                              </form>
-                                
-                            
-                            
-                            
-                            <input type="hidden" id="walletAdded" value="0">
-                        </div>
-                    </div>
-                </div>
-            </div>
+  <!-- idk -->
+            
             <!-- summary -->
         </div>
     </div>
@@ -405,7 +383,3 @@
   <!-- Main -->
   <script src="/js/main.js"></script>
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-  
-    
-  
-  

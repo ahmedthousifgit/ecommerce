@@ -57,9 +57,9 @@ router.post('/removeFromCart',cartController.removeFromCart)
 
 router.get('/cart-count',cartController.cartCount)
 
-router.get('/buy-now',cartController.buyNow)
+router.post('/buy-now',cartController.buyNow)
 
-router.get('/buy',cartController.buy)
+router.post('/checkout',cartController.checkout)
 
 // HOME PAGE NAV
 
