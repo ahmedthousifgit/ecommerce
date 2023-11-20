@@ -17,7 +17,7 @@ exports.showCart = async (req, res) => {
     }, 0);
 
        const totalAmount = totalPrice;
-
+    console.log(user.cart);
     res.render("user/cart", {
       cart: user.cart,
       username: user.name,
@@ -205,7 +205,14 @@ exports.checkout = async (req, res) => {
               const selectedAddress = user.addresses.find(address => address._id.toString() === selectedAddressId);
               const productIds = user.cart.map(item => item.productId);
               const selectedProducts = await Product.find({ _id: { $in: productIds } });
-
+              const totalPrice = user.cart.reduce((total, item) => {
+                // Check if item.product is not null before accessing properties
+                if (item.product && item.product.salePrice) {
+                  return total + item.product.salePrice * item.quantity;
+                }
+                return total;
+              }, 0);
+            
               // Validate selectedAddress, paymentMethod, and totalPrice
               // if (!selectedAddress || !paymentMethod || isNaN(totalPrice) || totalPrice <= 0) {
               //     return res.status(400).json({ error: 'Invalid request parameters' });
@@ -220,8 +227,9 @@ exports.checkout = async (req, res) => {
               const order = new Order({
                   userId: userId,
                   address: selectedAddress,
-                  paymentMethod: req.body.paymentMethod || 'cod',
-                  product: selectedProducts
+                  payment: req.body.paymentMethod || 'cod',
+                  product: selectedProducts,
+                  totalPrice: totalPrice,
                   // Add other product details if needed
               });
 
