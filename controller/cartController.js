@@ -2,6 +2,7 @@
    const Product = require("../models/products-model");
    const Order = require("../models/order-model");
    const { addAddress } = require("./userController");
+  //  const Swal = require('sweetalert2');
 
 exports.showCart = async (req, res) => {
   try {
@@ -198,11 +199,11 @@ exports.checkout = async (req, res) => {
   try {
       if (req.session.userId) {
           const userId = req.session.userId;
+          
+          const {selectedAdd}=req.body;      
           const user = await User.findById(userId).populate('addresses');
-
           if (user && !user.blocked) {
-              const selectedAddressId = req.body.selectedAddress;
-              const selectedAddress = user.addresses.find(address => address._id.toString() === selectedAddressId);
+              const selectedAddress = user.addresses.find(address => address._id.toString() === selectedAdd);
               const productIds = user.cart.map(item => item.productId);
               const selectedProducts = await Product.find({ _id: { $in: productIds } });
               const totalPrice = user.cart.reduce((total, item) => {
@@ -212,11 +213,7 @@ exports.checkout = async (req, res) => {
                 }
                 return total;
               }, 0);
-            
-              // Validate selectedAddress, paymentMethod, and totalPrice
-              // if (!selectedAddress || !paymentMethod || isNaN(totalPrice) || totalPrice <= 0) {
-              //     return res.status(400).json({ error: 'Invalid request parameters' });
-              // }
+             
 
               // Check if the user has items in the cart
               if (!user.cart || user.cart.length === 0) {
@@ -234,14 +231,15 @@ exports.checkout = async (req, res) => {
               });
 
               // Save the order to the database
-              const savedOrder = await order.save();
+             await order.save();
 
               // Clear the user's cart after the purchase
               user.cart = [];
               await user.save();
-
-              // Render the order confirmation page with order details
-              return res.render('user/order-details', { user, order: savedOrder });
+              res.status(200).json({success:true})
+              
+              
+              
           } else {
               res.redirect('/login');
           }
