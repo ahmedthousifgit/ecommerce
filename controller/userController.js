@@ -5,7 +5,9 @@ const Product = require("../models/products-model");
 const Category = require("../models/category");
 const {sendOtp} = require('../utility/nodemailer')
 const {generateOTP} = require('../utility/nodemailer')
+const { formatDate } = require('../utility/formatDate');
 const Address = require('../models/address-model');
+const Order= require('../models/order-model')
 const { json } = require("express");
 
 
@@ -465,8 +467,6 @@ exports.accoutPage = async (req, res) => {
   }
 };
 
-
-
 exports.productPage = async (req, res, next) => {
   if (req.session.userId) {
     const user = await User.findById(req.session.userId)
@@ -476,6 +476,32 @@ exports.productPage = async (req, res, next) => {
     res.redirect("/login");
   }
 };
+
+
+exports.orderList = async(req,res)=>{
+  try{
+    if(req.session.userId){
+      const user = await User.findById(req.session.userId)
+      const orders = await Order.find({userId:req.session.userId})
+      res.render("user/order-list",{username:user.name,orders,formatDate} )
+    }
+  }
+  catch(error){
+    console.log(error);
+    res.status(500).json({ error: "An error occurred" });
+  }
+}
+
+exports.orderDetails = async(req,res)=>{
+  try{
+    const user = await User.findById(req.session.userId)
+    res.render('user/order-details',{username:user.name})
+  }
+  catch(error){
+    console.log(error);
+    res.status(500).json({ error: "An error occurred" });
+  }
+}
 
 exports.logOut = async (req, res) => {
   req.session.destroy((err) => {

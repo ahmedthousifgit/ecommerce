@@ -73,9 +73,11 @@ router.get("/items", userController.productPage);
 
 router.get("/account", userController.accoutPage);
 
-router.get('/order-details',(req,res)=>{
-    res.render("user/order-details")
-})
+//ORDER DETAILS
+
+router.get('/order-list',userController.orderList);
+
+router.get('/order-details',userController.orderDetails)
 
 //LOGOUT
 router.get("/logout", userController.logOut);

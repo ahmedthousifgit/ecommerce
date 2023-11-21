@@ -34,7 +34,8 @@ const orderModel = mongoose.Schema({
         default:0
     },
     userId:{
-        require:true,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
         type:String
     },
     payment:{

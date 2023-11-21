@@ -1,3 +1,4 @@
+   const mongoose = require('mongoose')
    const User = require("../models/user");
    const Product = require("../models/products-model");
    const Order = require("../models/order-model");
@@ -222,11 +223,12 @@ exports.checkout = async (req, res) => {
 
               // Assuming you have a function to create an order in your Order model
               const order = new Order({
-                  userId: userId,
+                  userId: new mongoose.Types.ObjectId(req.session.userId),
                   address: selectedAddress,
                   payment: req.body.paymentMethod || 'cod',
                   product: selectedProducts,
                   totalPrice: totalPrice,
+                  status:'pending'
                   // Add other product details if needed
               });
 
