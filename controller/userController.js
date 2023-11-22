@@ -503,7 +503,7 @@ exports.orderDetails = async (req, res) => {
     
     const [user, order] = await Promise.all([
       User.findById(userId).populate('addresses'),
-      Order.findOne({ userId, _id: orderId }),
+      Order.findOne({ userId, _id: orderId }).populate('products.product'),
       
     ]);
     const address = await Address.findById({_id:order.address})
@@ -511,7 +511,7 @@ exports.orderDetails = async (req, res) => {
     // console.log(address);
     // console.log(user.addresses);
     // console.log(order);
-    // console.log(order.product);
+    console.log(order);
 
 
     if (!user || !order) {
@@ -525,8 +525,8 @@ exports.orderDetails = async (req, res) => {
       order,
       formatDate,
       address,
-      selectedProducts :order.product,
-      
+      selectedProducts :order.products,
+
       totalPrice:order.totalPrice
     });
   } catch (error) {

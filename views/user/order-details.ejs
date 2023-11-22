@@ -136,14 +136,14 @@
                                             <td>
                                                 <a class="itemside" href="#">
                                                     <div class="left">
-                                                        <img src="/uploads/products/<%= item.image[0] %>" style="height: 5rem; width: 5rem;" class="img-xs" alt="Item">
+                                                        <img src="/uploads/products/<%= item.product.image[0] %>" style="height: 5rem; width: 5rem;" class="img-xs" alt="Item">
                                                     </div>
                                                   
                                                 </a>
                                             </td>
-                                            <td>  <div class="info"><%= item.name %>  </div></td>
-                                            <td> <%= item.salePrice %> </td>
-                                            <td></td>
+                                            <td>  <div class="info"><%= item.product.name %>  </div></td>
+                                            <td> <%= item.product.salePrice %> </td>
+                                            <td><%= item.quantity %></td>
                                             <td class="text-end"> <%= totalPrice %></td>                                        </tr>
                                         
                                        <% }) %>

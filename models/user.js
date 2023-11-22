@@ -28,9 +28,11 @@ const userSchema = new mongoose.Schema({
   },
   cart:{
     type:Array
+
   } ,
   wishList:{
     type:Array,
+    
   },
   addresses: [
     {

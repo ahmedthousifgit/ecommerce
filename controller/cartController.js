@@ -214,30 +214,42 @@ exports.checkout = async (req, res) => {
                 }
                 return total;
               }, 0);
+
+              // const products= user.cart.map((item) => ({
+              //   product: item.product._id,
+              //   quantity: item.quantity,
+              //   pricePerQnt: item.product.salePrice,
+              // }))
+              // console.log(products);
               
 
               // Check if the user has items in the cart
               if (!user.cart || user.cart.length === 0) {
                   return res.status(400).json({ error: 'Cart is empty' });
               }
-              const quantities = user.cart.map(item => item.quantity);
-              console.log(quantities);
+              // const quantities = user.cart.map(item => item.quantity);
+              // console.log(quantities);
 
               // Assuming you have a function to create an order in your Order model
               const order = new Order({
                   userId: new mongoose.Types.ObjectId(req.session.userId),
                   address: selectedAddress,
                   payment: req.body.paymentMethod || 'cod',
-                  product: selectedProducts,
+                  // product: selectedProducts,
+                  products: user.cart.map((item) => ({
+                    product: item.product._id,
+                    quantity: item.quantity,
+                    pricePerQnt: item.product.salePrice,
+                  })),
                   totalPrice: totalPrice,
                   status:'pending',
-                  quantity:quantities
+                  
                  
                   
                   // Add other product details if needed
               });
-              console.log(user.cart);
-              console.log('-----------');
+              // console.log(user.cart);
+              // console.log('-----------');
               
               // Save the order to the database
              await order.save();

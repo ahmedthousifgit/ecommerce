@@ -12,11 +12,7 @@ const orderModel = mongoose.Schema({
         require:true,
         type:String,
     },
-    quantity:{
-        require:true,
-        type:Array
-    
-    },
+ 
     createdOn: {
         required: true,
         type: Date,
@@ -26,10 +22,17 @@ const orderModel = mongoose.Schema({
         require:true,
         type:String
     },
-    product:{
-        require:true,
-        type:Array
-    },
+    products: [{
+        product: {
+          type: mongoose.Types.ObjectId,
+          ref: 'products',
+          require: true
+        },
+        quantity: {
+          type: Number,
+          require:true
+        },
+    }],
     wallet:{
         default:0,
         type:Number
