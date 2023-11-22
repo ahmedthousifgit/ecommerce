@@ -12,6 +12,11 @@ const orderModel = mongoose.Schema({
         require:true,
         type:String,
     },
+    quantity:{
+        require:true,
+        type:Array
+    
+    },
     createdOn: {
         required: true,
         type: Date,

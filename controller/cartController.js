@@ -19,7 +19,7 @@ exports.showCart = async (req, res) => {
     }, 0);
 
        const totalAmount = totalPrice;
-    console.log(user.cart);
+    // console.log(user.cart);
     res.render("user/cart", {
       cart: user.cart,
       username: user.name,
@@ -155,7 +155,7 @@ exports.removeFromCart = async (req, res) => {
 
 
 exports.buyNow = async (req, res) => {
-    console.log(req.body);
+    // console.log(req.body);
     try {
         if (req.session.userId) {
                const userId = req.session.userId;
@@ -214,12 +214,14 @@ exports.checkout = async (req, res) => {
                 }
                 return total;
               }, 0);
-             
+              
 
               // Check if the user has items in the cart
               if (!user.cart || user.cart.length === 0) {
                   return res.status(400).json({ error: 'Cart is empty' });
               }
+              const quantities = user.cart.map(item => item.quantity);
+              console.log(quantities);
 
               // Assuming you have a function to create an order in your Order model
               const order = new Order({
@@ -228,10 +230,15 @@ exports.checkout = async (req, res) => {
                   payment: req.body.paymentMethod || 'cod',
                   product: selectedProducts,
                   totalPrice: totalPrice,
-                  status:'pending'
+                  status:'pending',
+                  quantity:quantities
+                 
+                  
                   // Add other product details if needed
               });
-
+              console.log(user.cart);
+              console.log('-----------');
+              
               // Save the order to the database
              await order.save();
 

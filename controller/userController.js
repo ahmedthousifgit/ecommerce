@@ -510,8 +510,10 @@ exports.orderDetails = async (req, res) => {
     
     // console.log(address);
     // console.log(user.addresses);
-    console.log(order);
-    console.log(order.product);
+    // console.log(order);
+    // console.log(order.product);
+
+
     if (!user || !order) {
       return res.status(404).json({ error: 'Order not found' });
     }
@@ -524,6 +526,7 @@ exports.orderDetails = async (req, res) => {
       formatDate,
       address,
       selectedProducts :order.product,
+      
       totalPrice:order.totalPrice
     });
   } catch (error) {
