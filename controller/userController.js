@@ -483,7 +483,11 @@ exports.orderList = async(req,res)=>{
     if(req.session.userId){
       const user = await User.findById(req.session.userId)
       const orders = await Order.find({userId:req.session.userId})
-      res.render("user/order-list",{username:user.name,orders,formatDate} )
+      res.render("user/order-list",{
+        username:user.name,
+        orders,
+        formatDate
+      } )
     }
   }
   catch(error){
@@ -492,16 +496,42 @@ exports.orderList = async(req,res)=>{
   }
 }
 
-exports.orderDetails = async(req,res)=>{
-  try{
-    const user = await User.findById(req.session.userId)
-    res.render('user/order-details',{username:user.name})
+exports.orderDetails = async (req, res) => {
+  try {
+    const userId = req.session.userId;
+    const orderId = req.params.orderId;
+    
+    const [user, order] = await Promise.all([
+      User.findById(userId).populate('addresses'),
+      Order.findOne({ userId, _id: orderId }),
+      
+    ]);
+    const address = await Address.findById({_id:order.address})
+    
+    // console.log(address);
+    // console.log(user.addresses);
+    console.log(order);
+    console.log(order.product);
+    if (!user || !order) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+    
+
+    res.render('user/order-details', {
+      username: user.name,
+      user,
+      order,
+      formatDate,
+      address,
+      selectedProducts :order.product,
+      totalPrice:order.totalPrice
+    });
+  } catch (error) {
+    console.error('Error in orderDetails controller:', error);
+    res.status(500).json({ error: 'An error occurred' });
   }
-  catch(error){
-    console.log(error);
-    res.status(500).json({ error: "An error occurred" });
-  }
-}
+};
+
 
 exports.logOut = async (req, res) => {
   req.session.destroy((err) => {

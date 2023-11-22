@@ -1,5 +1,3 @@
-
-
 <%-include('../partials/header') %>
 <%-include('../partials/nav') %>
 
@@ -77,10 +75,10 @@ thead {
                             <tr class="cell-1">
                                 <td><%= order._id %></td>
                                 <td><%= order.totalPrice.toFixed(2) %></td>
-                                <td><%= formatDate(order.createdAt) %></td>
+                                <td><%= formatDate(order.createdOn) %></td>
                                 <td><span class="badge badge-success"><%= order.status %></span></td>
                                 <td>
-                                    <a href="/order-details"><button class="btn btn-success" style="font-size: 10px; padding: 5px 10px;">Details</button></a>
+                                    <a href="/order-details/<%=order._id %>"><button class="btn btn-success" style="font-size: 10px; padding: 5px 10px;">Details</button></a>
                                     <button  class="btn btn-outline-danger" style="font-size: 10px; padding: 5px 10px;">Cancel</button>
                                 </td>
                                 
@@ -98,11 +96,3 @@ thead {
 
 <%-include('../partials/footer') %>
 
-
-<!-- <script>
-  // Format date function (you can customize this function based on your date format preferences)
-  function formatDate(dateString) {
-      const options = { year: 'numeric', month: 'numeric', day: 'numeric' };
-      return new Date(dateString).toLocaleDateString(undefined, options);
-  }
-</script> -->

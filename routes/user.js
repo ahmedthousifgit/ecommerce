@@ -77,7 +77,7 @@ router.get("/account", userController.accoutPage);
 
 router.get('/order-list',userController.orderList);
 
-router.get('/order-details',userController.orderDetails)
+router.get('/order-details/:orderId',userController.orderDetails)
 
 //LOGOUT
 router.get("/logout", userController.logOut);

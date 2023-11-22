@@ -25,16 +25,17 @@
 <body>
     <div class="screen-overlay"></div>
     <nav class="colorlib-nav" role="navigation">
-        <%-include('../partials/header')%>
+        
+        
     </nav>
-
+   
     <main class="">
        
         <section class="content-main">
             <div class="content-header">
                 <div>
                     <h2 class="content-title card-title">Order details</h2>
-                    <p>Details for Order ID: </p>
+                    <p>Details for Order ID: <%=order._id %></p>
                 </div>
             </div>
             <div class="card">
@@ -42,9 +43,9 @@
                     <div class="row align-items-center">
                         <div class="col-lg-6 col-md-6 mb-lg-0 mb-15">
                             <span>
-                                <i class="material-icons md-calendar_today"></i> <b></b>
+                                <i class="material-icons md-calendar_today"></i> <b><%= formatDate(order.createdOn) %></b>
                             </span> <br>
-                            <small class="text-muted">Order ID: </small>
+                            <small class="text-muted">Order ID: <%= order._id %> </small>
                         </div>
                         <div class="col-lg-6 col-md-6 ms-auto text-md-end">
                             <button class="btn btn-outline-primary" onclick="tracking()">Track Order</button>
@@ -65,7 +66,7 @@
                                     <h6 class="mb-1">Customer</h6>
                                     <p class="mb-1">
                                     
-                                        <br>   
+                                      <%= user.name %>  <br>   <%= user.mobile %>
                                     </p>
                                     
                                 </div>
@@ -80,7 +81,7 @@
                                     <h6 class="mb-1">Order info</h6>
                                     <p class="mb-1">
                                         
-                                        Pay method:  <br> Status:
+                                        Pay method:  <%= totalPrice %>  <br> Status:
                                         
                                             pending
                                                 
@@ -108,7 +109,7 @@
                                 <div class="text">
                                     <h6 class="mb-1">Deliver to</h6>
                                     <p class="mb-1">
-                                        Address:  <br> <br>
+                                        Address:  <%=address.name %> ,<%= address.number %>,<br> <%= address.house %> <%= address.town %> <br> <%= address.pinCode %>
                                     </p>
                                     
                                 </div>
@@ -129,23 +130,23 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        
+                                        <% selectedProducts.forEach( item =>{  %>
                                         
                                         <tr>
                                             <td>
                                                 <a class="itemside" href="#">
                                                     <div class="left">
-                                                        <img src="" style="height: 7rem; width: 7rem;" class="img-xs" alt="Item">
+                                                        <img src="/uploads/products/<%= item.image[0] %>" style="height: 5rem; width: 5rem;" class="img-xs" alt="Item">
                                                     </div>
                                                   
                                                 </a>
                                             </td>
-                                            <td>  <div class="info">  </div></td>
-                                            <td>  </td>
+                                            <td>  <div class="info"><%= item.name %>  </div></td>
+                                            <td> <%= item.salePrice %> </td>
                                             <td></td>
-                                            <td class="text-end"> </td>                                        </tr>
+                                            <td class="text-end"> <%= totalPrice %></td>                                        </tr>
                                         
-                                       
+                                       <% }) %>
                                     </tbody>
                                 </table>
                             </div> <!-- table-responsive// -->
@@ -156,8 +157,9 @@
                 </div> <!-- card-body end// -->
             </div> <!-- card end// -->
         </section> <!-- content-main end// -->
-        <%-include('../partials/footer')%>
+        
     </main>
+    
     <script src="assets/js/vendors/jquery-3.6.0.min.js"></script>
     <script src="assets/js/vendors/bootstrap.bundle.min.js"></script>
     <script src="assets/js/vendors/select2.min.js"></script>
@@ -311,11 +313,6 @@
 </head>
 
 <body>
-
-
-  <!-- SweetAlert2 Modal -->
-  <!-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script> -->
-  
 
   <!-- Bootstrap Modal -->
   <div class="modal fade" id="myModal" tabindex="-1" role="dialog">
