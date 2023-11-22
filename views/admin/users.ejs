@@ -45,7 +45,7 @@
                     <td><%= user.email %></td>
                     <td><%= user.mobile %></td>
                     <td>
-                        <% if (user.verified == 0) { %>
+                        <% if (user.blocked == false) { %>
                    <a href=""><button class="badge rounded-pill alert-success">Active</button></a>
                         <% } else { %>
                     <a href=""><button class="badge rounded-pill alert-danger">Inactive</button></a>

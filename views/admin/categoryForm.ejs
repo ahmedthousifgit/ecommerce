@@ -62,7 +62,7 @@
                                         </td>
                                         <td><b><%= category.name %></b></td>
                                         <td><%= category.description %></td>
-                                        <%if(category.verified==0){%>
+                                        <%if(category.isListed==true){%>
                                           <td><a href="/admin/listCategory/<%= category._id %>">
                                               <button class="badge rounded-pill alert-success active-badge">Active</button>
                                           </a></td>

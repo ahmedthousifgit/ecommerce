@@ -526,6 +526,7 @@ exports.orderDetails = async (req, res) => {
       formatDate,
       address,
       selectedProducts :order.products,
+      payment:req.body.paymentMethod || 'cod',
 
       totalPrice:order.totalPrice
     });

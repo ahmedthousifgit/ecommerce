@@ -327,6 +327,19 @@ exports.deleteProduct = async (req, res) => {
   }
 };
 
+
+exports.orderList = async(req,res)=>{
+  try{ 
+    if(req.session.adminId){
+      res.render('admin/orderList')
+    }
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "An error occurred" });
+  }
+}
+
 exports.logOut = (req, res) => {
   req.session.adminId = null;
   res.redirect("/admin");
