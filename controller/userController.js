@@ -507,10 +507,7 @@ exports.orderDetails = async (req, res) => {
       
     ]);
     const address = await Address.findById({_id:order.address})
-    
-    // console.log(address);
-    // console.log(user.addresses);
-    // console.log(order);
+  
     console.log(order);
 
 

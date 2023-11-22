@@ -48,11 +48,11 @@
                                 </tr>
                             </thead>
                             <tbody>
-                               
+                               <%orders.forEach(order=>{   %>
                                 <tr>
-                                    <td><b></b></td>
-                                    <td></td>
-                                    <td></td>
+                                    <td><b><%=order.userId.name  %></b></td>
+                                    <td><%= order.userId.mobile %></td>
+                                    <td><%= order.totalPrice %></td>
                                             
                                                 <!-- <td><button class="badge rounded-pill alert-success text-bg-warning">Pending</button></td>
                                            
@@ -68,15 +68,16 @@
                                                 
                                             
                                     <td></td>
-                                    <td></td>
+                                    <td><%= formatDate(order.createdOn) %></td>
+                                    <td><%= order.payment %></td>
                                     <td class="text-end">
                                                 
-                                        <a href="/admin/details?id=" class="btn btn-md rounded font-sm ml-5">Detail</a>
+                                        <a href="/admin/orderDetails" class="btn btn-md rounded font-sm ml-5">Detail</a>
                                                                        
                                     </td>
      
                                 </tr>
-                               
+                               <% }); %>
                             </tbody>
                         </table>
                         

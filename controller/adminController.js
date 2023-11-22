@@ -4,7 +4,11 @@ const bcrypt = require("bcrypt");
 const auth = require("../middleware/auth");
 const Product = require("../models/products-model");
 const User = require("../models/user");
+const {formatDate}= require('../utility/formatDate')
 const category = require("../models/category");
+const Order = require('../models/order-model')
+
+
 
 exports.authenticateAdmin = async (req, res) => {
   const { username, password } = req.body;
@@ -331,10 +335,35 @@ exports.deleteProduct = async (req, res) => {
 exports.orderList = async(req,res)=>{
   try{ 
     if(req.session.adminId){
-      res.render('admin/orderList')
+      
+      const orders = await Order.find({}).populate('userId')
+      res.render("admin/orderList",{
+        
+        orders,
+        formatDate
+      } )
+
+      // console.log(orders.user);
+      // console.log(orders.user);
+      
+    }else{
+      res.redirect("/admin");
     }
 
   } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "An error occurred" });
+  }
+}
+
+exports.orderDetails = async(req,res)=>{
+  try{
+    if(req.session.adminId){
+      res.render('admin/orderDetails')
+    }else{
+      res.redirect("/admin");
+    }
+  }catch(error){
     console.log(error);
     res.status(500).json({ error: "An error occurred" });
   }
