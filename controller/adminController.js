@@ -7,7 +7,7 @@ const User = require("../models/user");
 const {formatDate}= require('../utility/formatDate')
 const category = require("../models/category");
 const Order = require('../models/order-model')
-
+const Address = require('../models/address-model')
 
 
 exports.authenticateAdmin = async (req, res) => {
@@ -343,7 +343,7 @@ exports.orderList = async(req,res)=>{
         formatDate
       } )
 
-      // console.log(orders.user);
+      //  console.log(orders.user);
       // console.log(orders.user);
       
     }else{
@@ -358,11 +358,26 @@ exports.orderList = async(req,res)=>{
 
 exports.orderDetails = async(req,res)=>{
   try{
-    if(req.session.adminId){
-      res.render('admin/orderDetails')
-    }else{
-      res.redirect("/admin");
-    }
+      const orderId = req.params.orderId
+      const orders = await Order.findOne({_id:orderId}).populate('products.product').populate('userId')
+      console.log(orders.address[0]);
+      const addressId = orders.address[0]
+      const address = await Address.findOne({_id:addressId})
+      console.log(address);
+      
+      
+      
+      res.render('admin/orderDetails',{
+        address,
+        orders,
+        orderProducts : orders.products,
+        formatDate
+      })
+      console.log(orders);
+      console.log('-----------------');
+      console.log(orders.products);
+     
+    
   }catch(error){
     console.log(error);
     res.status(500).json({ error: "An error occurred" });

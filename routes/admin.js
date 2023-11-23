@@ -54,7 +54,7 @@ router.get('/unblockUser/:userId', adminController.unblockUser);
 //ORDERS
 router.get('/orders',adminController.orderList)
 
-router.get('/orderDetails',adminController.orderDetails)
+router.get('/orderDetails/:orderId',adminController.orderDetails)
 
 //LOGOUT
 router.get("/logout", adminController.logOut);

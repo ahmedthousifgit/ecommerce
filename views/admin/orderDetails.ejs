@@ -10,7 +10,7 @@
             <div class="content-header">
                 <div>
                     <h2 class="content-title card-title">Order details</h2>
-                    <p>Details for Order ID: </p>
+                    <p>Details for Order ID: <%=  %></p>
                 </div>
             </div>
             <div class="card">
@@ -18,16 +18,11 @@
                     <div class="row align-items-center">
                         <div class="col-lg-6 col-md-6 mb-lg-0 mb-15">
                             <span>
-                                <i class="material-icons md-calendar_today"></i> <b></b>
+                                <i class="material-icons md-calendar_today"></i> <b><%= formatDate(orders.createdOn) %></b>
                             </span> <br>
-                            <small class="text-muted">Order ID:  </small>
+                            <small class="text-muted">Order ID: <%= orders._id %> </small>
                         </div>
-                        <div class="col-lg-6 col-md-6 ms-auto text-md-end">
-                            <button class="btn btn-outline-primary" onclick="tracking()">Track Order</button>
-                           
-                        <a href="" class="btn btn-primary">invoice</a>
                         
-                        </div>
                     </div>
                 </header>
                 <div class="card-body">
@@ -40,8 +35,9 @@
                                 <div class="text">
                                     <h6 class="mb-1">Customer</h6>
                                     <p class="mb-1">
-                                    
-                                      <br>   
+                                    <%= orders.userId.name %>
+                                      <br>
+                                      <%= orders.userId.mobile %>
                                     </p>
                                     
                                 </div>
@@ -56,7 +52,7 @@
                                     <h6 class="mb-1">Order info</h6>
                                     <p class="mb-1">
                                         
-                                        Pay method:    <br> Status:
+                                        Pay method:  <%= orders.payment %>    <br> Status:
                                         
                                             pending
                                                 
@@ -84,8 +80,7 @@
                                 <div class="text">
                                     <h6 class="mb-1">Deliver to</h6>
                                     <p class="mb-1">
-                                        Address:  
-                                    </p>
+                                        Address:  <%= address.name %>,<br><%= address.number %>,<%= address.area %>, <br> <%= address.house %>,<%= address.pinCode %>                                    </p>
                                     
                                 </div>
                             </article>
@@ -102,26 +97,38 @@
                                             <th width="20%">Unit Price</th>
                                             <th width="10%">Quantity</th>
                                             <th width="20%" class="text-end">Total</th>
+                                            
                                         </tr>
                                     </thead>
                                     <tbody>
-                                       
+                                       <% orderProducts.forEach(item=>{   %>
                                         
                                         <tr>
                                             <td>
                                                 <a class="itemside" href="#">
                                                     <div class="left">
-                                                        <img src="/uploads/products/" style="height: 5rem; width: 5rem;" class="img-xs" alt="Item">
+                                                        <img src="/uploads/products/<%=item.product.image[0] %>" style="height: 4rem; width: 4rem;" class="img-xs" alt="Item">
                                                     </div>
                                                   
                                                 </a>
                                             </td>
-                                            <td>  <div class="info"> </div></td>
-                                            <td> </td>
-                                            <td></td>
-                                            <td class="text-end"> </td>                                        </tr>
-                                        
-                                       
+                                            <td>  <div class="info"><%= item.product.name %> </div></td>
+                                            <td> <%= item.product.salePrice %> </td>
+                                            <td> <%= item.quantity %></td>
+                                            <td class="text-end"><%=item.product.salePrice * item.quantity %> </td>                                        </tr>
+                                        <td  class="col-lg-2 col-6 col-md-3"> 
+                                            <select class="form-select" >
+                                                <option>Status</option>
+                                                 
+                                                 <option value="0">Pending</option>
+                                                 <option value="-1">cancelled</option>
+                                                 <option value="1">approved</option>
+                                                 <option value="4">Shipped</option>
+                                                 <option value="2"> delivered</option>
+                                                 <option value="3"> Returned</option>
+                                            </select>
+                                         </td>
+                                       <% }) %>
                                     </tbody>
                                 </table>
                             </div> <!-- table-responsive// -->
