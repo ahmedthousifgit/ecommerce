@@ -33,7 +33,7 @@ router.get('/deleteCategory/:categoryId',adminController.deleteCategory)
 //PRODUCT
 router.get("/add-product", adminController.addProductForm);
 
-router.post("/add-product",adminController.addProduct);
+router.post("/add-product",update.array("image",4), adminController.addProduct);
 
 router.get("/product-list", adminController.listProduct);
 

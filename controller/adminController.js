@@ -298,6 +298,9 @@ exports.editedProducts = async (req, res) => {
     if (!product) {
       return res.status(404).json({ error: "Product not found" });
     }
+   
+    console.log(req.files);
+
     product.name = req.body.name;
     product.description = req.body.description;
     product.category = req.body.category;

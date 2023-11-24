@@ -77,7 +77,7 @@ thead {
                                 <td><%= order.totalPrice.toFixed(2) %></td>
                                 
                                 <td><%= formatDate(order.createdOn) %></td>
-                                <td><span class="badge badge-success"><%= order.status %></span></td>
+                                <td><span><%= order.status %></span></td>
                                 
                                 <td>
                                     <a href="/order-details/<%=order._id %>"><button class="btn btn-success" style="font-size: 10px; padding: 5px 10px;">Details</button></a>

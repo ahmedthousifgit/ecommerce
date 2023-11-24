@@ -200,7 +200,6 @@ exports.checkout = async (req, res) => {
   try {
       if (req.session.userId) {
           const userId = req.session.userId;
-          
           const {selectedAdd}=req.body;      
           const user = await User.findById(userId).populate('addresses');
           if (user && !user.blocked) {
@@ -208,23 +207,36 @@ exports.checkout = async (req, res) => {
               const productIds = user.cart.map(item => item.productId);
               const selectedProducts = await Product.find({ _id: { $in: productIds } });
               const totalPrice = user.cart.reduce((total, item) => {
-                // Check if item.product is not null before accessing properties
                 if (item.product && item.product.salePrice) {
                   return total + item.product.salePrice * item.quantity;
                 }
                 return total;
               }, 0);
-
-             
-              
-
               // Check if the user has items in the cart
+              console.log('---------cart-----------------');
+              console.log(user.cart);
+              console.log('---------cart-----------------');
+              console.log(selectedProducts);
+              // console.log(productIds);
               if (!user.cart || user.cart.length === 0) {
                   return res.status(400).json({ error: 'Cart is empty' });
               }
-              // const quantities = user.cart.map(item => item.quantity);
-              // console.log(quantities);
-
+              let outOfStock = false
+              for(const item of user.cart){
+                const product = selectedProducts.find(
+                  (p) => p._id.toString() === item.productId
+                );
+              
+                if ( product && product.units < item.quantity) {
+                  // return res.status(400).json({ error: 'Insufficient stock' });
+                  outOfStock = true;
+                }
+                if (outOfStock) {
+                  return res.status(400).json({ error: 'Insufficient stock' });
+                }
+                
+              }
+              
               // Assuming you have a function to create an order in your Order model
               const order = new Order({
                   userId: new mongoose.Types.ObjectId(req.session.userId),
@@ -237,25 +249,28 @@ exports.checkout = async (req, res) => {
                     pricePerQnt: item.product.salePrice,
                   })),
                   totalPrice: totalPrice,
-                  status:'pending',
-                  
-                 
-                  
-                  // Add other product details if needed
+                  status:'pending',     
               });
-              // console.log(user.cart);
-              // console.log('-----------');
               
               // Save the order to the database
              await order.save();
 
+              // Update stock for each product
+        for (const item of user.cart) {
+          const product = selectedProducts.find(
+            (p) => p._id.toString() === item.productId
+          );
+
+          if (product) {
+            product.units -= item.quantity;
+            await product.save();
+          }
+        }
+
               // Clear the user's cart after the purchase
               user.cart = [];
               await user.save();
-              res.status(200).json({success:true})
-              
-              
-              
+              res.status(200).json({success:true})     
           } else {
               res.redirect('/login');
           }
