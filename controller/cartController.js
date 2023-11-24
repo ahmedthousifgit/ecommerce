@@ -88,7 +88,7 @@ exports.updateQuantity = async (req, res) => {
         newQuantity = currentQuantity - 1;
       }
 
-      // Ensure the new quantity is between 0 and 15
+      // Ensure the new quantity is between 1 and 15
       newQuantity = Math.min(15, Math.max(1, newQuantity));
 
       // Update the quantity in the cart
