@@ -25,6 +25,8 @@ router.get("/login", userController.showLogin);
 
 router.post("/login", userController.login);
 
+router.get('/forgotpassword',userController.forgotPassword)
+
 //SHOW PRODUCT
 router.get('/product-details',userController.productDetail)
 

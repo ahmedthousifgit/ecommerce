@@ -205,7 +205,9 @@ exports.checkout = async (req, res) => {
           if (user && !user.blocked) {
               const selectedAddress = user.addresses.find(address => address._id.toString() === selectedAdd);
               const productIds = user.cart.map(item => item.productId);
+              console.log(productIds,'------------');
               const selectedProducts = await Product.find({ _id: { $in: productIds } });
+             
               const totalPrice = user.cart.reduce((total, item) => {
                 if (item.product && item.product.salePrice) {
                   return total + item.product.salePrice * item.quantity;
@@ -216,7 +218,7 @@ exports.checkout = async (req, res) => {
               console.log('---------cart-----------------');
               console.log(user.cart);
               console.log('---------cart-----------------');
-              console.log(selectedProducts);
+              // console.log(selectedProducts);
               // console.log(productIds);
               if (!user.cart || user.cart.length === 0) {
                   return res.status(400).json({ error: 'Cart is empty' });

@@ -177,6 +177,19 @@ exports.verifyResendOTP = async (req, res) => {
   }
 };
 
+exports.forgotPassword = async(req,res)=>{
+  try{
+     if(req.session.userId){
+      res.redirect('/men')
+     }else{
+      res.render('user/forgotpassword')
+     }
+  }
+  catch(error){
+    throw new Error(error);
+  }
+}
+
 
 exports.showSignUp = async (req, res) => {
   if (req.session.userId) {

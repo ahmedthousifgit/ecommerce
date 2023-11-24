@@ -371,7 +371,7 @@ exports.orderDetails = async(req,res)=>{
       const address = await Address.findOne({_id:addressId})
      
       
-      
+      console.log(orders.products,'---------');
       
       res.render('admin/orderDetails',{
         address,

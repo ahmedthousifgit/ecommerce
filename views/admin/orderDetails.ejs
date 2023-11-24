@@ -232,7 +232,8 @@
                                     <p class="mb-1">
                                         
                                         Pay method:  <%= orders.payment %>    <br> Status:  <%= orders.status %>
-
+                                        
+  
                                     </p>
                                     
                                 </div>
@@ -267,7 +268,10 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                       <% orderProducts.forEach(item=>{   %>
+                                       <% orderProducts.forEach(item=>{
+                                        
+                                        console.log(item,"llll");
+                                        %>
                                         
                                         <tr>
                                             <td>
