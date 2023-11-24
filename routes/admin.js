@@ -33,7 +33,7 @@ router.get('/deleteCategory/:categoryId',adminController.deleteCategory)
 //PRODUCT
 router.get("/add-product", adminController.addProductForm);
 
-router.post("/add-product",update.array("image",4),adminController.addProduct);
+router.post("/add-product",adminController.addProduct);
 
 router.get("/product-list", adminController.listProduct);
 
@@ -55,6 +55,14 @@ router.get('/unblockUser/:userId', adminController.unblockUser);
 router.get('/orders',adminController.orderList)
 
 router.get('/orderDetails/:orderId',adminController.orderDetails)
+
+router.get('/delivered',adminController.delivered)
+
+// router.get('/orderStatus',adminController.orderStatus)
+
+// router.get('/changeStatus',adminController.changeStatus)
+
+router.post('/updateOrderStatus',adminController.updateOrderStatus)
 
 //LOGOUT
 router.get("/logout", adminController.logOut);

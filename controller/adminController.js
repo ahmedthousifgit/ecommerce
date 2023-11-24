@@ -8,6 +8,9 @@ const {formatDate}= require('../utility/formatDate')
 const category = require("../models/category");
 const Order = require('../models/order-model')
 const Address = require('../models/address-model')
+const multer = require("../multer/multers");
+const update = multer.update;
+const upload = multer.upload
 
 
 exports.authenticateAdmin = async (req, res) => {
@@ -360,10 +363,10 @@ exports.orderDetails = async(req,res)=>{
   try{
       const orderId = req.params.orderId
       const orders = await Order.findOne({_id:orderId}).populate('products.product').populate('userId')
-      console.log(orders.address[0]);
+      
       const addressId = orders.address[0]
       const address = await Address.findOne({_id:addressId})
-      console.log(address);
+     
       
       
       
@@ -373,15 +376,70 @@ exports.orderDetails = async(req,res)=>{
         orderProducts : orders.products,
         formatDate
       })
-      console.log(orders);
-      console.log('-----------------');
-      console.log(orders.products);
+      // console.log(orders);
+      // console.log('-----------------');
+      // console.log(orders.products);
      
     
   }catch(error){
     console.log(error);
     res.status(500).json({ error: "An error occurred" });
   }
+}
+
+exports.delivered = async (req, res) => {
+  await order
+    .updateOne({ _id: req.body.id }, { status: "2" })
+    .then((data) => {
+      res.json(true);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.json(false);
+    });
+};
+
+exports.updateOrderStatus = async (req, res) => {
+  try {
+    console.log("inside::::::::orderstatus");
+      const {orderId,status } = req.body;
+  
+      console.log('orderID::::'+orderId);
+      console.log("status "+ status);
+      // console.log(status,orderId);
+      if (!status || !orderId) {
+          return res.status(400).json({ error: 'Invalid input parameters' });
+      }
+      const updatedOrder = await Order.findByIdAndUpdate(
+        { _id: orderId},
+        { $set: { status: status } },
+        { new: true }
+    );
+      console.log(updatedOrder);
+      if (!updatedOrder) {
+          return res.status(404).json({ error: 'Order not found' });
+      }
+      res.json({ success: true, updatedOrder });
+  } catch (error) {
+      console.error('Error updating order status:', error);
+      res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+exports.orderStatus=async (req,res)=>{
+  if(req.query.status=="all"){
+     res.redirect('/adminOrders')
+  }else{
+      var orders = await Order.find({status:req.query.status})
+  }
+      res.render('admin/orderList',{orders})  
+}
+
+exports.changeStatus=async(req,res)=>{
+  await order.findByIdAndUpdate(req.query.id,{$set:{status:req.query.status}}).lean()
+  .then((data)=>{
+    res.redirect(`/admin/details?id=${req.query.id}`)
+  })
 }
 
 exports.logOut = (req, res) => {

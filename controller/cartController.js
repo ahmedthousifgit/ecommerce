@@ -215,12 +215,7 @@ exports.checkout = async (req, res) => {
                 return total;
               }, 0);
 
-              // const products= user.cart.map((item) => ({
-              //   product: item.product._id,
-              //   quantity: item.quantity,
-              //   pricePerQnt: item.product.salePrice,
-              // }))
-              // console.log(products);
+             
               
 
               // Check if the user has items in the cart
