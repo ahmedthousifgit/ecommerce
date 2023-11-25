@@ -29,7 +29,11 @@ const userSchema = new mongoose.Schema({
   cart:{
     type:Array
 
-  } ,
+  },
+  token:{
+    type:String,
+    default:''
+  },
   wishList:{
     type:Array,
     

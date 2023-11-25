@@ -5,10 +5,12 @@ const Product = require("../models/products-model");
 const Category = require("../models/category");
 const {sendOtp} = require('../utility/nodemailer')
 const {generateOTP} = require('../utility/nodemailer')
+const {sendVerifymail}=require('../utility/nodemailer')
 const { formatDate } = require('../utility/formatDate');
 const Address = require('../models/address-model');
 const Order= require('../models/order-model')
 const { json } = require("express");
+const randomstring = require('randomstring')
 
 
 exports.home = async (req, res) => {
@@ -187,6 +189,68 @@ exports.forgotPassword = async(req,res)=>{
   }
   catch(error){
     throw new Error(error);
+  }
+}
+
+exports.forgetpswd = async (req, res) => {
+  try {
+
+      const email = req.body.email
+      const user = await User.findOne({ email: email });
+      if (user) {
+          const randomString = randomstring.generate();
+          const updateData = await User.updateOne({ email: email }, { $set: { token: randomString } })
+          sendVerifymail(user.userName, user.email, randomString);
+          res.render('user/forgotpassword', { message: "Please check your mail to reset your password" })
+      } else {
+          res.render('user/forgotpassword', { message: "user email is incorrect" })
+      }
+
+  } catch (error) {
+      throw new Error(error)
+  }
+}
+
+
+exports.forgetPswdload = async(req,res)=>{
+
+  try {
+      const token =req.query.token;        
+      const tokenData = await User.findOne({token:token})
+      if(tokenData){
+          res.render('user/forget-password',{user_id :tokenData._id});
+
+      }else{
+          res.render('user/404',{message:"Token is invalid"})
+      }
+  } catch (error) {
+      throw new Error(error)
+  }
+}
+
+const securePassword = async(password)=>{
+
+  try{
+      const passwordHash = await bcrypt.hash(password,10);
+      return passwordHash;
+  }catch(error){
+      console.log(error.message);
+  }
+}
+
+//forget pswd post--
+exports.resetPswd = async(req,res)=>{
+
+  try {
+      const password = req.body.password;
+      const user_id = req.body.user_id;
+      const secure_password = await securePassword(password);
+
+     const updateData = await User.findByIdAndUpdate({_id:user_id},{$set:{password:secure_password,token:''}})
+     res.render('user/login',{errorMessage:'password reset successfully'})
+
+  } catch (error) {
+      throw new Error(error)
   }
 }
 

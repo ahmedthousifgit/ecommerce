@@ -310,19 +310,8 @@
                                             <dl class="dlist">
                                                 <dt class="text-muted">Status:</dt>
                                                 <dd>
-                                                    <span class="badge rounded-pill alert-success text-success">   <%if(orders.status==0){%>
-                                                        Pending
-                                                          <%}else if(orders.status==-1){%>
-                                                            <span class="badge rounded-pill alert-danger text-danger">cancelled </span>
-                                                            <%}else if(orders.status==1){%>
-                                                                <span class="badge rounded-pill alert-success text-success">Approved</span>
-                                                                <%}else if(orders.status==3){%>
-                                                                    <span class="badge rounded-pill alert-secondary text-secondary">Returned</span>
-                                                                 <%}else if(orders.status==4){%>
-                                                                    <span class="badge rounded-pill alert-primary text-primary">Shipped</span>
-                                                                 <%}else{%></span>
-                                                                    <span class="badge rounded-pill alert-success text-success">Delivered</span>
-                                                                    <%}%>
+                                                    <span >   <%= orders.status%>
+                                                       
                                                 </dd>
                                             </dl>
                                         </article>
