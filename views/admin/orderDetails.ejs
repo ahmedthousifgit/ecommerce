@@ -231,8 +231,9 @@
                                     <h6 class="mb-1">Order info</h6>
                                     <p class="mb-1">
                                         
-                                        Pay method:  <%= orders.payment %>    <br> Status:  <%= orders.status %>
+                                        Pay method:  <%= orders.payment %>    <br> Status: <%= orders.status %>
                                         
+                                
   
                                     </p>
                                     
@@ -292,10 +293,7 @@
                                        <% }) %>
                                        <td colspan="6" class="pt-4">
                                         <article class="float-end">
-                                            <dl class="dlist">
-                                                <dt>Subtotal:</dt>
-                                                <dd><%= %> </dd>
-                                            </dl>
+                                            
                                             <br>
                                             <dl class="dlist">
                                                 <dt>Shipping cost:</dt>
@@ -304,7 +302,7 @@
                                             <br>
                                             <dl class="dlist">
                                                 <dt>Grand total:</dt>
-                                                <dd> <b class="h5">₹ <%= %></b> </dd>
+                                                <dd> <b class="h5">₹ <%= orders.totalPrice%></b> </dd>
                                             </dl>
                                             <br>
                                             <dl class="dlist">

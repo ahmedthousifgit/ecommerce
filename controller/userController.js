@@ -349,6 +349,19 @@ exports.addressForm = async(req,res)=>{
   }
 }
 
+exports.checkoutAdd = async(req,res)=>{
+  try{
+    if(req.session.userId){
+      res.render('user/checkoutAddress')
+    }else{
+      res.redirect('/login')
+    }
+  }catch(error){
+    console.log(error);
+    res.status(500).json({ error: "An error occurred" });
+  }
+}
+
 exports.addAddress = async (req, res) => {
   try {
     const { name, number, altNumber, pinCode, house, area, landmark, town, state } = req.body;
@@ -382,6 +395,8 @@ exports.addAddress = async (req, res) => {
     res.status(500).json({ error: "An error occurred" });
   }
 };
+
+
 
 
 exports.removeAddress= async(req,res)=>{
