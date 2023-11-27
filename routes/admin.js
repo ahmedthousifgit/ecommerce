@@ -16,51 +16,47 @@ router.get("/", adminController.adminIndex);
 router.post("/admin", adminController.authenticateAdmin);
 
 //DASHBOARD
-router.get("/dashboard",adminController.dashboard);
+router.get("/dashboard",auth.adminlogged,adminController.dashboard);
 
 //CATEGORY
-router.get("/categories", adminController.adminCategoryForm);
+router.get("/categories", auth.adminlogged,adminController.adminCategoryForm);
 
-router.post("/categoryForm",upload.single("image"),adminController.submitCategory);
+router.post("/categoryForm",auth.adminlogged,upload.single("image"),adminController.submitCategory);
 
-router.get('/listCategory/:categoryId',adminController.listCategory)
+router.get('/listCategory/:categoryId',auth.adminlogged,adminController.listCategory)
 
-router.get('/unlistCategory/:categoryId',adminController.unlistCategory)
+router.get('/unlistCategory/:categoryId',auth.adminlogged,adminController.unlistCategory)
 
-router.get('/deleteCategory/:categoryId',adminController.deleteCategory)
+router.get('/deleteCategory/:categoryId',auth.adminlogged,adminController.deleteCategory)
 
 
 //PRODUCT
-router.get("/add-product", adminController.addProductForm);
+router.get("/add-product",auth.adminlogged, adminController.addProductForm);
 
-router.post("/add-product",update.array("image",4), adminController.addProduct);
+router.post("/add-product",auth.adminlogged,update.array("image",4), adminController.addProduct);
 
-router.get("/product-list", adminController.listProduct);
+router.get("/product-list",auth.adminlogged, adminController.listProduct);
 
 //EDIT PRODUCTS
-router.get('/edit-products/:productId',adminController.editProductForm)
+router.get('/edit-products/:productId',auth.adminlogged,adminController.editProductForm)
 
-router.post('/edit-products/:productId',update.array("image",4),adminController.editedProducts)
+router.post('/edit-products/:productId',auth.adminlogged,update.array("image",4),adminController.editedProducts)
 
-router.get('/deleteProduct/:productId',adminController.deleteProduct)
+router.get('/deleteProduct/:productId',auth.adminlogged,adminController.deleteProduct)
 
 //USERLIST
-router.get('/users-list',adminController.users)
+router.get('/users-list',auth.adminlogged,adminController.users)
 
-router.get('/blockUser/:userId', adminController.blockUser);
+router.get('/blockUser/:userId',auth.adminlogged, adminController.blockUser);
 
-router.get('/unblockUser/:userId', adminController.unblockUser);
+router.get('/unblockUser/:userId',auth.adminlogged, adminController.unblockUser);
 
 //ORDERS
-router.get('/orders',adminController.orderList)
+router.get('/orders',auth.adminlogged,adminController.orderList)
 
-router.get('/orderDetails/:orderId',adminController.orderDetails)
+router.get('/orderDetails/:orderId',auth.adminlogged,adminController.orderDetails)
 
-router.get('/delivered',adminController.delivered)
-
-// router.get('/orderStatus',adminController.orderStatus)
-
-// router.get('/changeStatus',adminController.changeStatus)
+router.get('/delivered',auth.adminlogged,adminController.delivered)
 
 router.post('/updateOrderStatus',adminController.updateOrderStatus)
 

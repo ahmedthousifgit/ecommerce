@@ -9,6 +9,7 @@ const category = require("../models/category");
 const Order = require('../models/order-model')
 const Address = require('../models/address-model')
 const multer = require("../multer/multers");
+const adminAuth = require('../middleware/auth')
 const update = multer.update;
 const upload = multer.upload
 
@@ -60,20 +61,22 @@ exports.adminLoggin = (req, res) => {
 };
 
 exports.dashboard = async (req, res) => {
-  if (req.session.adminId) {
+  try{
     res.render("admin/dashboard", {
       title: "Admin dashboard",
       errorMessage: "",
     });
-  } else {
-    res.redirect("/admin");
+  }catch(error){
+    console.log(error);
+    res.status(500).json({ error: "An error occurred" });
   }
+
 };
 
 exports.adminCategoryForm = async (req, res) => {
   try {
     const categories = await Category.find(); // Fetch the categories
-    if (req.session.adminId) {
+    
       const isError = "";
       res.render("admin/categoryForm", {
         title: "Category management",
@@ -81,9 +84,7 @@ exports.adminCategoryForm = async (req, res) => {
         isError,
         categories, // Pass the categories to the template
       });
-    } else {
-      res.redirect("/admin");
-    }
+   
   } catch (error) {
     console.log(error);
   }
@@ -172,12 +173,10 @@ exports.deleteCategory = async (req, res) => {
 
 exports.addProductForm = async (req, res) => {
   try {
-    if (req.session.adminId) {
+    
       const categories = await Category.find({ isListed: true });
       res.render("admin/add-products", { categories });
-    } else {
-      res.redirect("/admin");
-    }
+    
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "An error occured" });
@@ -215,12 +214,10 @@ exports.addProduct = async (req, res) => {
 
 exports.listProduct = async (req, res) => {
   try {
-    if(req.session.adminId){
+    
       const products = await Product.find();
       res.render("admin/product-list", { products });
-    }else{
-      res.redirect('/admin')
-    }
+    
     
   } catch (error) {
     console.log(error);
@@ -231,12 +228,10 @@ exports.listProduct = async (req, res) => {
 //USERS
 exports.users = async (req, res) => {
   try {
-    if (req.session.adminId) {
+    
       const users = await User.find();
       res.render("admin/users", { users });
-    } else {
-      res.redirect("/admin");
-    }
+   
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "An error occurred" });
@@ -340,7 +335,7 @@ exports.deleteProduct = async (req, res) => {
 
 exports.orderList = async(req,res)=>{
   try{ 
-    if(req.session.adminId){
+    
       
       const orders = await Order.find({}).populate('userId')
       res.render("admin/orderList",{
@@ -352,10 +347,7 @@ exports.orderList = async(req,res)=>{
       //  console.log(orders.user);
       // console.log(orders.user);
       
-    }else{
-      res.redirect("/admin");
-    }
-
+   
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "An error occurred" });
