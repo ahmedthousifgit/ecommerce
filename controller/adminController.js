@@ -164,7 +164,9 @@ exports.deleteCategory = async (req, res) => {
     if (!category) {
       return res.status(404).json({ error: "Product not found" });
     }
-    res.redirect("/admin/categories");
+    // res.redirect("/admin/categories");
+    res.status(200).json({success:true,redirectTo:"/admin/categories"})
+    
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "An error occurred" });
@@ -247,7 +249,7 @@ exports.blockUser = async (req, res) => {
     } else {
       user.blocked = true; // Unblock the user
       await user.save();
-      res.redirect("/admin/users-list");
+      res.status(200).json({success:true,redirectTo:"/admin/users-list"})
     }
   } catch (error) {
     console.log(error);
@@ -320,12 +322,15 @@ exports.editedProducts = async (req, res) => {
 
 exports.deleteProduct = async (req, res) => {
   try {
+    console.log("call comes here");
     const productId = req.params.productId;
+    console.log('Received productId:', productId);
     const product = await Product.findByIdAndRemove(productId);
     if (!product) {
       return res.status(404).json({ error: "Product not found" });
     }
-    res.redirect("/admin/product-list");
+    res.status(200).json({ success: true, redirectTo: "/admin/product-list" });
+
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "An error occurred" });

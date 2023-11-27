@@ -173,7 +173,7 @@ exports.buyNow = async (req, res) => {
                     }
                     return total;
                   }, 0);
-                
+                console.log(user.cart);
 
                 // Render the buy-now page with user data and addresses
                 res.render('user/buy-now', {

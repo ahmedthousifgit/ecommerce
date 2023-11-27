@@ -57,7 +57,7 @@
                             <button class="badge rounded-pill alert-success">Unblock</button>
                           </a>
                         <% } else { %>
-                          <a href="/admin/blockUser/<%= user._id %>">
+                          <a href="#" onclick="confirmBlock('<%= user._id%>')">
                             <button class="badge rounded-pill alert-danger">Block</button>
                           </a>
                         <% } %>
@@ -96,3 +96,44 @@
     <%-include('../partials/adminfooter') %>
   </main>
 </body>
+
+
+<script>
+  function confirmBlock(userId) {
+    Swal.fire({
+      title: "Are you sure you want to block?",
+      text: "!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, block!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const response = await fetch(`blockUser/${userId}`, {
+            method: "get",
+          });
+         
+      
+          if (response.status==200) {
+           
+            const responseData = await response.json();
+            
+            window.location.href = responseData.redirectTo;
+          } else {
+            console.error("Failed to delete",response.statusText);
+            Swal.fire(
+              "Error",
+              "An error occurred while deleting the product.",
+              "error"
+            );
+          }
+        } catch (error) {
+          console.error("An error occurred:", error);
+          Swal.fire("Error", "An unexpected error occurred.", "error");
+        }
+      }
+    });
+  }
+</script>
