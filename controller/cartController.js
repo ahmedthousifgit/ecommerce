@@ -157,7 +157,7 @@ exports.removeFromCart = async (req, res) => {
 exports.buyNow = async (req, res) => {
     // console.log(req.body);
     try {
-        if (req.session.userId) {
+        
                const userId = req.session.userId;
                const user = await User.findById(userId).populate('addresses');
 
@@ -187,18 +187,57 @@ exports.buyNow = async (req, res) => {
             } else {
                 res.redirect('/login');
             }
-        } else {
-            res.redirect('/login');
-        }
+        
     } catch (error) {
         console.error('Error in buyNow controller:', error);
         res.status(500).json({ error: "An error occurred" });
     }
 };
+exports.checkOut = async (req, res) => {
+  // console.log(req.body);
+  try {
+      if (req.session.userId) {
+             const userId = req.session.userId;
+             const user = await User.findById(userId).populate('addresses');
+
+          if (user && !user.blocked) {
+              // Check if the user has items in the cart
+              
+
+              // Calculate total price
+                 const totalPrice = user.cart.reduce((total, item) => {
+                  // Check if item.product is not null before accessing properties
+                  if (item.product && item.product.salePrice) {
+                    return total + item.product.salePrice * item.quantity;
+                  }
+                  return total;
+                }, 0);
+              
+
+              // Render the buy-now page with user data and addresses
+              res.render('user/buy-now', {
+                  user,
+                  username: user.name,
+                  cart: user.cart,
+                  addresses: user.addresses,
+                  paymentMethod: req.query.paymentMethod || 'cod',
+                  totalPrice
+              });
+          } else {
+              res.redirect('/login');
+          }
+      } else {
+          res.redirect('/login');
+      }
+  } catch (error) {
+      console.error('Error in buyNow controller:', error);
+      res.status(500).json({ error: "An error occurred" });
+  }
+};
 
 exports.checkout = async (req, res) => {
   try {
-      if (req.session.userId) {
+      
           const userId = req.session.userId;
           const {selectedAdd}=req.body;      
           const user = await User.findById(userId).populate('addresses');
@@ -276,9 +315,7 @@ exports.checkout = async (req, res) => {
           } else {
               res.redirect('/login');
           }
-      } else {
-          res.redirect('/login');
-      }
+      
   } catch (error) {
       console.error('Error in buy controller:', error);
       res.status(500).json({ error: 'An error occurred' });

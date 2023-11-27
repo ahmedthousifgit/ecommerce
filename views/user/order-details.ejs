@@ -114,6 +114,7 @@
                                             <th width="20%">Unit Price</th>
                                             <th width="10%">Quantity</th>
                                             <th width="20%" class="text-end">Total</th>
+                                           
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -132,7 +133,9 @@
                                             <td> <%= item.product.salePrice %> </td>
                                             <td><%= item.quantity %></td>
                                             <td class="text-end"> <%= totalPrice %></td>                                        </tr>
-                                        
+                                        <td>
+                                          <button  class="btn btn-outline-danger" style="font-size: 10px; padding: 5px 10px;">Cancel</button>
+                                        </td>
                                        <% }) %>
                                     </tbody>
                                 </table>

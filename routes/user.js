@@ -3,6 +3,8 @@ var router = express.Router();
 const userController = require("../controller/userController");
 const cartController = require('../controller/cartController')
 const User = require("../models/user");
+const { use } = require("../config/emailSender");
+const auth = require('../middleware/auth')
 
 // GET home page
 router.get("/",userController.home);
@@ -36,17 +38,17 @@ router.get('/forget-password',userController.forgetPswdload)
 router.post('/forget-password', userController.resetPswd)
 
 //SHOW PRODUCT
-router.get('/product-details',userController.productDetail)
+router.get('/product-details',auth.isLogged,userController.productDetail)
 
 
 //PROFILE
-router.get('/account',userController.account)
+router.get('/account',auth.isLogged,userController.account)
 
-router.get('/edit-profile',userController.editProfile)
+router.get('/edit-profile',auth.isLogged,userController.editProfile)
 
 router.post('/edit-profile',userController.updateProfile)
 
-router.get('/add-address',userController.addressForm)
+router.get('/add-address',auth.isLogged,userController.addressForm)
 
 router.post('/add-address',userController.addAddress)
 
@@ -54,40 +56,46 @@ router.get('/edit-address',userController.editAddress)
 
 router.post('/edit-address',userController.updateAddress)
 
-router.post('/remove-address/',userController.removeAddress)
+router.post('/remove-address/',auth.isLogged,userController.removeAddress)
 
 //CART
 router.get('/cart', cartController.showCart )
 
 router.post('/cart',cartController.addToCart)
 
-router.post('/update-quantity', cartController.updateQuantity);
+router.post('/update-quantity',auth.isLogged,cartController.updateQuantity);
 
-router.post('/removeFromCart',cartController.removeFromCart)
+router.post('/removeFromCart',auth.isLogged,cartController.removeFromCart)
 
-router.get('/cart-count',cartController.cartCount)
+router.get('/cart-count',auth.isLogged, cartController.cartCount)
 
-router.post('/buy-now',cartController.buyNow)
+router.post('/buy-now',auth.isLogged,cartController.buyNow)
 
-router.post('/checkout',cartController.checkout)
+router.get('/buy-now',auth.isLogged,cartController.buyNow)
+
+router.post('/checkout',auth.isLogged,cartController.checkout)
 
 // HOME PAGE NAV
 
-router.get("/men", userController.menPage);
+router.get("/men", auth.isLogged,userController.menPage);
 
-router.get("/women", userController.womenPage);
+router.get("/women",auth.isLogged, userController.womenPage);
 
-router.get("/kids", userController.kidPage);
+router.get("/kids",auth.isLogged,userController.kidPage);
 
-router.get("/items", userController.productPage);
+router.get("/items", auth.isLogged, userController.productPage);
 
-router.get("/account", userController.accoutPage);
+router.get("/account", auth.isLogged,userController.accoutPage);
 
 //ORDER DETAILS
 
-router.get('/order-list',userController.orderList);
+router.get('/order-list',auth.isLogged,userController.orderList);
 
-router.get('/order-details/:orderId',userController.orderDetails)
+router.get('/order-details/:orderId',auth.isLogged,userController.orderDetails)
+
+router.get('/checkout-address',auth.isLogged,userController.checkoutAdd)
+
+router.post('/checkout-submitAdd',userController.checkoutAddress)
 
 
 //LOGOUT

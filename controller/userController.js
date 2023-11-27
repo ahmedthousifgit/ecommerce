@@ -302,13 +302,11 @@ exports.login = async (req, res) => {
 
 exports.menPage = async (req, res) => {
   try {
-    if(req.session.userId){
+  
       const products = await Product.find();
       const user = await User.findById(req.session.userId)
       res.render("user/men", { products,username:user.name });
-    }else{
-      res.redirect('/login')
-    }
+    
     
   } catch (error) {
     console.log(error);
@@ -318,16 +316,14 @@ exports.menPage = async (req, res) => {
 
 exports.account= async(req,res)=>{
   try{
-    if(req.session.userId){
+    
       const user = await User.findById(req.session.userId).populate('addresses')
       if(user && !user.blocked){
         res.render('user/account',{user})
       }else{
         res.redirect('/login')
       }
-    }else{
-      res.redirect('/login')
-    }
+    
   }
   catch(error){
     console.log(error);
@@ -338,11 +334,9 @@ exports.account= async(req,res)=>{
 
 exports.addressForm = async(req,res)=>{
   try{
-    if(req.session.userId){
+    
       res.render('user/add-address')
-    }else{
-      res.redirect('/login')
-    }
+   
   }catch(error){
     console.log(error);
     res.status(500).json({ error: "An error occurred" });
@@ -351,11 +345,9 @@ exports.addressForm = async(req,res)=>{
 
 exports.checkoutAdd = async(req,res)=>{
   try{
-    if(req.session.userId){
+    
       res.render('user/checkoutAddress')
-    }else{
-      res.redirect('/login')
-    }
+    
   }catch(error){
     console.log(error);
     res.status(500).json({ error: "An error occurred" });
@@ -396,12 +388,48 @@ exports.addAddress = async (req, res) => {
   }
 };
 
+exports.checkoutAddress = async (req, res) => {
+  try {
+    
+    const { name, number, altNumber, pinCode, house, area, landmark, town, state } = req.body;
+    const user = await User.findById(req.session.userId);
+
+    if (user) {
+      const address = new Address({
+        user: user._id,
+        name,
+        number,
+        altNumber,
+        pinCode,
+        house,
+        area,
+        landmark,
+        town,
+        state,
+      });
+      console.log(address);
+
+      await address.save();
+
+      user.addresses.push(address);
+      await user.save();
+
+      res.redirect('/buy-now')
+    } else {
+      res.redirect('/login');
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "An error occurred" });
+  }
+};
+
 
 
 
 exports.removeAddress= async(req,res)=>{
   try{
-    if(req.session.userId){
+    
       const {userId,addressId} = req.body
       const user = await User.findById(userId)
       if(!user){
@@ -412,10 +440,7 @@ exports.removeAddress= async(req,res)=>{
       user.addresses.pull(addressId);
       await user.save();
       res.json(true);
-      
-    }else{
-      res.redirect('/login')
-    }
+  
 
   }
   catch(error){
@@ -446,7 +471,7 @@ exports.editAddress = async(req,res)=>{
 
 exports.editProfile = async (req, res) => {
   try {
-    if (req.session.userId) {
+   
       const userId = req.session.userId;
       const user = await User.findById(userId);
       
@@ -455,9 +480,7 @@ exports.editProfile = async (req, res) => {
       } else {
         res.redirect('/login');
       }
-    } else {
-      res.redirect('/login');
-    }
+    
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "An error occurred" });
@@ -513,7 +536,7 @@ exports.updateAddress= async(req,res)=>{
 
 exports.productDetail= async(req,res)=>{
   try{
-    if(req.session.userId){
+    
       const productId = req.query.productId
       const products = await Product.findById(productId)
       if(!products){
@@ -521,9 +544,7 @@ exports.productDetail= async(req,res)=>{
       }
       res.render('user/product-details',{products})
       
-    }else{
-      res.redirect('/login')
-    }
+    
   }
   catch(error){
     console.log(error);
@@ -532,47 +553,57 @@ exports.productDetail= async(req,res)=>{
 }
 
 exports.womenPage = async (req, res) => {
-  if (req.session.userId) {
-
-    const user = await User.findById(req.session.userId)
-      res.render("user/women", { username:user.name });
-    
-  } else {
-    res.redirect("/login");
-  }
+ try{
+  const user = await User.findById(req.session.userId)
+  res.render("user/women", { username:user.name });
+ }
+catch(error){
+  console.log(error);
+  res.status(500).json({ error: "An error occurred" });
+}
 };
 
 exports.kidPage = async (req, res) => {
-  if (req.session.userId) {
+  try{
     const user = await User.findById(req.session.userId)
-      res.render("user/kids", { username:user.name });
-  } else {
-    res.redirect("/login");
+    res.render("user/kids", { username:user.name });
   }
+  catch(error){
+    console.log(error);
+    res.status(500).json({ error: "An error occurred" });
+  }
+    
+  
 };
 
 exports.accoutPage = async (req, res) => {
-  if (req.session.userId) {
-    res.render("user/account", { title: "Express" });
-  } else {
-    res.redirect("/login");
-  }
+ try{
+  res.render("user/account", { title: "Express" });
+ } 
+ catch(error){
+  console.log(error);
+    res.status(500).json({ error: "An error occurred" });
+ }
+    
+ 
 };
 
 exports.productPage = async (req, res, next) => {
-  if (req.session.userId) {
+  try{
     const user = await User.findById(req.session.userId)
     res.render("user/items", { username:user.name });
-    
-  } else {
-    res.redirect("/login");
   }
+  catch(error){
+    console.log(error);
+      res.status(500).json({ error: "An error occurred" });
+   }
+
 };
 
 
 exports.orderList = async(req,res)=>{
   try{
-    if(req.session.userId){
+ 
       const user = await User.findById(req.session.userId)
       const orders = await Order.find({userId:req.session.userId})
       res.render("user/order-list",{
@@ -580,7 +611,7 @@ exports.orderList = async(req,res)=>{
         orders,
         formatDate
       } )
-    }
+    
   }
   catch(error){
     console.log(error);
