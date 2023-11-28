@@ -606,6 +606,7 @@ exports.orderList = async(req,res)=>{
  
       const user = await User.findById(req.session.userId)
       const orders = await Order.find({userId:req.session.userId})
+      // console.log('&&&&&&&&',orders);
       res.render("user/order-list",{
         username:user.name,
         orders,
@@ -630,8 +631,9 @@ exports.orderDetails = async (req, res) => {
       
     ]);
     const address = await Address.findById({_id:order.address})
-  
+    console.log('^^^^^^^^^^^^^^^^^^^');
     console.log(order);
+    console.log(order._id);
 
 
     if (!user || !order) {
@@ -656,6 +658,57 @@ exports.orderDetails = async (req, res) => {
   }
 };
 
+// exports.cancelOrder= async(req,res)=>{
+//   try{
+//     const orderId = req.body.orderId
+//     const order = await Order.findByIdAndRemove(orderId)
+//     console.log(order);
+    
+//     if(!order){
+//       console.log('!ORDER');
+//       return res.status(404).json({error:'Order not found'})
+//     }
+    
+//     res.status(200).json({success:true})
+
+//   }
+//   catch (error) {
+    
+//     console.error('Error in orderDetails controller:', error);
+//     res.status(500).json({ error: 'An error occurred' });
+//   }
+// }
+
+exports.cancelOrder = async (req, res) => {
+  try {
+    const orderId = req.body.orderId;
+
+  
+    const order = await Order.findByIdAndUpdate(orderId).populate('products.product');
+    console.log('+++++++++++++++++++++');
+    console.log(order);
+    console.log('__________');
+    console.log(order.products);
+
+    // Update product stock for each product in the order
+    for (const item of order.products) {
+      const product = item.product;
+
+      if (product) {
+        // Increase the product stock by the canceled quantity
+        product.units += item.quantity;
+
+        // Save the updated product
+        await product.save();
+      }
+    }
+    await Order.findByIdAndRemove(orderId);
+    res.status(200).json({ success: true });
+  } catch (error) {
+    console.error('Error in cancelOrder controller:', error);
+    res.status(500).json({ error: 'An error occurred' });
+  }
+};
 
 exports.logOut = async (req, res) => {
   req.session.destroy((err) => {

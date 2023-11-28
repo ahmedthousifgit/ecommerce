@@ -244,7 +244,7 @@ exports.checkout = async (req, res) => {
           if (user && !user.blocked) {
               const selectedAddress = user.addresses.find(address => address._id.toString() === selectedAdd);
               const productIds = user.cart.map(item => item.productId);
-              console.log(productIds,'------------');
+              // console.log(productIds,'------------');
               const selectedProducts = await Product.find({ _id: { $in: productIds } });
              
               const totalPrice = user.cart.reduce((total, item) => {
@@ -254,9 +254,9 @@ exports.checkout = async (req, res) => {
                 return total;
               }, 0);
               // Check if the user has items in the cart
-              console.log('---------cart-----------------');
-              console.log(user.cart);
-              console.log('---------cart-----------------');
+              // console.log('---------cart-----------------');
+              // console.log(user.cart);
+              // console.log('---------cart-----------------');
               // console.log(selectedProducts);
               // console.log(productIds);
               if (!user.cart || user.cart.length === 0) {

@@ -97,6 +97,8 @@ router.get('/checkout-address',auth.isLogged,userController.checkoutAdd)
 
 router.post('/checkout-submitAdd',userController.checkoutAddress)
 
+router.post('/order-cancel',userController.cancelOrder)
+
 
 //LOGOUT
 router.get("/logout", userController.logOut);
