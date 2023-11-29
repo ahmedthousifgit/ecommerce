@@ -75,6 +75,11 @@ router.get('/buy-now',auth.isLogged,cartController.buyNow)
 
 router.post('/checkout',auth.isLogged,cartController.checkout)
 
+//RAZORPAY
+
+router.post('/razorpay-order', auth.isLogged, cartController.createRazorpayOrder);
+
+
 // HOME PAGE NAV
 
 router.get("/men", auth.isLogged,userController.menPage);

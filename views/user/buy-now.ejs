@@ -43,211 +43,214 @@
   <link rel="stylesheet" href="/css/style.css" />
 </head>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
-<style>
-  .icon-hover-primary:hover {
-    border-color: #3b71ca !important;
-    background-color: white !important;
+  <style>
+        .icon-hover-primary:hover {
+            border-color: #3b71ca !important;
+            background-color: white !important;
+        }
+  
+        .icon-hover-primary:hover i {
+            color: #3b71ca !important;
+        }
+  
+        .icon-hover-danger:hover {
+            border-color: #dc4c64 !important;
+            background-color: white !important;
+        }
+  
+        .icon-hover-danger:hover i {
+            color: #dc4c64 !important;
+        }
+  
+        .boxed label {
+            display: inline-block;
+            width: 100%;
+            margin-top: 20px;
+            padding: 10px;
+            border: solid 2px #ccc;
+            transition: all 0.3s;
+        }
+  
+        .boxed input[type="radio"] {
+            display: none;
+        }
+  
+        .boxed input[type="radio"]:checked+label {
+            border: solid 2px rgb(15, 103, 218);
+            background-color: #bad5ff;
+        }
+        :root {
+  --card-line-height: 1.2em;
+  --card-padding: 1em;
+  --card-radius: 0.5em;
+  --color-green: #558309;
+  --color-gray: #e2ebf6;
+  --color-dark-gray: #c4d1e1;
+  --radio-border-width: 2px;
+  --radio-size: 1.5em;
   }
-
-  .icon-hover-primary:hover i {
-    color: #3b71ca !important;
-  }
-
-  .icon-hover-danger:hover {
-    border-color: #dc4c64 !important;
-    background-color: white !important;
-  }
-
-  .icon-hover-danger:hover i {
-    color: #dc4c64 !important;
-  }
-
-  .boxed label {
-    display: inline-block;
-    width: 100%;
-    margin-top: 20px;
-    padding: 10px;
-    border: solid 2px #ccc;
-    transition: all 0.3s;
-  }
-
-  .boxed input[type="radio"] {
-    display: none;
-  }
-
-  .boxed input[type="radio"]:checked + label {
-    border: solid 2px rgb(15, 103, 218);
-    background-color: #bad5ff;
-  }
-
-  :root {
-    --card-line-height: 1.2em;
-    --card-padding: 1em;
-    --card-radius: 0.5em;
-    --color-green: #558309;
-    --color-gray: #e2ebf6;
-    --color-dark-gray: #c4d1e1;
-    --radio-border-width: 2px;
-    --radio-size: 1.5em;
-  }
-
+  
   body {
-    background-color: #f2f8ff;
-    color: #263238;
-    font-family: "Noto Sans", sans-serif;
-    margin: 0;
-    padding: 2em 6vw;
+  background-color: #f2f8ff;
+  color: #263238;
+  font-family: 'Noto Sans', sans-serif;
+  margin: 0;
+  padding: 2em 6vw;
   }
-
+  
   .grid {
-    display: grid;
-    grid-gap: let(--card-padding);
-    margin: 0 auto;
-    max-width: 60em;
-    padding: 0;
-
-    @media (min-width: 42em) {
-      grid-template-columns: repeat(3, 1fr);
-    }
+  display: grid;
+  grid-gap: var(--card-padding);
+  margin: 0 auto;
+  max-width: 60em;
+  padding: 0;
+  
+  @media (min-width: 42em) {
+    grid-template-columns: repeat(3, 1fr);
   }
-
+  }
+  
   .card {
-    background-color: #fff;
-    border-radius: let(--card-radius);
-    position: relative;
-
-    &:hover {
-      box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.15);
-    }
+  background-color: #fff;
+  border-radius: var(--card-radius);
+  position: relative;
+  
+  &:hover {
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.15);
   }
-
+  }
+  
   .radio {
-    font-size: inherit;
-    margin: 0;
-    position: absolute;
-    right: calc(let(--card-padding) + let(--radio-border-width));
-    top: calc(let(--card-padding) + let(--radio-border-width));
+  font-size: inherit;
+  margin: 0;
+  position: absolute;
+  right: calc(var(--card-padding) + var(--radio-border-width));
+  top: calc(var(--card-padding) + var(--radio-border-width));
   }
-
-  @supports (-webkit-appearance: none) or (-moz-appearance: none) {
-    .radio {
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      background: #fff;
-      border: let(--radio-border-width) solid let(--color-gray);
-      border-radius: 50%;
-      cursor: pointer;
-      height: let(--radio-size);
-      outline: none;
-      transition: background 0.2s ease-out, border-color 0.2s ease-out;
-      width: let(--radio-size);
-
-      &::after {
-        border: let(--radio-border-width) solid #fff;
-        border-top: 0;
-        border-left: 0;
-        content: "";
-        display: block;
-        height: 0.75rem;
-        left: 25%;
-        position: absolute;
-        top: 50%;
-        transform: rotate(45deg) translate(-50%, -50%);
-        width: 0.375rem;
-      }
-
-      &:checked {
-        background: let(--color-green);
-        border-color: let(--color-green);
-      }
-    }
-
-    .card:hover .radio {
-      border-color: let(--color-dark-gray);
-
-      &:checked {
-        border-color: let(--color-green);
-      }
-    }
-  }
-
-  .plan-details {
-    border: let(--radio-border-width) solid let(--color-gray);
-    border-radius: let(--card-radius);
+  
+  @supports(-webkit-appearance: none) or (-moz-appearance: none) { 
+  .radio {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background: #fff;
+    border: var(--radio-border-width) solid var(--color-gray);
+    border-radius: 50%;
     cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    padding: let(--card-padding);
-    transition: border-color 0.2s ease-out;
+    height: var(--radio-size);
+    outline: none;
+    transition: 
+      background 0.2s ease-out,
+      border-color 0.2s ease-out;
+    width: var(--radio-size); 
+  
+    &::after {
+      border: var(--radio-border-width) solid #fff;
+      border-top: 0;
+      border-left: 0;
+      content: '';
+      display: block;
+      height: 0.75rem;
+      left: 25%;
+      position: absolute;
+      top: 50%;
+      transform: 
+        rotate(45deg)
+        translate(-50%, -50%);
+      width: 0.375rem;
+    }
+  
+    &:checked {
+      background: var(--color-green);
+      border-color: var(--color-green);
+    }
   }
-
+  
+  .card:hover .radio {
+    border-color: var(--color-dark-gray);
+    
+    &:checked {
+      border-color: var(--color-green);
+    }
+  }
+  }
+  
+  .plan-details {
+  border: var(--radio-border-width) solid var(--color-gray);
+  border-radius: var(--card-radius);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  padding: var(--card-padding);
+  transition: border-color 0.2s ease-out;
+  }
+  
   .card:hover .plan-details {
-    border-color: let(--color-dark-gray);
+  border-color: var(--color-dark-gray);
   }
-
+  
   .radio:checked ~ .plan-details {
-    border-color: let(--color-green);
+  border-color: var(--color-green);
   }
-
+  
   .radio:focus ~ .plan-details {
-    box-shadow: 0 0 0 2px let(--color-dark-gray);
+  box-shadow: 0 0 0 2px var(--color-dark-gray);
   }
-
+  
   .radio:disabled ~ .plan-details {
-    color: let(--color-dark-gray);
-    cursor: default;
+  color: var(--color-dark-gray);
+  cursor: default;
   }
-
+  
   .radio:disabled ~ .plan-details .plan-type {
-    color: let(--color-dark-gray);
+  color: var(--color-dark-gray);
   }
-
+  
   .card:hover .radio:disabled ~ .plan-details {
-    border-color: let(--color-gray);
-    box-shadow: none;
+  border-color: var(--color-gray);
+  box-shadow: none;
   }
-
+  
   .card:hover .radio:disabled {
-    border-color: let(--color-gray);
+    border-color: var(--color-gray);
   }
-
+  
   .plan-type {
-    color: let(--color-green);
-    font-size: 1.5rem;
-    font-weight: bold;
-    line-height: 1em;
+  color: var(--color-green);
+  font-size: 1.5rem;
+  font-weight: bold;
+  line-height: 1em;
   }
-
+  
   .plan-cost {
-    font-size: 2.5rem;
-    font-weight: bold;
-    padding: 0.5rem 0;
+  font-size: 2.5rem;
+  font-weight: bold;
+  padding: 0.5rem 0;
   }
-
+  
   .slash {
-    font-weight: normal;
+  font-weight: normal;
   }
-
+  
   .plan-cycle {
-    font-size: 2rem;
-    font-letiant: none;
-    border-bottom: none;
-    cursor: inherit;
-    text-decoration: none;
+  font-size: 2rem;
+  font-variant: none;
+  border-bottom: none;
+  cursor: inherit;
+  text-decoration: none;
   }
-
+  
   .hidden-visually {
-    border: 0;
-    clip: rect(0, 0, 0, 0);
-    height: 1px;
-    margin: -1px;
-    overflow: hidden;
-    padding: 0;
-    position: absolute;
-    white-space: nowrap;
-    width: 1px;
+  border: 0;
+  clip: rect(0, 0, 0, 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
   }
-</style>
+    </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
 
 <!-- cart + summary -->
@@ -351,6 +354,13 @@
                     <img src="/images/cod.jpeg" alt="cod-img" />
                   </span>
                 </label>
+                <label class="card">
+                  <input name="paymentMethod" class="radio payment" type="radio"  value="razorpay">
+                  <span class="plan-details">
+                    <img src="https://tse4.mm.bing.net/th?id=OIP.n7Hfo49CKkQWz6wM62j7HgHaFj&pid=Api&P=0&h=180" alt="razorpay-img">
+                  </span>
+              </label>
+
               </div>
               <div class="col-lg-3">
                 <div class="card shadow-0 border">
@@ -432,7 +442,7 @@
 <script src="/js/main.js"></script>
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
-<script>
+<!-- <script>
   document
     .getElementById("completeCheckoutBtn")
     .addEventListener("click", async () => {
@@ -470,4 +480,106 @@
     });
 
     
+</script> -->
+
+
+<script>
+   const handlePaymentSelection = (selectedPaymentMethod) => {
+    const paymentMethods = document.querySelectorAll('input[name="paymentMethod"]');
+    paymentMethods.forEach((method) => {
+      const span = method.parentElement.querySelector('.plan-details');
+      if (method.value === selectedPaymentMethod) {
+        span.classList.add('selected-payment');
+      } else {
+        span.classList.remove('selected-payment');
+      }
+    });
+  };
+
+  document.getElementById("completeCheckoutBtn").addEventListener("click", async () => {
+    const billingAddress = document.querySelector('input[name="selectedAddress"]:checked');
+    const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+
+    if (!billingAddress) {
+      alert("Please select an address or add a product to the cart");
+      return;
+    }
+
+    if (paymentMethod === 'razorpay') {
+      // Handle Razorpay payment
+      const response = await fetch("/razorpay-order", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          selectedAdd: billingAddress.value,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        const options = {
+          key: 'rzp_test_mu3Z5SNU9tR58R',
+          amount: data.order.amount,
+          currency: "INR",
+          name: "Shoes.in",
+          description: "Payment for Your Order",
+          order_id: data.order.id,
+          handler: function (response) {
+            // Handle successful payment response here
+            console.log(response);
+            // Redirect to order confirmation page or any other desired action
+            window.location.href = "/order-list";
+          },
+          prefill: {
+            name: "<%= user.name %>",
+            email: "<%= user.email %>",
+          },
+          theme: {
+            color: "#3399cc",
+          },
+        };
+
+        const rzp = new Razorpay(options);
+        rzp.open();
+      } else {
+        // Handle error in Razorpay order creation
+        console.error("Error in Razorpay order creation:", data.error);
+      }
+    } else if (paymentMethod === 'cod') {
+      alert('cod')
+      alert(billingAddress.value)
+      // Handle Cash on Delivery (COD) payment
+      try {
+        const response = await fetch("/checkout", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            selectedAdd: billingAddress.value,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          await Swal.fire({
+            title: "Order Confirmed!",
+            text: "Order Successful. Waiting for response!",
+            icon: "success",
+          });
+          window.location.href = "/order-list";
+        } else {
+          // Handle error in checkout
+          console.error("Error in checkout:", data.error);
+        }
+      } catch (error) {
+        console.error("Error in checkout:", error);
+      }
+    }
+  });
 </script>
+

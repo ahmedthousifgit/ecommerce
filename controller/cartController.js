@@ -3,8 +3,14 @@
    const Product = require("../models/products-model");
    const Order = require("../models/order-model");
    const { addAddress } = require("./userController");
-  //  const Swal = require('sweetalert2');
-
+   const Razorpay = require('razorpay')
+ 
+  var razorpay = new Razorpay({
+    key_id: 'rzp_test_mu3Z5SNU9tR58R',
+    key_secret: 'Oh5tMzxzueElUJUzM3Oo8fCa',
+  });
+  // console.log(process.env.RAZORPAY_KEY_ID);
+  
 exports.showCart = async (req, res) => {
   try {
        const userId = req.session.userId;
@@ -236,6 +242,9 @@ exports.checkOut = async (req, res) => {
 };
 
 exports.checkout = async (req, res) => {
+  console.log('////////////////////////////////////////////////////////////////////////////');
+  console.log(process.env.RAZORPAY_KEY_ID,);
+
   try {
       
           const userId = req.session.userId;
@@ -276,8 +285,8 @@ exports.checkout = async (req, res) => {
                   return res.status(400).json({ error: 'Insufficient stock' });
                 }
                 
-              }
-              
+              } 
+           
               // Assuming you have a function to create an order in your Order model
               const order = new Order({
                   userId: new mongoose.Types.ObjectId(req.session.userId),
@@ -322,5 +331,82 @@ exports.checkout = async (req, res) => {
   }
 };
 
+exports.createRazorpayOrder = async (req, res) => {
+  try {
+    const userId = req.session.userId;
+    const { selectedAdd } = req.body;
+    const user = await User.findById(userId).populate('addresses');
+
+    if (user && !user.blocked) {
+      const selectedAddress = user.addresses.find(address => address._id.toString() === selectedAdd);
+      const productIds = user.cart.map(item => item.productId);
+      const selectedProducts = await Product.find({ _id: { $in: productIds } });
+
+      const totalPrice = user.cart.reduce((total, item) => {
+        if (item.product && item.product.salePrice) {
+          return total + item.product.salePrice * item.quantity;
+        }
+        return total;
+      }, 0);
+
+      // Assuming you have a function to create an order in your Order model
+      const order = new Order({
+        userId: new mongoose.Types.ObjectId(req.session.userId),
+        address: selectedAddress,
+        payment: 'razorpay', // Assuming 'razorpay' for Razorpay orders
+        products: user.cart.map((item) => ({
+          product: item.product._id,
+          quantity: item.quantity,
+          pricePerQnt: item.product.salePrice,
+        })),
+        totalPrice: totalPrice,
+        status: 'pending',
+      });
+
+      // Save the order to the database
+      await order.save();
+
+      // Continue with the code to update stock, clear cart, etc.
+      for (const item of user.cart) {
+        const product = selectedProducts.find(
+          (p) => p._id.toString() === item.productId
+        );
+
+        if (product) {
+          product.units -= item.quantity;
+          await product.save();
+        }
+      }
+
+      // Clear the user's cart after the purchase
+      user.cart = [];
+      await user.save();
+
+      // Create Razorpay order using the initialized instance
+      const orderOptions = {
+        amount: Math.round(totalPrice * 100), // Razorpay accepts amount in paisa
+        currency: 'INR',
+        receipt: `order_${order._id}`,
+        payment_capture: 1,
+      };
+
+      const razorpayOrder = await razorpay.orders.create(orderOptions);
+      console.log('order created',razorpayOrder);
+      res.json({
+        success: true,
+        order: {
+          id: razorpayOrder.id,
+          amount: razorpayOrder.amount,
+          currency: razorpayOrder.currency,
+        },
+      });
+    } else {
+      res.redirect('/login');
+    }
+  } catch (error) {
+    console.error('Error in createRazorpayOrder controller:', error);
+    res.status(500).json({ error: 'An error occurred' });
+  }
+};
 
 
