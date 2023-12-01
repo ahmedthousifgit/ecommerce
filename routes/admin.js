@@ -9,14 +9,14 @@ const upload = multer.upload
 
 
 //LOGIN
-router.get("/", adminController.adminIndex);
+// router.get("/", adminController.adminIndex);
 
-// router.get("/admin", adminController.adminLoggin);
+router.get("/", adminController.adminLoggin);
 
-router.post("/admin", adminController.authenticateAdmin);
+router.post("/" , adminController.authenticateAdmin);
 
 //DASHBOARD
-router.get("/dashboard",auth.adminlogged,adminController.dashboard);
+router.get("/dashboard",auth.adminlogged,adminController.loadHome)
 
 //CATEGORY
 router.get("/categories", auth.adminlogged,adminController.adminCategoryForm);

@@ -499,7 +499,7 @@
               if (response.razorpay_payment_id) {
               // Move the order creation logic here
               console.log('Razorpay payment ID available. Proceeding to order creation...');
-              alert('success')
+              
               
               const createOrderResponse = await fetch("/create-order", {
              
@@ -511,7 +511,7 @@
                   selectedAdd: billingAddress.value,
                 }),
               });
-              alert('hsdhif')
+              
 
               const orderData = await createOrderResponse.json();
 
@@ -541,8 +541,8 @@
           console.error("Error in Razorpay order creation:", data.error);
         }
       } else if (paymentMethod === "cod") {
-        alert("cod");
-        alert(billingAddress.value);
+      
+        
         // Handle Cash on Delivery (COD) payment
         try {
           const response = await fetch("/checkout", {

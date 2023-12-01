@@ -22,7 +22,7 @@ exports.authenticateAdmin = async (req, res) => {
       const passwordMatch = await bcrypt.compare(password, admin.password);
       if (passwordMatch) {
         req.session.adminId = admin._id;
-        res.render("admin/dashboard");
+        res.redirect("/admin/dashboard");
       } else {
         return res.status(401).render("admin/login", {
           title: "Admin Login",
@@ -39,20 +39,21 @@ exports.authenticateAdmin = async (req, res) => {
   }
 };
 
-exports.adminIndex = (req, res) => {
-  if (req.session.adminId) {
-    res.redirect("/admin/dashboard");
-  }
-  const errorMessage = "";
-  res.render("admin/login", { errorMessage });
-};
+// exports.adminIndex = (req, res) => {
+//   if (req.session.adminId) {
+//     res.redirect("/admin/dashboard");
+//   }
+//   const errorMessage = "";
+//   res.render("admin/login", { errorMessage });
+// };
+
 
 exports.adminLoggin = (req, res) => {
   try {
     if (req.session.adminId) {
-      res.redirect("/dashboard");
+      res.redirect("/admin/dashboard");
     } else {
-      res.render("admin/login");
+      res.render("admin/login",{errorMessage:''});
     }
   } catch (error) {
     console.log(error);
@@ -60,12 +61,46 @@ exports.adminLoggin = (req, res) => {
   }
 };
 
-exports.dashboard = async (req, res) => {
+exports.loadHome = async (req, res) => {
   try{
-    res.render("admin/dashboard", {
-      title: "Admin dashboard",
-      errorMessage: "",
-    });
+    const orderCount = await Order.find({}).count()
+    const productCount = await Product.find({}).count()
+    
+    const order = await Order.find({}).sort({_id:-1}).limit(10).populate('userId')
+    const products = await Product.find()
+
+    // monthly sale
+    const monthlySales = await Order.aggregate([
+      {
+          $match: {
+              status: "delivered", // Filter by status
+          },
+      },
+      {
+          $group: {
+              _id: {
+                  $month: '$createdOn',
+              },
+              count: { $sum: 1 },
+          },
+      },
+      {
+          $sort: {
+              '_id': 1,
+          },
+      },
+  ]);
+  const monthlySalesArray = Array.from({ length: 12 }, (_, index) => {
+      const monthData = monthlySales.find((item) => item._id === index + 1);
+      return monthData ? monthData.count : 0;
+  });
+    // monthly sale end
+    // console.log(order);
+    // console.log(products);
+    // console.log(orderCount);
+    // console.log(productCount);
+    console.log(monthlySalesArray);
+    res.render('admin/dashboard',{title:"Admin dashboard",errorMessage:"",orderCount,productCount,order,products,monthlySalesArray})
   }catch(error){
     console.log(error);
     res.status(500).json({ error: "An error occurred" });
