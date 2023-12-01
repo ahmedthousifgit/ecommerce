@@ -79,6 +79,8 @@ router.post('/checkout',auth.isLogged,cartController.checkout)
 
 router.post('/razorpay-order', auth.isLogged, cartController.createRazorpayOrder);
 
+router.post('/create-order',auth.isLogged,cartController.createOrder)
+
 
 // HOME PAGE NAV
 

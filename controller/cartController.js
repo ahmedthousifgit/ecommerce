@@ -9,7 +9,7 @@
     key_id: 'rzp_test_mu3Z5SNU9tR58R',
     key_secret: 'Oh5tMzxzueElUJUzM3Oo8fCa',
   });
-  // console.log(process.env.RAZORPAY_KEY_ID);
+  
   
 exports.showCart = async (req, res) => {
   try {
@@ -199,54 +199,10 @@ exports.buyNow = async (req, res) => {
         res.status(500).json({ error: "An error occurred" });
     }
 };
-exports.checkOut = async (req, res) => {
-  // console.log(req.body);
-  try {
-      if (req.session.userId) {
-             const userId = req.session.userId;
-             const user = await User.findById(userId).populate('addresses');
 
-          if (user && !user.blocked) {
-              // Check if the user has items in the cart
-              
-
-              // Calculate total price
-                 const totalPrice = user.cart.reduce((total, item) => {
-                  // Check if item.product is not null before accessing properties
-                  if (item.product && item.product.salePrice) {
-                    return total + item.product.salePrice * item.quantity;
-                  }
-                  return total;
-                }, 0);
-              
-
-              // Render the buy-now page with user data and addresses
-              res.render('user/buy-now', {
-                  user,
-                  username: user.name,
-                  cart: user.cart,
-                  addresses: user.addresses,
-                  paymentMethod: req.query.paymentMethod || 'cod',
-                  totalPrice
-              });
-          } else {
-              res.redirect('/login');
-          }
-      } else {
-          res.redirect('/login');
-      }
-  } catch (error) {
-      console.error('Error in buyNow controller:', error);
-      res.status(500).json({ error: "An error occurred" });
-  }
-};
 
 exports.checkout = async (req, res) => {
-  console.log('////////////////////////////////////////////////////////////////////////////');
-  console.log(process.env.RAZORPAY_KEY_ID,);
-
   try {
-      
           const userId = req.session.userId;
           const {selectedAdd}=req.body;      
           const user = await User.findById(userId).populate('addresses');
@@ -331,13 +287,16 @@ exports.checkout = async (req, res) => {
   }
 };
 
+
+
 exports.createRazorpayOrder = async (req, res) => {
   try {
+    console.log('\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\RAZORPAY');
     const userId = req.session.userId;
     const { selectedAdd } = req.body;
     const user = await User.findById(userId).populate('addresses');
 
-    if (user && !user.blocked) {
+
       const selectedAddress = user.addresses.find(address => address._id.toString() === selectedAdd);
       const productIds = user.cart.map(item => item.productId);
       const selectedProducts = await Product.find({ _id: { $in: productIds } });
@@ -349,24 +308,149 @@ exports.createRazorpayOrder = async (req, res) => {
         return total;
       }, 0);
 
-      // Assuming you have a function to create an order in your Order model
+      // Create Razorpay order using the initialized instance
+      const orderOptions = {
+        amount: Math.round(totalPrice * 100), // Razorpay accepts amount in paisa
+        currency: 'INR',
+        receipt: `order_${Date.now()}`, // Use a timestamp as a receipt
+        payment_capture: 1,
+      };
+
+       await razorpay.orders.create(orderOptions,(err,data)=>{
+        if (err) {
+          console.error('Error creating Razorpay order:', err);
+          res.status(500).json({ error: 'Error creating Razorpay order' });
+        } else {
+          console.log('order created', data);
+          res.status(201).json({
+            success: true,
+            order: data,
+          });
+        }
+
+      });
+    
+   
+  } catch (error) {
+    console.error('Error in createRazorpayOrder controller:', error);
+    res.status(500).json({ error: 'An error occurred' });
+  }
+};
+
+// exports.createRazorpayOrder = async (req, res) => {
+//   try {
+//     const userId = req.session.userId;
+//     const { selectedAdd } = req.body;
+//     const user = await User.findById(userId).populate('addresses');
+
+//     if (user && !user.blocked) {
+//       const selectedAddress = user.addresses.find(address => address._id.toString() === selectedAdd);
+//       const productIds = user.cart.map(item => item.productId);
+//       const selectedProducts = await Product.find({ _id: { $in: productIds } });
+
+//       const totalPrice = user.cart.reduce((total, item) => {
+//         if (item.product && item.product.salePrice) {
+//           return total + item.product.salePrice * item.quantity;
+//         }
+//         return total;
+//       }, 0);
+
+//       // Assuming you have a function to create an order in your Order model
+//       const order = new Order({
+//         userId: new mongoose.Types.ObjectId(req.session.userId),
+//         address: selectedAddress,
+//         payment: 'razorpay', // Assuming 'razorpay' for Razorpay orders
+//         products: user.cart.map((item) => ({
+//           product: item.product._id,
+//           quantity: item.quantity,
+//           pricePerQnt: item.product.salePrice,
+//         })),
+//         totalPrice: totalPrice,
+//         status: 'pending',
+//       });
+
+//       // Save the order to the database
+//       await order.save();
+
+//       // Continue with the code to update stock, clear cart, etc.
+//       for (const item of user.cart) {
+//         const product = selectedProducts.find(
+//           (p) => p._id.toString() === item.productId
+//         );
+
+//         if (product) {
+//           product.units -= item.quantity;
+//           await product.save();
+//         }
+//       }
+
+//       // Clear the user's cart after the purchase
+//       user.cart = [];
+//       await user.save();
+
+//       // Create Razorpay order using the initialized instance
+//       const orderOptions = {
+//         amount: Math.round(totalPrice * 100), // Razorpay accepts amount in paisa
+//         currency: 'INR',
+//         receipt: `order_${order._id}`,
+//         payment_capture: 1,
+//       };
+
+//       const razorpayOrder = await razorpay.orders.create(orderOptions);
+//       console.log('order created',razorpayOrder);
+//       res.json({
+//         success: true,
+//         order: {
+//           id: razorpayOrder.id,
+//           amount: razorpayOrder.amount,
+//           currency: razorpayOrder.currency,
+//         },
+//       });
+//     } else {
+//       res.redirect('/login');
+//     }
+//   } catch (error) {
+//     console.error('Error in createRazorpayOrder controller:', error);
+//     res.status(500).json({ error: 'An error occurred' });
+//   }
+// };
+
+exports.createOrder= async(req,res)=>{
+  try{
+    console.log('----------[[[[[[[[[[[[[[[[[[[[[[[[[[[[[');
+    const userId = req.session.userId;
+    const { selectedAdd } = req.body;
+    console.log(selectedAdd,'-==================');
+    const user = await User.findById(userId).populate('addresses');
+
+    if (user && !user.blocked) {
+      const selectedAddress = user.addresses.find(address => address._id.toString() === selectedAdd);
+      const productIds = user.cart.map(item => item.productId);
+      const selectedProducts = await Product.find({ _id: { $in: productIds } });
+     console.log(selectedProducts);
+      const totalPrice = user.cart.reduce((total, item) => {
+        if (item.product && item.product.salePrice) {
+          return total + item.product.salePrice * item.quantity;
+        }
+        return total;
+      }, 0);
+
       const order = new Order({
         userId: new mongoose.Types.ObjectId(req.session.userId),
         address: selectedAddress,
         payment: 'razorpay', // Assuming 'razorpay' for Razorpay orders
-        products: user.cart.map((item) => ({
-          product: item.product._id,
+        products: selectedProducts.map((item) => ({
+          product: item._id,
           quantity: item.quantity,
-          pricePerQnt: item.product.salePrice,
+          pricePerQnt: item.salePrice,
         })),
         totalPrice: totalPrice,
         status: 'pending',
       });
-
+  
       // Save the order to the database
       await order.save();
 
-      // Continue with the code to update stock, clear cart, etc.
       for (const item of user.cart) {
         const product = selectedProducts.find(
           (p) => p._id.toString() === item.productId
@@ -381,32 +465,11 @@ exports.createRazorpayOrder = async (req, res) => {
       // Clear the user's cart after the purchase
       user.cart = [];
       await user.save();
-
-      // Create Razorpay order using the initialized instance
-      const orderOptions = {
-        amount: Math.round(totalPrice * 100), // Razorpay accepts amount in paisa
-        currency: 'INR',
-        receipt: `order_${order._id}`,
-        payment_capture: 1,
-      };
-
-      const razorpayOrder = await razorpay.orders.create(orderOptions);
-      console.log('order created',razorpayOrder);
-      res.json({
-        success: true,
-        order: {
-          id: razorpayOrder.id,
-          amount: razorpayOrder.amount,
-          currency: razorpayOrder.currency,
-        },
-      });
-    } else {
-      res.redirect('/login');
+      res.json({ success: true, order: order });
     }
-  } catch (error) {
+  }
+  catch(error){
     console.error('Error in createRazorpayOrder controller:', error);
     res.status(500).json({ error: 'An error occurred' });
   }
-};
-
-
+}

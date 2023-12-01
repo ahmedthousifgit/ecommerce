@@ -19,5 +19,5 @@ const products = multer.diskStorage({
   },
 });
 
-exports.upload = multer({ storage: storage });
 exports.update = multer({ storage: products });
+exports.upload = multer({ storage: storage });
