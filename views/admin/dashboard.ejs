@@ -69,7 +69,7 @@
               ></span>
               <div class="text">
                 <h6 class="mb-1 card-title">Revenue</h6>
-                <span>$13,456.5</span>
+                <span>₹<%= totalRevenue %></span>
                 <span class="text-sm"> Shipping fees are not included </span>
               </div>
             </article>
@@ -83,7 +83,7 @@
               ></span>
               <div class="text">
                 <h6 class="mb-1 card-title">Orders</h6>
-                <span>53.668</span>
+                <span><%= orderCount %></span>
                 <span class="text-sm"> Excluding orders in transit </span>
               </div>
             </article>
@@ -97,7 +97,7 @@
               ></span>
               <div class="text">
                 <h6 class="mb-1 card-title">Products</h6>
-                <span>9.856</span>
+                <span><%= productCount %></span>
                 <span class="text-sm"> In 19 Categories </span>
               </div>
             </article>
@@ -110,12 +110,15 @@
             <article class="card-body">
               <h5 class="card-title">Sale statistics</h5>
               <input type="text" value="<%= monthlySalesArray %>" hidden id="monthlySalesArray">
+              <input type="text" value="<%= productsPerMonth %>" hidden id="productsPerMonth">
               <canvas id="myChart" height="120px"></canvas>
             </article>
           </div>
+          
           <div class="row"></div>
         </div>
       </div>
+     
       <div class="card mb-4">
         <header class="card-header">
           <h4 class="card-title">Latest orders</h4>
@@ -153,6 +156,7 @@
             </div>
           </div>
         </header>
+        
         <div class="card-body">
           <div class="table-responsive">
             <div class="table-responsive">

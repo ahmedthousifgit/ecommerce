@@ -65,9 +65,16 @@ exports.loadHome = async (req, res) => {
   try{
     const orderCount = await Order.find({}).count()
     const productCount = await Product.find({}).count()
-    
     const order = await Order.find({}).sort({_id:-1}).limit(10).populate('userId')
     const products = await Product.find()
+
+    const aggregationResult = await Order.aggregate([
+      { $match: 
+        { status: 'delivered' } },
+      { $group:
+         { _id: null, totalPrice: { $sum: '$totalPrice' } } }
+    ]);
+    console.log(aggregationResult);
 
     // monthly sale
     const monthlySales = await Order.aggregate([
@@ -95,12 +102,25 @@ exports.loadHome = async (req, res) => {
       return monthData ? monthData.count : 0;
   });
     // monthly sale end
+
+    //---------product graph---------------
+    const productsPerMonth = Array(12).fill(0)
+    products.forEach(product=>{
+      const creationMonth = product.createdOn.getMonth();
+      productsPerMonth[creationMonth]++
+    })
+    const totalRevenue = aggregationResult.length > 0 ? aggregationResult[0].totalPrice : 0;
+    console.log(totalRevenue);
+
+    
+    // console.log(productsPerMonth);
+    //----------end product graph end
     // console.log(order);
     // console.log(products);
     // console.log(orderCount);
     // console.log(productCount);
-    console.log(monthlySalesArray);
-    res.render('admin/dashboard',{title:"Admin dashboard",errorMessage:"",orderCount,productCount,order,products,monthlySalesArray})
+    // console.log(monthlySalesArray);
+    res.render('admin/dashboard',{title:"Admin dashboard",errorMessage:"",orderCount,productCount,order,products,monthlySalesArray,productsPerMonth,totalRevenue})
   }catch(error){
     console.log(error);
     res.status(500).json({ error: "An error occurred" });
