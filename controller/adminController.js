@@ -4,15 +4,14 @@ const bcrypt = require("bcrypt");
 const auth = require("../middleware/auth");
 const Product = require("../models/products-model");
 const User = require("../models/user");
-const {formatDate}= require('../utility/formatDate')
+const { formatDate } = require("../utility/formatDate");
 const category = require("../models/category");
-const Order = require('../models/order-model')
-const Address = require('../models/address-model')
+const Order = require("../models/order-model");
+const Address = require("../models/address-model");
 const multer = require("../multer/multers");
-const adminAuth = require('../middleware/auth')
+const adminAuth = require("../middleware/auth");
 const update = multer.update;
-const upload = multer.upload
-
+const upload = multer.upload;
 
 exports.authenticateAdmin = async (req, res) => {
   const { username, password } = req.body;
@@ -47,13 +46,12 @@ exports.authenticateAdmin = async (req, res) => {
 //   res.render("admin/login", { errorMessage });
 // };
 
-
 exports.adminLoggin = (req, res) => {
   try {
     if (req.session.adminId) {
       res.redirect("/admin/dashboard");
     } else {
-      res.render("admin/login",{errorMessage:''});
+      res.render("admin/login", { errorMessage: "" });
     }
   } catch (error) {
     console.log(error);
@@ -62,32 +60,61 @@ exports.adminLoggin = (req, res) => {
 };
 
 exports.loadHome = async (req, res) => {
-  try{
-    const orderCount = await Order.find({}).count()
-    const productCount = await Product.find({}).count()
-    const order = await Order.find({}).sort({_id:-1}).limit(10).populate('userId')
-    const products = await Product.find()
+  try {
+    const orderCount = await Order.find({}).count();
+    const productCount = await Product.find({}).count();
+    const order = await Order.find({})
+      .sort({ _id: -1 })
+      .limit(10)
+      .populate("userId");
+    const orders = await Order.find({}).populate("userId");
+    const products = await Product.find();
 
     const aggregationResult = await Order.aggregate([
-      { $match: 
-        { status: 'delivered' } },
-      { $group:
-         { _id: null, totalPrice: { $sum: '$totalPrice' } } }
+      { $match: { status: "delivered" } },
+      { $group: { _id: null, totalPrice: { $sum: "$totalPrice" } } },
     ]);
-    console.log(aggregationResult);
 
     // monthly sale
     const monthlySales = await Order.aggregate([
       {
+        $match: {
+          status: "delivered", // Filter by status
+        },
+      },
+      {
+        $group: {
+          _id: {
+            $month: "$createdOn",
+          },
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $sort: {
+          _id: 1,
+        },
+      },
+    ]);
+    const monthlySalesArray = Array.from({ length: 12 }, (_, index) => {
+      const monthData = monthlySales.find((item) => item._id === index + 1);
+      return monthData ? monthData.count : 0;
+    });
+    // monthly sale end
+
+    //------------order ststus--------------------
+
+    const orderStatus = await Order.aggregate([
+      {
           $match: {
-              status: "delivered", // Filter by status
+              status: {
+                  $in: ['delivered', 'pending', 'Cancel Order', 'Out of delivery']
+              }
           },
       },
       {
           $group: {
-              _id: {
-                  $month: '$createdOn',
-              },
+              _id: '$status', // Group by status instead of month
               count: { $sum: 1 },
           },
       },
@@ -97,49 +124,57 @@ exports.loadHome = async (req, res) => {
           },
       },
   ]);
-  const monthlySalesArray = Array.from({ length: 12 }, (_, index) => {
-      const monthData = monthlySales.find((item) => item._id === index + 1);
-      return monthData ? monthData.count : 0;
+
+  const orderStatusArray = Array.from({ length: 4 }, (_, index) => {
+      const status = ['delivered', 'pending', 'Cancel Order', 'Out of delivery'][index];
+      const statusData = orderStatus.find((item) => item._id === status);
+      return statusData ? statusData.count : 0;
   });
-    // monthly sale end
+  
+console.log(orderStatusArray);
+//-----------end order status
 
     //---------product graph---------------
-    const productsPerMonth = Array(12).fill(0)
-    products.forEach(product=>{
+    const productsPerMonth = Array(12).fill(0);
+    products.forEach((product) => {
       const creationMonth = product.createdOn.getMonth();
-      productsPerMonth[creationMonth]++
-    })
-    const totalRevenue = aggregationResult.length > 0 ? aggregationResult[0].totalPrice : 0;
-    console.log(totalRevenue);
+      productsPerMonth[creationMonth]++;
+    });
+    const totalRevenue =
+      aggregationResult.length > 0 ? aggregationResult[0].totalPrice : 0;
+ 
 
-    
-    // console.log(productsPerMonth);
-    //----------end product graph end
-    // console.log(order);
-    // console.log(products);
-    // console.log(orderCount);
-    // console.log(productCount);
-    // console.log(monthlySalesArray);
-    res.render('admin/dashboard',{title:"Admin dashboard",errorMessage:"",orderCount,productCount,order,products,monthlySalesArray,productsPerMonth,totalRevenue})
-  }catch(error){
+    res.render("admin/dashboard", {
+      title: "Admin dashboard",
+      errorMessage: "",
+      orderCount,
+      productCount,
+      order,
+      products,
+      monthlySalesArray,
+      productsPerMonth,
+      totalRevenue,
+      orders,
+      orderStatusArray,
+      formatDate
+    });
+  } catch (error) {
     console.log(error);
     res.status(500).json({ error: "An error occurred" });
   }
-
 };
 
 exports.adminCategoryForm = async (req, res) => {
   try {
     const categories = await Category.find(); // Fetch the categories
-    
-      const isError = "";
-      res.render("admin/categoryForm", {
-        title: "Category management",
-        errorMessage: "",
-        isError,
-        categories, // Pass the categories to the template
-      });
-   
+
+    const isError = "";
+    res.render("admin/categoryForm", {
+      title: "Category management",
+      errorMessage: "",
+      isError,
+      categories, // Pass the categories to the template
+    });
   } catch (error) {
     console.log(error);
   }
@@ -220,8 +255,7 @@ exports.deleteCategory = async (req, res) => {
       return res.status(404).json({ error: "Product not found" });
     }
     // res.redirect("/admin/categories");
-    res.status(200).json({success:true,redirectTo:"/admin/categories"})
-    
+    res.status(200).json({ success: true, redirectTo: "/admin/categories" });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "An error occurred" });
@@ -230,10 +264,8 @@ exports.deleteCategory = async (req, res) => {
 
 exports.addProductForm = async (req, res) => {
   try {
-    
-      const categories = await Category.find({ isListed: true });
-      res.render("admin/add-products", { categories });
-    
+    const categories = await Category.find({ isListed: true });
+    res.render("admin/add-products", { categories });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "An error occured" });
@@ -271,11 +303,8 @@ exports.addProduct = async (req, res) => {
 
 exports.listProduct = async (req, res) => {
   try {
-    
-      const products = await Product.find();
-      res.render("admin/product-list", { products });
-    
-    
+    const products = await Product.find();
+    res.render("admin/product-list", { products });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "An error occurred" });
@@ -285,10 +314,8 @@ exports.listProduct = async (req, res) => {
 //USERS
 exports.users = async (req, res) => {
   try {
-    
-      const users = await User.find();
-      res.render("admin/users", { users });
-   
+    const users = await User.find();
+    res.render("admin/users", { users });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "An error occurred" });
@@ -304,7 +331,7 @@ exports.blockUser = async (req, res) => {
     } else {
       user.blocked = true; // Unblock the user
       await user.save();
-      res.status(200).json({success:true,redirectTo:"/admin/users-list"})
+      res.status(200).json({ success: true, redirectTo: "/admin/users-list" });
     }
   } catch (error) {
     console.log(error);
@@ -350,7 +377,7 @@ exports.editedProducts = async (req, res) => {
     if (!product) {
       return res.status(404).json({ error: "Product not found" });
     }
-   
+
     console.log(req.files);
 
     product.name = req.body.name;
@@ -379,65 +406,58 @@ exports.deleteProduct = async (req, res) => {
   try {
     console.log("call comes here");
     const productId = req.params.productId;
-    console.log('Received productId:', productId);
+    console.log("Received productId:", productId);
     const product = await Product.findByIdAndRemove(productId);
     if (!product) {
       return res.status(404).json({ error: "Product not found" });
     }
     res.status(200).json({ success: true, redirectTo: "/admin/product-list" });
-
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "An error occurred" });
   }
 };
 
+exports.orderList = async (req, res) => {
+  try {
+    const orders = await Order.find({}).populate("userId");
+    res.render("admin/orderList", {
+      orders,
+      formatDate,
+    });
 
-exports.orderList = async(req,res)=>{
-  try{ 
-    
-      
-      const orders = await Order.find({}).populate('userId')
-      res.render("admin/orderList",{
-        
-        orders,
-        formatDate
-      } )
-
-      //  console.log(orders.user);
-      // console.log(orders.user);
-      
-   
+    //  console.log(orders.user);
+    // console.log(orders.user);
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "An error occurred" });
   }
-}
+};
 
-exports.orderDetails = async(req,res)=>{
-  try{
-      const orderId = req.params.orderId
-      const orders = await Order.findOne({_id:orderId}).populate('products.product').populate('userId')
-      
-      const addressId = orders.address[0]
-      const address = await Address.findOne({_id:addressId})
-     
-      res.render('admin/orderDetails',{
-        address,
-        orders,
-        orderProducts : orders.products,
-        formatDate
-      })
-      // console.log(orders);
-      // console.log('-----------------');
-      // console.log(orders.products);
-     
-    
-  }catch(error){
+exports.orderDetails = async (req, res) => {
+  try {
+    const orderId = req.params.orderId;
+    const orders = await Order.findOne({ _id: orderId })
+      .populate("products.product")
+      .populate("userId");
+
+    const addressId = orders.address[0];
+    const address = await Address.findOne({ _id: addressId });
+
+    res.render("admin/orderDetails", {
+      address,
+      orders,
+      orderProducts: orders.products,
+      formatDate,
+    });
+    // console.log(orders);
+    // console.log('-----------------');
+    // console.log(orders.products);
+  } catch (error) {
     console.log(error);
     res.status(500).json({ error: "An error occurred" });
   }
-}
+};
 
 exports.delivered = async (req, res) => {
   await order
@@ -454,45 +474,47 @@ exports.delivered = async (req, res) => {
 exports.updateOrderStatus = async (req, res) => {
   try {
     console.log("inside::::::::orderstatus");
-      const {orderId,status } = req.body;
-  
-      console.log('orderID::::'+orderId);
-      console.log("status "+ status);
-      // console.log(status,orderId);
-      if (!status || !orderId) {
-          return res.status(400).json({ error: 'Invalid input parameters' });
-      }
-      const updatedOrder = await Order.findByIdAndUpdate(
-        { _id: orderId},
-        { $set: { status: status } },
-        { new: true }
+    const { orderId, status } = req.body;
+
+    console.log("orderID::::" + orderId);
+    console.log("status " + status);
+    // console.log(status,orderId);
+    if (!status || !orderId) {
+      return res.status(400).json({ error: "Invalid input parameters" });
+    }
+    const updatedOrder = await Order.findByIdAndUpdate(
+      { _id: orderId },
+      { $set: { status: status } },
+      { new: true }
     );
-      console.log(updatedOrder);
-      if (!updatedOrder) {
-          return res.status(404).json({ error: 'Order not found' });
-      }
-      res.json({ success: true, updatedOrder });
+    console.log(updatedOrder);
+    if (!updatedOrder) {
+      return res.status(404).json({ error: "Order not found" });
+    }
+    res.json({ success: true, updatedOrder });
   } catch (error) {
-      console.error('Error updating order status:', error);
-      res.status(500).json({ error: 'Internal server error' });
+    console.error("Error updating order status:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
-exports.orderStatus=async (req,res)=>{
-  if(req.query.status=="all"){
-     res.redirect('/adminOrders')
-  }else{
-      var orders = await Order.find({status:req.query.status})
+exports.orderStatus = async (req, res) => {
+  if (req.query.status == "all") {
+    res.redirect("/adminOrders");
+  } else {
+    var orders = await Order.find({ status: req.query.status });
   }
-      res.render('admin/orderList',{orders})  
-}
+  res.render("admin/orderList", { orders });
+};
 
-exports.changeStatus=async(req,res)=>{
-  await order.findByIdAndUpdate(req.query.id,{$set:{status:req.query.status}}).lean()
-  .then((data)=>{
-    res.redirect(`/admin/details?id=${req.query.id}`)
-  })
-}
+exports.changeStatus = async (req, res) => {
+  await order
+    .findByIdAndUpdate(req.query.id, { $set: { status: req.query.status } })
+    .lean()
+    .then((data) => {
+      res.redirect(`/admin/details?id=${req.query.id}`);
+    });
+};
 
 exports.logOut = (req, res) => {
   req.session.adminId = null;
