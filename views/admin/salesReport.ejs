@@ -1,0 +1,101 @@
+<%-include('../partials/adminheader') %>
+
+<body>
+  <div class="screen-overlay"></div>
+  <%-include('../partials/adminaside') %>
+  <main class="main-wrap">
+    <%-include('../partials/adminNav') %>
+<section class="content-main">
+    <div class="content-header">
+        <div>
+            <h2 class="content-title card-title">Sales Report </h2>
+            
+        </div>
+    </div>
+    <div class="card mb-4">
+        <header class="card-header">
+            <div class="row gx-3">
+        
+              
+                        <div class="col-lg-2 col-6 col-md-3">
+                            <select class="form-select" onchange="location.href='/admin/salesReport?day=' + this.value">
+                              <% if (locals.salesToday) { %>
+                                <option value="salesToday" selected>salesToday</option>
+                                <option value="salesWeekly">salesWeekly</option>
+                                <option value="salesMonthly">salesMonthly</option>
+                                <option value="salesYearly">salesYearly</option>
+                              <% } else if (locals.salesWeekly) { %>
+                                <option value="salesWeekly" selected>salesWeekly</option>
+                                <option value="salesToday">salesToday</option>
+                                <option value="salesMonthly">salesMonthly</option>
+                                <option value="salesYearly">salesYearly</option>
+                              <% } else if (locals.salesMonthly) { %>
+                                <option value="salesMonthly" selected>salesMonthly</option>
+                                <option value="salesToday">salesToday</option>
+                                <option value="salesWeekly">salesWeekly</option>
+                                <option value="salesYearly">salesYearly</option>
+                              <% } else if (locals.salesYearly) { %>
+                                <option value="salesYearly" selected>salesYearly</option>
+                                <option value="salesToday">salesToday</option>
+                                <option value="salesWeekly">salesWeekly</option>
+                                <option value="salesMonthly">salesMonthly</option>
+                              <% } %>
+                            </select>
+                          </div>
+            </div>
+        </header> <!-- card-header end// -->
+        <div class="card-body">
+            <div class="table-responsive">
+                <table id="salesTable" class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th> Order ID</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Product</th>
+                            <th scope="col">Date</th>
+                            <th scope="col">payment</th>
+                            <th scope="col">Status</th>
+                            <th scope="col" class="text-end"> Total Price </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <div class="col-lg-6 col-md-6 ms-auto text-md-end">                    
+                        <a href="" id="createSalesReport" class="btn btn-primary mb-2">invoice</a>
+                        </div>
+
+                            <%  %>
+                        
+                                <tr>
+                                  <td></td>
+                                  <td></td>
+                                  <td><b></b></td>
+                                
+                                  <td><b></b></td>
+                                
+                                  <td></td>
+                                  <td></td>
+                                  <td>
+                                    
+                    </tbody>
+                </table>
+               
+                    <div class="pagination">
+                     
+                        <button><a href="">Previous</a></button>
+                      
+                  
+                      <!-- Change the loop to start from 1 and go up to totalpages -->
+                        <button><a href="" class=""></a></button>
+                    
+                     
+                        <button><a href="">Next</a></button>
+                      
+                    </div>
+                
+                
+            </div> <!-- table-responsive //end -->
+        </div> <!-- card-body end// -->
+    </div> <!-- card end// -->
+    
+</section> <!-- content-main end// -->

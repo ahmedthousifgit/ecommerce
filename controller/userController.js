@@ -119,7 +119,8 @@ exports.verifyOTP = async (req, res) => {
   }
 };
 
-exports.reSendOTP = async (req, res) => {
+exports.
+reSendOTP = async (req, res) => {
   try {
     if(req.session.userId){
       res.redirect('/men')

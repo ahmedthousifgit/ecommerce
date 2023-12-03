@@ -2,6 +2,7 @@ var express = require("express");
 const session = require('express-session')
 var router = express.Router();
 const adminController = require("../controller/adminController");
+const salesController = require('../controller/salesController')
 const auth = require("../middleware/auth");
 const multer = require("../multer/multers");
 const update = multer.update;
@@ -59,6 +60,10 @@ router.get('/orderDetails/:orderId',auth.adminlogged,adminController.orderDetail
 router.get('/delivered',auth.adminlogged,adminController.delivered)
 
 router.post('/updateOrderStatus',adminController.updateOrderStatus)
+
+
+//REPORT
+router.get('/sales-report',auth.adminlogged,salesController.salesReport)
 
 //LOGOUT
 router.get("/logout", adminController.logOut);
