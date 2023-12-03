@@ -65,7 +65,7 @@ router.post('/updateOrderStatus',adminController.updateOrderStatus)
 //REPORT
 router.get('/sales-report',auth.adminlogged,salesController.salesReport)
 
-
+router.get('/downloadPdf',auth.adminlogged,salesController.downloadPdf)
 
 //LOGOUT
 router.get("/logout", adminController.logOut);

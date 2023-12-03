@@ -1,7 +1,7 @@
 const Order = require('../models/order-model')
 const product = require('../models/products-model')
 const { formatDate } = require("../utility/formatDate");
-
+const PDFDocument=require('pdfkit')
 
 
 exports.salesReport = async (req,res)=>{
@@ -25,7 +25,7 @@ exports.salesReport = async (req,res)=>{
                         $lt: new Date().setHours(23, 59, 59, 999), // End of today
                     }
                     
-                })
+                }).populate('userId')
                 // console.log(orders,"++++++++++++++++++++++++");
                 break;
 
@@ -82,12 +82,63 @@ exports.salesReport = async (req,res)=>{
         const endIndex=startIndex+itemsPerPage
         const totalpages=Math.ceil(orders.length/3)
         const currentProduct=orders.slice(startIndex,endIndex)
+        if (req.query.downloadPdf) {
+            console.log('////////////////////');
+            const doc = new PDFDocument();
+            // Customize your PDF content here based on the sales report data
+            doc.text('Sales Report', { align: 'center' });
+            doc.text(`Date: ${new Date().toLocaleDateString()}`, { align: 'center' });
+            doc.moveDown();
+            let orderCounter = 0;
+            // Add your sales data to the PDF
+            orders.forEach((order) => {
+              doc.text(`Order ID: ORD${String(order._id.toString().slice(-4)).padStart(5, '0')}`, { fontSize: 12 });
+              doc.text(`Customer Name: ${order.user ? order.user.name : 'N/A'}`, { fontSize: 12 });
+              doc.text(`Price: ${order.grandTotal}`, { fontSize: 12 });
+              doc.text(`Status: ${order.status}`, { fontSize: 12 });
+              doc.text(`Date: ${order.createdOn ? order.createdOn.toLocaleDateString() : 'N/A'}`, { fontSize: 12 });
+              doc.moveDown(); // Add spacing between entries
+            });
 
-// console.log(orders,"+++++++++++++++++++");
-       res.render('admin/salesReport',{orders:currentProduct,formatDate,totalpages,currentpage})
+            
+            // Set the response headers for PDF download
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', 'attachment; filename="sales_report.pdf"');
+            // Pipe the PDF content to the response stream
+            doc.pipe(res);
+            doc.end();
+          } else{
+            
+            res.render('admin/salesReport',{orders:currentProduct,formatDate,totalpages,currentpage})
+
+          }
+       
     }
     catch(error){
         console.log(error);
         res.status(500).json({ error: "An error occurred" });
     }
 }
+
+exports.downloadPdf = async (req, res) => {
+    try {
+       
+        // ... Your existing sales report generation logic ...
+  
+        // Generate PDF using pdfkit
+        const doc = new PDFDocument();
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'attachment; filename=sales_report.pdf');
+        doc.pipe(res);
+  
+        // Add PDF content here
+        doc.text('Sales Report', { align: 'center', underline: true });
+        // ... Add more content based on your requirements ...
+  
+        doc.end();
+  
+    } catch (error) {
+        console.log('Error occurred in downloadPdf route:', error);
+        res.status(500).json({ error: 'An error occurred' });
+    }
+  };
