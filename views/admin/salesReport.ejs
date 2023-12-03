@@ -127,19 +127,19 @@
     const selectedValue = this.value;
     switch (selectedValue) {
         case 'today':
-            window.location.href = '/salesReport?date=today';
+            window.location.href = '/admin/sales-report?date=today';
             break;
         case 'week':
-            window.location.href = '/salesReport?date=week';
+            window.location.href = '/admin/sales-report?date=week';
             break;
         case 'month':
-            window.location.href = '/salesReport?date=month';
+            window.location.href = '/admin/sales-report?date=month';
             break;
         case 'year':
-            window.location.href = '/salesReport?date=year';
+            window.location.href = '/admin/sales-report?date=year';
             break;
         default:
-            window.location.href = '/salesReport?date=all';
+            window.location.href = '/admin/sales-report?date=all';
     }
 });
 

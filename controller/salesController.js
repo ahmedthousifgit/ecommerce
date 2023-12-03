@@ -40,7 +40,7 @@ exports.salesReport = async (req,res)=>{
 
                 orders = await Order.find({
                     status: 'delivered',
-                    createdAt: {
+                    createdOn: {
                         $gte: startOfWeek,
                         $lt: endOfWeek,
                     },
@@ -52,7 +52,7 @@ exports.salesReport = async (req,res)=>{
 
                 orders = await Order.find({
                     status: 'delivered',
-                    createdAt: {
+                    createdOn: {
                         $gte: startOfMonth,
                         $lt: endOfMonth,
                     },
@@ -64,7 +64,7 @@ exports.salesReport = async (req,res)=>{
 
                 orders = await Order.find({
                     status: 'delivered',
-                    createdAt: {
+                    createdOn: {
                         $gte: startOfYear,
                         $lt: endOfYear,
                     },
