@@ -5,97 +5,143 @@
   <%-include('../partials/adminaside') %>
   <main class="main-wrap">
     <%-include('../partials/adminNav') %>
-<section class="content-main">
-    <div class="content-header">
-        <div>
-            <h2 class="content-title card-title">Sales Report </h2>
-            
-        </div>
-    </div>
-    <div class="card mb-4">
-        <header class="card-header">
-            <div class="row gx-3">
-        
-              
-                        <div class="col-lg-2 col-6 col-md-3">
-                            <select class="form-select" onchange="location.href='/admin/salesReport?day=' + this.value">
-                              <% if (locals.salesToday) { %>
-                                <option value="salesToday" selected>salesToday</option>
-                                <option value="salesWeekly">salesWeekly</option>
-                                <option value="salesMonthly">salesMonthly</option>
-                                <option value="salesYearly">salesYearly</option>
-                              <% } else if (locals.salesWeekly) { %>
-                                <option value="salesWeekly" selected>salesWeekly</option>
-                                <option value="salesToday">salesToday</option>
-                                <option value="salesMonthly">salesMonthly</option>
-                                <option value="salesYearly">salesYearly</option>
-                              <% } else if (locals.salesMonthly) { %>
-                                <option value="salesMonthly" selected>salesMonthly</option>
-                                <option value="salesToday">salesToday</option>
-                                <option value="salesWeekly">salesWeekly</option>
-                                <option value="salesYearly">salesYearly</option>
-                              <% } else if (locals.salesYearly) { %>
-                                <option value="salesYearly" selected>salesYearly</option>
-                                <option value="salesToday">salesToday</option>
-                                <option value="salesWeekly">salesWeekly</option>
-                                <option value="salesMonthly">salesMonthly</option>
-                              <% } %>
-                            </select>
-                          </div>
+    <section class="content-main">
+            <div class="content-header">
+                <div class="col-md-9">
+                    <h2 class="content-title card-title">Sales List </h2>
+                    <br><br>
+                    <select class="form-select d-inline-block mb-lg-0 mb-15 mw-200" id="filterOrders">
+                        <option value="all">Report</option>
+                        <option value="today">Report of Today</option>
+                        <option value="week">Report of this week</option>
+                        <option value="month">Report of this month</option>
+                        <option value="year">Report of this year</option>
+                    </select>
+                    <button class="btn btn-primary" id="downloadPdf">Download PDF</button>
+                </div>
+                
+                <!-- <button class="btn btn-primary" id="filterSales">Filter Sales</button> -->
             </div>
-        </header> <!-- card-header end// -->
-        <div class="card-body">
-            <div class="table-responsive">
-                <table id="salesTable" class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th> Order ID</th>
-                            <th scope="col">Name</th>
-                            <th scope="col">Product</th>
-                            <th scope="col">Date</th>
-                            <th scope="col">payment</th>
-                            <th scope="col">Status</th>
-                            <th scope="col" class="text-end"> Total Price </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <div class="col-lg-6 col-md-6 ms-auto text-md-end">                    
-                        <a href="" id="createSalesReport" class="btn btn-primary mb-2">invoice</a>
-                        </div>
+            <div class="row">
+                <div class="col-md-9">
+                    <div class="card mb-4">
+                      
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Customer name</th>
+                                            <th>Price</th>
+                                            <th>Status</th>
+                                            <th>Date</th>
+                                            <th class="text-end"> Action </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
 
-                            <%  %>
-                        
-                                <tr>
-                                  <td></td>
-                                  <td></td>
-                                  <td><b></b></td>
-                                
-                                  <td><b></b></td>
-                                
-                                  <td></td>
-                                  <td></td>
-                                  <td>
-                                    
-                    </tbody>
-                </table>
-               
-                    <div class="pagination">
-                     
-                        <button><a href="">Previous</a></button>
-                      
-                  
-                      <!-- Change the loop to start from 1 and go up to totalpages -->
-                        <button><a href="" class=""></a></button>
-                    
-                     
-                        <button><a href="">Next</a></button>
-                      
-                    </div>
-                
-                
-            </div> <!-- table-responsive //end -->
-        </div> <!-- card-body end// -->
-    </div> <!-- card end// -->
+
+
+
+
+     <!------------------------------------------ this is a single order data -=--------------------->
     
-</section> <!-- content-main end// -->
+       <% if(orders.length>0) { %>
+          <% for (let i=0; i<orders.length; i++){ %>
+            <% for(let j=0; j<orders[i].products.length;j++) {%>
+              <tr>
+                <td>ODR<%= orders[i]._id.toString().slice(-4) %></td>
+                <td><b><%= orders[i].userId.name  %></b></td>
+               
+                <td><%= orders[i].totalPrice %></td>
+
+                <% if (orders[i].status=='Pending') { %>
+
+                <td><span class="badge rounded-pill alert-warning">Pending</span></td>
+                <% } else if(orders[i].status=='Confirmed'){ %>
+                    <td><span class="badge rounded-pill alert-success">Confirmed</span></td>
+                    <% } else if(orders[i].status=='Cancelled'){ %>
+                        <td><span class="badege rounded-pill alert-danger">Cancelled</span></td>
+                <% } else if(orders[i].status=='Shipped'){ %>
+                    <td><span class="badge rounded-pill alert-success">Shipped</span></td>
+                    <% } else if(orders[i].status=='delivered'){ %>
+                        <td><span class="badge rounded-pill alert-success">Delivered</span></td>
+                        <% } else if(orders[i].status=='Returned'){ %>
+                            <td><span class="badge rounded-pill alert-danger">Returned</span></td>
+
+                        <% } %>
+
+                        <td><%= formatDate(orders[i].createdOn) %></td>
+                <td class="text-end">
+                    <a href="/admin/orderDetails/<%- orders[i]._id%>" class="btn btn-md rounded font-sm">Detail</a>
+                    <!-- <a href="/admin/oderDetailsadmin?id=<%= orders[i].products[j]._id %>&orderId=<%= orders[i]._id %>" class="btn btn-md rounded font-sm">Detail</a> -->
+
+                </td>
+              </tr>
+              <% } %>
+            <% } %>
+        <% }else{ %>
+          <tr>
+            <td colspan="2">No item found in Oders</td>
+          </tr>
+          <% } %>
+          
+        
+       
+      
+              <!-- --------------------------end ------------------------------------ -->
+                                        
+                                        
+                                      
+                                    </tbody>
+                                </table>
+                            </div> <!-- table-responsive //end -->
+                        </div> <!-- card-body end// -->
+                    </div> <!-- card end// -->
+                    <% if (totalpages) { %>
+                      <div class="pagination justify-content-center">
+                        <% if (currentpage > 1) { %>
+                          <button class="btn btn-sm" ><a href="?page=<%= currentpage - 1 %>">Previous</a></button>
+                        <% } %>
+                    
+                        <% for (let i = 1; i <= totalpages; i++) { %> <!-- Change the loop to start from 1 and go up to totalpages -->
+                          <button class="btn btn-sm " ><a href="?page=<%= i %>" class="<%= i === currentpage ? 'active' : '' %>"><%= i %></a></button>
+                        <% } %>
+                    
+                        <% if (currentpage < totalpages) { %>
+                          <button class="btn btn-sm" ><a href="?page=<%= currentpage + 1 %>">Next</a></button>
+                        <% } %>
+                      </div>
+                    <% } %>
+                </div>
+                
+              
+            </div>
+           
+        </section> <!-- content-main end// -->
+  
+  
+  <script>
+  document.getElementById('filterOrders').addEventListener('change', function () {
+    const selectedValue = this.value;
+    switch (selectedValue) {
+        case 'today':
+            window.location.href = '/salesReport?date=today';
+            break;
+        case 'week':
+            window.location.href = '/salesReport?date=week';
+            break;
+        case 'month':
+            window.location.href = '/salesReport?date=month';
+            break;
+        case 'year':
+            window.location.href = '/salesReport?date=year';
+            break;
+        default:
+            window.location.href = '/salesReport?date=all';
+    }
+});
+
+
+        </script>
