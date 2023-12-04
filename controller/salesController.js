@@ -93,8 +93,8 @@ exports.salesReport = async (req,res)=>{
             // Add your sales data to the PDF
             orders.forEach((order) => {
               doc.text(`Order ID: ORD${String(order._id.toString().slice(-4)).padStart(5, '0')}`, { fontSize: 12 });
-              doc.text(`Customer Name: ${order.user ? order.user.name : 'N/A'}`, { fontSize: 12 });
-              doc.text(`Price: ${order.grandTotal}`, { fontSize: 12 });
+              doc.text(`Customer Name: ${order.userId.name ? order.userId.name : 'N/A'}`, { fontSize: 12 });
+              doc.text(`Price: ${order.totalPrice}`, { fontSize: 12 });
               doc.text(`Status: ${order.status}`, { fontSize: 12 });
               doc.text(`Date: ${order.createdOn ? order.createdOn.toLocaleDateString() : 'N/A'}`, { fontSize: 12 });
               doc.moveDown(); // Add spacing between entries
