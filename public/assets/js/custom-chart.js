@@ -1,7 +1,7 @@
 (function ($) {
   "use strict";
   let monthlySalesArray = document.getElementById("monthlySalesArray").value;
-
+console.log(monthlySalesArray);
   monthlySalesArray = monthlySalesArray.trim(); // Remove leading and trailing whitespace
   monthlySalesArray = monthlySalesArray.split(",");
   monthlySalesArray = monthlySalesArray.map((item) => Number(item));

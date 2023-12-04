@@ -98,22 +98,31 @@ exports.updateQuantity = async (req, res) => {
       newQuantity = Math.min(15, Math.max(1, newQuantity));
 
       // Update the quantity in the cart
-         const updatedUser = await User.findOneAndUpdate(
-        { _id: userId, "cart.productId": productId },
-        { $set: { "cart.$.quantity": newQuantity } },
-        { new: true }
-      );
-         const totalAmount = updatedUser.cart.reduce(
-        (total, item) => total + item.product.salePrice * item.quantity,
-        0
-      );
-      res.json({ cart: updatedUser.cart, totalAmount });
+
+      const productData= await Product.findById(productId)
+      
+if (productData.units>=newQuantity) {
+  const updatedUser = await User.findOneAndUpdate(
+    { _id: userId, "cart.productId": productId },
+    { $set: { "cart.$.quantity": newQuantity } },
+    { new: true }
+  );
+     const totalAmount = updatedUser.cart.reduce(
+    (total, item) => total + item.product.salePrice * item.quantity,
+    0
+  );
+  res.json({ success:true, cart: updatedUser.cart, totalAmount });
+}else{
+  res.status(404).json({success:false, message: "out of stock" });
+
+}
+         
     } else {
-      res.status(404).json({ message: "Item not found in the cart" });
+      res.status(404).json({success:false, message: "Item not found in the cart" });
     }
   } catch (error) {
     console.log(error);
-    res.status(500).json({ error: "An error occurred" });
+    res.status(500).json({success:false, error: "An error occurred" });
   }
 };
 

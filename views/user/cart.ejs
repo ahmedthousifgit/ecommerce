@@ -8,6 +8,10 @@
 	<div class="container py-5">
 	  <div class="row d-flex justify-content-center my-4">
 		<div class="col-md-8">
+			<div id="cartNotification"
+                    style="display: none; position: fixed; top: 20px; right: 20px; background-color: #f90909; color: #fff; padding: 10px; border-radius: 5px;">
+
+                </div>
 			<!-- shopping cart card -->
 			<div class="m-4">
 				<h4 class="card-title mb-4">Your shopping cart</h4>
@@ -158,7 +162,8 @@
     })
         .then(response => response.json())
         .then(data => {
-            const quantityElement = document.getElementById(`${productId}`);
+			if (data.success) {
+				const quantityElement = document.getElementById(`${productId}`);
             const totalElement = document.getElementById(`pro-total-${productId}`);
             const priceElement = document.getElementById(`price-${productId}`);
 			const totalPriceElement = document.getElementById('totalPrice');
@@ -182,6 +187,17 @@
             totalAmountElement.textContent = `₹ ${newTotalAmount.toFixed(2)}`;
 
             console.log(data.cart);
+			}else{
+				const notification = document.getElementById('cartNotification');
+                        const errorMessage = data.error || 'Unknown error occurred';
+                        notification.textContent = errorMessage;
+                        notification.style.display = 'block';
+                        setTimeout(() => {
+                            notification.style.display = 'none';
+                        }, 2000);
+                        console.error('Failed to update cart:', data.error);
+			}
+            
         })
         .catch(error => {
             console.error('Error:', error);
