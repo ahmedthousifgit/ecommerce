@@ -80,12 +80,13 @@ exports.updateQuantity = async (req, res) => {
       _id: userId,
       "cart.productId": productId,
     });
+    console.log(user);
 
     if (user) {
          const currentQuantity = user.cart.find(
         (item) => item.productId === productId
       ).quantity;
-
+     
       // Update the quantity based on the action (increment or decrement)
       let newQuantity;
       if (action === "increment") {
@@ -98,9 +99,9 @@ exports.updateQuantity = async (req, res) => {
       newQuantity = Math.min(15, Math.max(1, newQuantity));
 
       // Update the quantity in the cart
-
+         console.log('000000000000000000000000');
       const productData= await Product.findById(productId)
-      
+      console.log(productData);
 if (productData.units>=newQuantity) {
   const updatedUser = await User.findOneAndUpdate(
     { _id: userId, "cart.productId": productId },
@@ -346,92 +347,16 @@ exports.createRazorpayOrder = async (req, res) => {
   }
 };
 
-// exports.createRazorpayOrder = async (req, res) => {
-//   try {
-//     const userId = req.session.userId;
-//     const { selectedAdd } = req.body;
-//     const user = await User.findById(userId).populate('addresses');
-
-//     if (user && !user.blocked) {
-//       const selectedAddress = user.addresses.find(address => address._id.toString() === selectedAdd);
-//       const productIds = user.cart.map(item => item.productId);
-//       const selectedProducts = await Product.find({ _id: { $in: productIds } });
-
-//       const totalPrice = user.cart.reduce((total, item) => {
-//         if (item.product && item.product.salePrice) {
-//           return total + item.product.salePrice * item.quantity;
-//         }
-//         return total;
-//       }, 0);
-
-//       // Assuming you have a function to create an order in your Order model
-//       const order = new Order({
-//         userId: new mongoose.Types.ObjectId(req.session.userId),
-//         address: selectedAddress,
-//         payment: 'razorpay', // Assuming 'razorpay' for Razorpay orders
-//         products: user.cart.map((item) => ({
-//           product: item.product._id,
-//           quantity: item.quantity,
-//           pricePerQnt: item.product.salePrice,
-//         })),
-//         totalPrice: totalPrice,
-//         status: 'pending',
-//       });
-
-//       // Save the order to the database
-//       await order.save();
-
-//       // Continue with the code to update stock, clear cart, etc.
-//       for (const item of user.cart) {
-//         const product = selectedProducts.find(
-//           (p) => p._id.toString() === item.productId
-//         );
-
-//         if (product) {
-//           product.units -= item.quantity;
-//           await product.save();
-//         }
-//       }
-
-//       // Clear the user's cart after the purchase
-//       user.cart = [];
-//       await user.save();
-
-//       // Create Razorpay order using the initialized instance
-//       const orderOptions = {
-//         amount: Math.round(totalPrice * 100), // Razorpay accepts amount in paisa
-//         currency: 'INR',
-//         receipt: `order_${order._id}`,
-//         payment_capture: 1,
-//       };
-
-//       const razorpayOrder = await razorpay.orders.create(orderOptions);
-//       console.log('order created',razorpayOrder);
-//       res.json({
-//         success: true,
-//         order: {
-//           id: razorpayOrder.id,
-//           amount: razorpayOrder.amount,
-//           currency: razorpayOrder.currency,
-//         },
-//       });
-//     } else {
-//       res.redirect('/login');
-//     }
-//   } catch (error) {
-//     console.error('Error in createRazorpayOrder controller:', error);
-//     res.status(500).json({ error: 'An error occurred' });
-//   }
-// };
 
 exports.createOrder= async(req,res)=>{
   try{
     console.log('----------[[[[[[[[[[[[[[[[[[[[[[[[[[[[[');
     const userId = req.session.userId;
     const { selectedAdd } = req.body;
+    console.log(req.body,'0000000000000000000000000000000');
     console.log(selectedAdd,'-==================');
     const user = await User.findById(userId).populate('addresses');
-
+    console.log(user.cart);
     if (user && !user.blocked) {
       const selectedAddress = user.addresses.find(address => address._id.toString() === selectedAdd);
       const productIds = user.cart.map(item => item.productId);
@@ -443,13 +368,14 @@ exports.createOrder= async(req,res)=>{
         }
         return total;
       }, 0);
+      console.log(totalPrice);
 
       const order = new Order({
         userId: new mongoose.Types.ObjectId(req.session.userId),
         address: selectedAddress,
         payment: 'razorpay', // Assuming 'razorpay' for Razorpay orders
-        products: selectedProducts.map((item) => ({
-          product: item._id,
+        products: user.cart.map((item) => ({
+          product: item.product._id,
           quantity: item.quantity,
           pricePerQnt: item.salePrice,
         })),
@@ -459,6 +385,8 @@ exports.createOrder= async(req,res)=>{
   
       // Save the order to the database
       await order.save();
+    
+      console.log(order);
 
       for (const item of user.cart) {
         const product = selectedProducts.find(

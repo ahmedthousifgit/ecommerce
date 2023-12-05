@@ -189,7 +189,7 @@
             console.log(data.cart);
 			}else{
 				const notification = document.getElementById('cartNotification');
-                        const errorMessage = data.error || 'Unknown error occurred';
+                        const errorMessage = data.error || 'Product out of stock';
                         notification.textContent = errorMessage;
                         notification.style.display = 'block';
                         setTimeout(() => {

@@ -174,7 +174,7 @@
                             <a class="dropdown-item" href="#" data-status="Out of delivery">Out of delivery</a>
                         </li>
                         <li>
-                            <a class="dropdown-item" href="#" data-status="Pending">Pending</a>
+                            <a class="dropdown-item" href="#" data-status="pending">Pending</a>
                         </li>
                         <li>
                             <a class="dropdown-item" href="#" data-status="shipped">Shipped</a>
@@ -231,7 +231,21 @@
                                     <h6 class="mb-1">Order info</h6>
                                     <p class="mb-1">
                                         
-                                        Pay method:  <%= orders.payment %>    <br> Status: <%= orders.status %>
+                                        Pay method:  <%= orders.payment %>    <br> Status: <% if (orders.status=='pending') { %>
+
+                                            <td><span class="badge rounded-pill alert-warning">pending</span></td>
+                                            <% } else if(orders.status=='Order confirmed'){ %>
+                                                <td><span class="badge rounded-pill alert-soft-success">Confirmed</span></td>
+                                                <% } else if(orders.status=='Cancel Order'){ %>
+                                                    <td><span class="badege rounded-pill alert-danger">Cancelled</span></td>
+                                            <% } else if(orders.status=='Shipped'){ %>
+                                                <td><span class="badge rounded-pill alert-success">Shipped</span></td>
+                                                <% } else if(orders.status=='delivered'){ %>
+                                                    <td><span class="badge rounded-pill alert-success">Delivered</span></td>
+                                                    <% } else if(orders.status=='Out of delivery'){ %>
+                                                        <td><span class="badge rounded-pill alert-success">Out of delivery</span></td>
+                                                    <% } %>
+                          
                                         
                                 
   

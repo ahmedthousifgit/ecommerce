@@ -683,9 +683,12 @@ exports.orderDetails = async (req, res) => {
 exports.cancelOrder = async (req, res) => {
   try {
     const orderId = req.body.orderId;
-
+    console.log(orderId);
   
-    const order = await Order.findByIdAndUpdate(orderId).populate('products.product');
+    const order = await Order.findById(orderId).populate('products.product').populate('products.quantity');
+    const products = await Product.find()
+    
+    console.log(order.status);
     console.log('+++++++++++++++++++++');
     console.log(order);
     console.log('__________');
@@ -695,15 +698,26 @@ exports.cancelOrder = async (req, res) => {
     for (const item of order.products) {
       const product = item.product;
 
-      if (product) {
+     
+     
+      if (product ) {
         // Increase the product stock by the canceled quantity
+        console.log('item quantity::::::::',item.quantity)
+        
         product.units += item.quantity;
 
         // Save the updated product
         await product.save();
+      }else{
+        console.log('product not found');
       }
+      
+      console.log(item.quantity)
+    
     }
-    await Order.findByIdAndRemove(orderId);
+    order.status = 'Cancel Order'
+    await order.save();
+    // await Order.findByIdAndUpdate(orderId);
     res.status(200).json({ success: true });
   } catch (error) {
     console.error('Error in cancelOrder controller:', error);

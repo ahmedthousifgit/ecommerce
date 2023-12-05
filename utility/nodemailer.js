@@ -53,7 +53,7 @@ function generateOTP() {
     `;
   
     const mailOptions = {
-      from: 'ahmedthousiii@gmail.com',
+      from: process.env.EMAIL,
       to: email,
       subject: 'OTP Verification',
       html: htmlMessage, 
