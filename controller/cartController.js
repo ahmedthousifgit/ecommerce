@@ -305,8 +305,7 @@ exports.createRazorpayOrder = async (req, res) => {
     const userId = req.session.userId;
     const { selectedAdd } = req.body;
     const user = await User.findById(userId).populate('addresses');
-
-
+      
       const selectedAddress = user.addresses.find(address => address._id.toString() === selectedAdd);
       const productIds = user.cart.map(item => item.productId);
       const selectedProducts = await Product.find({ _id: { $in: productIds } });
