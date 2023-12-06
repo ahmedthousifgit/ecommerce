@@ -89,7 +89,10 @@
                           <td><span class="badge rounded-pill alert-success">Delivered</span></td>
                           <% } else if(order.status=='Out of delivery'){ %>
                               <td><span class="badge rounded-pill alert-success">Out of delivery</span></td>
-                          <% } %>
+                          <% } else if(order.status=='returned'){ %>
+                           
+                            <td><span class="badge rounded-pill alert-warning">Returned</span></td>
+                        <% } %>
 
                 <td>
                   <a href="/order-details/<%=order._id %>"
@@ -104,18 +107,18 @@
                     <a
                     href="#"
                     class="btn btn-outline-warning"
-                   
+                    onclick="confirmReturn('<%=order._id %>')"
                     style="font-size: 10px; padding: 5px 10px"
                     >Return</a
                   >
                     <% } %> 
-                   <% if (order.status !== 'delivered' && order.status !== 'Cancel Order'){%>
+                   <% if (order.status !== 'delivered' && order.status !== 'Cancel Order' && order.status !=='returned'){%>
 
                   <a
                     href="#"
                     class="btn btn-outline-danger"
                     onclick="confirmCancel('<%=order._id%>')"
-                    id="cancelButton_<%= order._id %>"
+                    
                     style="font-size: 10px; padding: 5px 10px"
                     <% if (order.status === 'Cancel Order') { %> disabled <% } %>
                     >Cancel</a
@@ -138,50 +141,97 @@
 
 <script>
    
-   async function confirmCancel(id) {
-    Swal.fire({
-      title: "Submit your reason for cancellation",
-      input: "text",
-      inputAttributes: {
-        autocapitalize: "off",
-      },
-      showCancelButton: true,
-      confirmButtonText: "Submit",
-      showLoaderOnConfirm: true,
-      preConfirm: async (reason) => {
-        try {
-          const response = await fetch(`/order-cancel`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ orderId: id, reason: reason }),
-          });
+  async function confirmCancel(id) {
+   Swal.fire({
+     title: "Submit your reason for cancellation",
+     input: "text",
+     inputAttributes: {
+       autocapitalize: "off",
+     },
+     showCancelButton: true,
+     confirmButtonText: "Submit",
+     showLoaderOnConfirm: true,
+     preConfirm: async (reason) => {
+       try {
+         const response = await fetch(`/order-cancel`, {
+           method: "POST",
+           headers: {
+             "Content-Type": "application/json",
+           },
+           body: JSON.stringify({ orderId: id, reason: reason }),
+         });
 
-          if (!response.ok) {
-            throw new Error(`Request failed: ${response.status}`);
-          }
+         if (!response.ok) {
+           throw new Error(`Request failed: ${response.status}`);
+         }
 
-          const responseData = await response.json();
-          return responseData;
-        } catch (error) {
-          Swal.showValidationMessage(`
-              Request failed: ${error}
-            `);
+         const responseData = await response.json();
+         return responseData;
+       } catch (error) {
+         Swal.showValidationMessage(`
+             Request failed: ${error}
+           `);
+       }
+     },
+     allowOutsideClick: () => !Swal.isLoading(),
+   }).then((result) => {
+     if (result.isConfirmed) {
+       Swal.fire({
+         title: "Request Submitted",
+         text: "Your cancellation request has been submitted.",
+         icon: "success",
+       }).then(()=>{
+         location.href='/order-list'
+       })
+     }
+   });
+ }
+
+ // Add a new JavaScript function for confirming returns
+async function confirmReturn(id) {
+  Swal.fire({
+    title: "Submit your reason for return",
+    input: "text",
+    inputAttributes: {
+      autocapitalize: "off",
+    },
+    showCancelButton: true,
+    confirmButtonText: "Submit",
+    showLoaderOnConfirm: true,
+    preConfirm: async (reason) => {
+      try {
+        const response = await fetch(`/order-return`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ orderId: id, reason: reason }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`Request failed: ${response.status}`);
         }
-      },
-      allowOutsideClick: () => !Swal.isLoading(),
-    }).then((result) => {
-      if (result.isConfirmed) {
-        Swal.fire({
-          title: "Request Submitted",
-          text: "Your cancellation request has been submitted.",
-          icon: "success",
-        }).then(()=>{
-          location.href='/order-list'
-        })
-      }
-    });
-  }
-</script>
 
+        const responseData = await response.json();
+        return responseData;
+      } catch (error) {
+        Swal.showValidationMessage(`
+          Request failed: ${error}
+        `);
+      }
+    },
+    allowOutsideClick: () => !Swal.isLoading(),
+  }).then((result) => {
+    if (result.isConfirmed) {
+      Swal.fire({
+        title: "Request Submitted",
+        text: "Your return request has been submitted.",
+        icon: "success",
+      }).then(() => {
+        location.href = '/order-list';
+      });
+    }
+  });
+}
+
+</script>

@@ -659,40 +659,22 @@ exports.orderDetails = async (req, res) => {
   }
 };
 
-// exports.cancelOrder= async(req,res)=>{
-//   try{
-//     const orderId = req.body.orderId
-//     const order = await Order.findByIdAndRemove(orderId)
-//     console.log(order);
-    
-//     if(!order){
-//       console.log('!ORDER');
-//       return res.status(404).json({error:'Order not found'})
-//     }
-    
-//     res.status(200).json({success:true})
 
-//   }
-//   catch (error) {
-    
-//     console.error('Error in orderDetails controller:', error);
-//     res.status(500).json({ error: 'An error occurred' });
-//   }
-// }
 
 exports.cancelOrder = async (req, res) => {
   try {
+   
     const orderId = req.body.orderId;
     console.log(orderId);
   
     const order = await Order.findById(orderId).populate('products.product').populate('products.quantity');
     const products = await Product.find()
     
-    console.log(order.status);
-    console.log('+++++++++++++++++++++');
-    console.log(order);
-    console.log('__________');
-    console.log(order.products);
+    // console.log(order.status);
+    // console.log('+++++++++++++++++++++');
+    // console.log(order);
+    // console.log('__________');
+    // console.log(order.products);
 
     // Update product stock for each product in the order
     for (const item of order.products) {
@@ -702,7 +684,7 @@ exports.cancelOrder = async (req, res) => {
      
       if (product ) {
         // Increase the product stock by the canceled quantity
-        console.log('item quantity::::::::',item.quantity)
+        // console.log('item quantity::::::::',item.quantity)
         
         product.units += item.quantity;
 
@@ -724,6 +706,34 @@ exports.cancelOrder = async (req, res) => {
     res.status(500).json({ error: 'An error occurred' });
   }
 };
+
+
+exports.returnOrder= async(req,res)=>{
+  try{
+    const orderId = req.body.orderId
+    const Reason = req.body.reason
+    const products = await Product.find()
+    const order = await Order.findById(orderId).populate('products.product').populate(products.quantity)
+    
+    for(const item of order.products ){
+      const product = item.product
+    
+    if(product){
+      product.units += item.quantity
+      await product.save()
+    }
+  }
+    order.status = 'returned'
+    order.reason = Reason
+    await order.save()
+    res.status(200).json({ success: true });
+  }
+  
+  catch(error){
+    console.error('Error in returnOrder controller:', error);
+    res.status(500).json({ error: 'An error occurred' });
+  }
+}
 
 exports.logOut = async (req, res) => {
   req.session.destroy((err) => {

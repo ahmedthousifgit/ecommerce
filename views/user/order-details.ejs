@@ -81,7 +81,24 @@
                                     <h6 class="mb-1">Order info</h6>
                                     <p class="mb-1">
                                         
-                                        Pay method:  <%= order.payment %>  <br> Status:<%= order.status %>
+                                        Pay method:  <%= order.payment %>  <br> Status:
+                                        <% if (order.status=='pending') { %>
+
+                                          <td><span class="badge rounded-pill alert-warning">Pending</span></td>
+                                          <% } else if(order.status=='Order confirmed'){ %>
+                                              <td><span class="badge rounded-pill alert-soft-success">Confirmed</span></td>
+                                              <% } else if(order.status=='Cancel Order'){ %>
+                                                  <td><span class="badege rounded-pill alert-danger">Cancelled</span></td>
+                                          <% } else if(order.status=='Shipped'){ %>
+                                              <td><span class="badge rounded-pill alert-success">Shipped</span></td>
+                                              <% } else if(order.status=='delivered'){ %>
+                                                  <td><span class="badge rounded-pill alert-success">Delivered</span></td>
+                                                  <% } else if(order.status=='Out of delivery'){ %>
+                                                      <td><span class="badge rounded-pill alert-success">Out of delivery</span></td>
+                                                  <% } else if(order.status=='returned'){ %>
+                                                   
+                                                    <td><span class="badge rounded-pill alert-warning">Returned</span></td>
+                                                <% } %>
 
                                     </p>
                                     
