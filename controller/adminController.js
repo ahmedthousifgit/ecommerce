@@ -300,11 +300,25 @@ exports.addProduct = async (req, res) => {
     res.status(500).json({ error: "An error occurred" });
   }
 };
-
+const ITEMS_PER_PAGE = 4
 exports.listProduct = async (req, res) => {
   try {
-    const products = await Product.find();
-    res.render("admin/product-list", { products });
+    const page = parseInt(req.query.page)
+    const totalProducts = await Product.countDocuments()
+    const totalPages = Math.ceil(totalProducts/ITEMS_PER_PAGE)
+    const products = await Product.find()
+    .sort({createdOn:-1})
+    .skip((page-1)* ITEMS_PER_PAGE)
+    .limit(ITEMS_PER_PAGE)
+    
+
+    res.render("admin/product-list", 
+    {
+       products,
+       currentPage:page,
+       totalPages 
+    
+    });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "An error occurred" });
@@ -314,8 +328,14 @@ exports.listProduct = async (req, res) => {
 //USERS
 exports.users = async (req, res) => {
   try {
-    const users = await User.find();
-    res.render("admin/users", { users });
+    const page= parseInt(req.query.page)
+    const totalusers = await User.countDocuments()
+    const totalPages = Math.ceil(totalusers/ITEMS_PER_PAGE)
+    const users = await User.find()
+    .sort({createdOn:-1})
+    .skip((page-1)*ITEMS_PER_PAGE)
+    .limit(ITEMS_PER_PAGE)
+    res.render("admin/users", { users,currentPage:page,totalPages });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "An error occurred" });
@@ -418,12 +438,21 @@ exports.deleteProduct = async (req, res) => {
   }
 };
 
+
 exports.orderList = async (req, res) => {
   try {
-    const orders = await Order.find({}).populate("userId");
+    const page = parseInt(req.query.page)
+    const totalOrders = await Order.countDocuments({}).populate('userId')
+    const totalPages = Math.ceil(totalOrders/ITEMS_PER_PAGE)
+    const orders = await Order.find({}).populate("userId")
+    .sort({createdOn:-1})
+    .skip((page-1)*ITEMS_PER_PAGE)
+    .limit(ITEMS_PER_PAGE)
     res.render("admin/orderList", {
       orders,
       formatDate,
+      totalPages,
+      currentPage:page
     });
 
     //  console.log(orders.user);

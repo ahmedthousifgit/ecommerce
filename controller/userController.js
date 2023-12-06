@@ -602,16 +602,25 @@ exports.productPage = async (req, res, next) => {
 };
 
 
+const ITEMS_PER_PAGE =6
 exports.orderList = async(req,res)=>{
   try{
  
       const user = await User.findById(req.session.userId)
+      const page = parseInt(req.query.page)
+      const totalOrders = await Order.countDocuments({userId:req.session.userId})
+      const totalPages = Math.ceil(totalOrders/ITEMS_PER_PAGE)
       const orders = await Order.find({userId:req.session.userId})
+      .sort({createdOn:-1})
+      .skip((page -1)* ITEMS_PER_PAGE)
+      .limit(ITEMS_PER_PAGE);
       // console.log('&&&&&&&&',orders);
       res.render("user/order-list",{
         username:user.name,
         orders,
-        formatDate
+        formatDate,
+        currentPage: page,
+        totalPages
       } )
     
   }
