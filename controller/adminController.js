@@ -2,6 +2,8 @@ const adminModel = require("../models/admin");
 const Category = require("../models/category");
 const bcrypt = require("bcrypt");
 const auth = require("../middleware/auth");
+const path = require('path')
+const sharp = require('sharp')
 const Product = require("../models/products-model");
 const User = require("../models/user");
 const { formatDate } = require("../utility/formatDate");
@@ -12,6 +14,7 @@ const multer = require("../multer/multers");
 const adminAuth = require("../middleware/auth");
 const update = multer.update;
 const upload = multer.upload;
+
 
 exports.authenticateAdmin = async (req, res) => {
   const { username, password } = req.body;
@@ -274,6 +277,29 @@ exports.addProductForm = async (req, res) => {
 
 exports.addProduct = async (req, res) => {
   try {
+    const imageData = [];
+    const imageFiles = req.files;
+
+    for (const file of imageFiles) {
+      console.log(file, "File received");
+
+      const randomInteger = Math.floor(Math.random() * 20000001);
+      const imageDirectory = path.join('public', 'uploads', 'products');
+      const imgFileName = "cropped" + randomInteger + ".jpg";
+      const imagePath = path.join(imageDirectory, imgFileName);
+
+      console.log(imagePath, "Image path");
+
+      const croppedImage = await sharp(file.path)
+        .resize(471, 471, {
+          fit: "cover",
+        })
+        .toFile(imagePath);
+
+      if (croppedImage) {
+        imageData.push(imgFileName);
+      }
+    }
     const productData = {
       name: req.body.name,
       description: req.body.description,
@@ -284,12 +310,7 @@ exports.addProduct = async (req, res) => {
       createdOn: Date.now(),
       taxRate: req.body.taxRate,
       units: req.body.units,
-      image: [
-        req.files[0].filename,
-        req.files[1].filename,
-        req.files[2].filename,
-        req.files[3].filename,
-      ],
+      image: imageData
     };
 
     const product = new Product(productData);
