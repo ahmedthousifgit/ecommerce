@@ -104,7 +104,11 @@ exports.loadHome = async (req, res) => {
       return monthData ? monthData.count : 0;
     });
     // monthly sale end
-
+    const productsPerMonth = Array(12).fill(0);
+    products.forEach((product) => {
+      const creationMonth = product.createdOn.getMonth();
+      productsPerMonth[creationMonth]++;
+    });
     //------------order ststus--------------------
 
     const orderStatus = await Order.aggregate([
@@ -138,11 +142,7 @@ console.log(orderStatusArray);
 //-----------end order status
 
     //---------product graph---------------
-    const productsPerMonth = Array(12).fill(0);
-    products.forEach((product) => {
-      const creationMonth = product.createdOn.getMonth();
-      productsPerMonth[creationMonth]++;
-    });
+  
     const totalRevenue =
       aggregationResult.length > 0 ? aggregationResult[0].totalPrice : 0;
  
