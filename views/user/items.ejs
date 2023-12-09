@@ -1,52 +1,5 @@
-<!DOCTYPE HTML>
-<html>
-	<head>
-	<title>Footwear - Free Bootstrap 4 Template by Colorlib</title>
-   <meta charset="utf-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<%-include('../partials/header') %>
 
-  <!-- Facebook and Twitter integration -->
-	<meta property="og:title" content=""/>
-	<meta property="og:image" content=""/>
-	<meta property="og:url" content=""/>
-	<meta property="og:site_name" content=""/>
-	<meta property="og:description" content=""/>
-	<meta name="twitter:title" content="" />
-	<meta name="twitter:image" content="" />
-	<meta name="twitter:url" content="" />
-	<meta name="twitter:card" content="" />
-
-	<link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,500,600,700" rel="stylesheet">
-	<link href="https://fonts.googleapis.com/css?family=Rokkitt:100,300,400,700" rel="stylesheet">
-	
-	<!-- Animate.css -->
-	<link rel="stylesheet" href="css/animate.css">
-	<!-- Icomoon Icon Fonts-->
-	<link rel="stylesheet" href="css/icomoon.css">
-	<!-- Ion Icon Fonts-->
-	<link rel="stylesheet" href="css/ionicons.min.css">
-	<!-- Bootstrap  -->
-	<link rel="stylesheet" href="css/bootstrap.min.css">
-
-	<!-- Magnific Popup -->
-	<link rel="stylesheet" href="css/magnific-popup.css">
-
-	<!-- Flexslider  -->
-	<link rel="stylesheet" href="css/flexslider.css">
-
-	<!-- Owl Carousel -->
-	<link rel="stylesheet" href="css/owl.carousel.min.css">
-	<link rel="stylesheet" href="css/owl.theme.default.min.css">
-	
-	<!-- Date Picker -->
-	<link rel="stylesheet" href="css/bootstrap-datepicker.css">
-	<!-- Flaticons  -->
-	<link rel="stylesheet" href="fonts/flaticon/font/flaticon.css">
-
-	<!-- Theme style  -->
-	<link rel="stylesheet" href="css/style.css">
-
-	</head>
 	<body>
 		
 	<div class="colorlib-loader"></div>
@@ -54,12 +7,67 @@
 	<div id="page">
 		<%-include('../partials/nav')  %>
 	
-
+      
 		<div class="breadcrumbs">
 			<div class="container">
 				<div class="row">
-					<div class="col">
-						<p class="bread"><span><a href="index.html">Home</a></span> / <span>Contact</span></p>
+					<%-include('../partials/productAside')%>
+				 
+					<div class="col-lg-9 col-xl-9">
+						    <div class="row row-pb-md">
+							<%if(products.length==0){%>
+								<div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+									<img src="/images/noproduct.png" alt="Product Not Found" style="height: 60%; width: 60%;">
+								  </div>
+								  
+								<%}else{%>
+							
+
+							<% products.forEach(product => { %>
+								<div class="col-lg-3 col-md-4 col-12 col-sm-6">
+									<div class="product-cart-wrap mb-30">
+										<div class="product-img-action-wrap">
+											<div class="product-img product-img-zoom">
+												<a href="#">
+													<img class="default-img" src="/uploads/products/<%= product.image[0] %>" style="height: 270px; width: 270px;"  alt="">
+													<img class="hover-img" src="frontendassets/imgs/shop/product-1-2.jpg" alt="">
+												</a>
+											</div>
+											<div class="product-action-1">
+												<a aria-label="Quick view" class="action-btn hover-up" data-bs-toggle="modal" data-bs-target="#quickViewModal"><i class="fi-rs-eye"></i></a>
+												<a aria-label="Add To Wishlist" class="action-btn hover-up" href="shop-wishlist.html"><i class="fi-rs-heart"></i></a>
+												<a aria-label="Compare" class="action-btn hover-up" href="shop-compare.html"><i class="fi-rs-shuffle"></i></a>
+											</div>
+											
+										</div>
+										<div class="product-content-wrap">
+											<div class="product-category">
+												<a href="shop-grid-right.html">Shoes</a>
+											</div>
+											<h2><a href="/product-details?productId=<%= product._id %>"><%= product.name %></a></h2>
+											
+											<div class="product-price">
+												<span><%= product.salePrice %></span>
+												<span class="old-price">$5000.8</span>
+											</div>
+											<div class="product-action-1 show">
+												<% if(product.units === 0){ %>
+													<p class="text-danger">Out of stock</p>
+													<% } else { %>
+		
+												
+												<a aria-label="Add To Cart" class="action-btn hover-up" href="shop-cart.html"><i class="fi-rs-shopping-bag-add"></i></a>
+											  <% } %>
+											</div>
+										</div>
+									</div>
+								</div>
+								 <% });  %>
+								 <% } %>
+
+						    
+					</div>
+
 					</div>
 				</div>
 			</div>
@@ -67,6 +75,7 @@
 
 
 		
+
 
 		<%-include('../partials/footer') %>
 	</div>
@@ -99,7 +108,6 @@
 	<script src="js/google_map.js"></script>
 	<!-- Main -->
 	<script src="js/main.js"></script>
-
-	</body>
+</body>
 </html>
 

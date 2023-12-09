@@ -276,6 +276,7 @@ exports.addProductForm = async (req, res) => {
 };
 
 exports.addProduct = async (req, res) => {
+  let x = req.body.size;
   try {
     const imageData = [];
     const imageFiles = req.files;
@@ -301,16 +302,18 @@ exports.addProduct = async (req, res) => {
       }
     }
     const productData = {
+      
       name: req.body.name,
       description: req.body.description,
       category: req.body.category,
       subCategory: req.body.subCategory,
-      regularPrice: req.body.regularPrice,
+      regularPrice: req.body.regularPrice,  
       salePrice: req.body.salePrice,
       createdOn: Date.now(),
+      color:req.body.color,
       taxRate: req.body.taxRate,
       units: req.body.units,
-
+      size : x,
       image: imageData
     };
 

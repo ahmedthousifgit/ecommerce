@@ -589,10 +589,12 @@ exports.accoutPage = async (req, res) => {
  
 };
 
-exports.productPage = async (req, res, next) => {
+exports.productPage = async (req, res) => {
   try{
     const user = await User.findById(req.session.userId)
-    res.render("user/items", { username:user.name });
+    const categories = await Category.find({ isListed: true })
+    const products = await Product.find()
+    res.render("user/items", { username:user.name ,products ,categories});
   }
   catch(error){
     console.log(error);
