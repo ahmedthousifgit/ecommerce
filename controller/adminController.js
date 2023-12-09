@@ -310,6 +310,7 @@ exports.addProduct = async (req, res) => {
       createdOn: Date.now(),
       taxRate: req.body.taxRate,
       units: req.body.units,
+
       image: imageData
     };
 
