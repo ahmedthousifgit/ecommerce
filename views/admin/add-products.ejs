@@ -270,7 +270,7 @@
                     <label class="form-label">Category</label>
                     <select class="form-select" name="category">
                       <% categories.forEach(category => { %>
-                      <option value="<%= category._id %>">
+                      <option value="<%= category.name %>">
                         <%= category.name %>
                       </option>
                       <% }); %>
@@ -278,10 +278,10 @@
                   </div>
                   <div class="col-sm-6 mb-3">
                     <label class="form-label">Sub-category</label>
-                    <select class="form-select" name="SubCategory">
-                      <option>Men</option>
-                      <option>Women</option>
-                      <option>Kids</option>
+                    <select class="form-select" name="subCategory">
+                      <option value="men">Men</option>
+                      <option value="women">Women</option>
+                      <option value="kids">Kids</option>
                     </select>
                   </div>
                 </div>

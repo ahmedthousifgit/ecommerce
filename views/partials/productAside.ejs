@@ -6,7 +6,7 @@
                 <ul>
                     <a href="/show-products"><li>All</li></a><hr>
                     <% categories.forEach((item) =>{ %>
-                        <li class="mt-3"><a href=""><%= item.name %></a></li>
+                        <li class="mt-3"><a href="/brand/<%=item.name%>"><%= item.name %></a></li>
                         <hr>
                     <% }); %>
                     
