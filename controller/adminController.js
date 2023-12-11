@@ -301,7 +301,6 @@ exports.addProduct = async (req, res) => {
         imageData.push(imgFileName);
       }
     }
-    console.log(req.body.subCategory,"+++++++++++");
     const productData = {
       
       name: req.body.name,

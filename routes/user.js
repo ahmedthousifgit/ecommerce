@@ -39,11 +39,13 @@ router.get('/forget-password',userController.forgetPswdload)
 router.post('/forget-password', userController.resetPswd)
 
 //SHOW PRODUCT
-router.get("/show-products",auth.isLogged, productController.productShow);
+router.get("/show-products", productController.productShow);
 
 router.get('/product-details',auth.isLogged,userController.productDetail)
 
-router.get('/brand/:id',auth.isLogged,productController.brandWise)
+router.get('/brand/:id',productController.brandWise)
+
+router.get('/priceFilter/:price',auth.isLogged,productController.priceWise)
 
 //PROFILE
 router.get('/account',auth.isLogged,userController.account)
