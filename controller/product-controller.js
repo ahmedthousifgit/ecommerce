@@ -25,7 +25,7 @@ exports.brandWise = async (req, res) => {
   try {
     const categories = await Categories.find();
     const user = await User.findById(req.session.userId);
-    const brand = req.params.id;
+    const brand = req.query.id;
     let products;
     if (brand) {
       products = await Product.find({
@@ -50,9 +50,10 @@ exports.brandWise = async (req, res) => {
 
 exports.priceWise = async (req, res) => {
   try {
+    const price = req.query.id;
     const user = await User.findById(req.session.userId);
     const categories = await Categories.find({ isListed: true });
-    const price = parseFloat(req.params.price);
+    
     console.log("PRICE::::::", price);
     let products;
     if (price) {
@@ -62,7 +63,7 @@ exports.priceWise = async (req, res) => {
     } else {
       products = await Product.find({ isListed: true });
     }
-    console.log(products);
+    // console.log(products);
     res.render("user/items", {
       products,
       username: User.name,
@@ -73,3 +74,32 @@ exports.priceWise = async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 };
+
+
+exports.colorWise = async(req,res)=>{
+  try{
+    const selectedColor = req.query.id;
+    console.log(selectedColor,"======");
+    const user = await User.findById(req.session.userId);
+    const categories = await Categories.find({isListed:true})
+    let products;
+    if(selectedColor){
+        products = await Product.find({
+        color: selectedColor,
+        isListed:true,
+
+      })
+    }else{
+      products = await Product.find({isListed:tru})
+    }
+    res.render("user/items",{
+      products,
+      username: User.name,
+      categories,
+    })
+  }
+  catch(error){
+    console.log(error);
+    res.status(500).send("Internal Server Error")
+  }
+}
