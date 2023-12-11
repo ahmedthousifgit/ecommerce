@@ -554,30 +554,7 @@ exports.productDetail= async(req,res)=>{
   }
 }
 
-// exports.womenPage = async (req, res) => {
-//  try{
-//   const products = await Product.find();
-//   const user = await User.findById(req.session.userId)
-//   res.render("user/women", { username:user.name ,products});
-//  }
-// catch(error){
-//   console.log(error);
-//   res.status(500).json({ error: "An error occurred" });
-// }
-// };
 
-// exports.kidPage = async (req, res) => {
-//   try{
-//     const user = await User.findById(req.session.userId)
-//     res.render("user/kids", { username:user.name });
-//   }
-//   catch(error){
-//     console.log(error);
-//     res.status(500).json({ error: "An error occurred" });
-//   }
-    
-  
-// };
 
 exports.accoutPage = async (req, res) => {
  try{
@@ -595,8 +572,22 @@ exports.productPage = async (req, res) => {
   try{
     const user = await User.findById(req.session.userId)
     const categories = await Category.find({ isListed: true })
-    const products = await Product.find()
-    res.render("user/items", { username:user.name ,products ,categories});
+    const currentPage = parseInt(req.query.page)|| 1
+    const productsPerPage = 6;
+    // Calculate the number of products to skip
+    const skip = (currentPage - 1) * productsPerPage;
+    const products = await Product.find({verified:0,isListed:true})
+    .skip(skip)
+    .limit(productsPerPage)
+    const totalProducts = await Product.countDocuments({verified:0,isListed:true})
+    const totalPages = Math.ceil(totalProducts / productsPerPage)
+    res.render("user/items", {
+      username:user.name ,
+      products ,
+      categories,
+      totalPages,
+      currentPage,
+    });
   }
   catch(error){
     console.log(error);

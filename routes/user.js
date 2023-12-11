@@ -95,10 +95,6 @@ router.post('/create-order',auth.isLogged,cartController.createOrder)
 
 router.get("/men", auth.isLogged,userController.menPage);
 
-// router.get("/women",auth.isLogged, userController.womenPage);
-
-// router.get("/kids",auth.isLogged,userController.kidPage);
-
 router.get("/items", auth.isLogged, userController.productPage);
 
 router.get("/account", auth.isLogged,userController.accoutPage);
