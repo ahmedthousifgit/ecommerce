@@ -304,9 +304,10 @@ exports.login = async (req, res) => {
 exports.menPage = async (req, res) => {
   try {
   
-      const products = await Product.find();
+      const products = await Product.find({ verified: "0", isListed: true });
+      const categories = await Category.find()
       const user = await User.findById(req.session.userId)
-      res.render("user/men", { products,username:user.name });
+      res.render("user/men", { products,username:user.name,categories });
     
     
   } catch (error) {
@@ -553,29 +554,30 @@ exports.productDetail= async(req,res)=>{
   }
 }
 
-exports.womenPage = async (req, res) => {
- try{
-  const user = await User.findById(req.session.userId)
-  res.render("user/women", { username:user.name });
- }
-catch(error){
-  console.log(error);
-  res.status(500).json({ error: "An error occurred" });
-}
-};
+// exports.womenPage = async (req, res) => {
+//  try{
+//   const products = await Product.find();
+//   const user = await User.findById(req.session.userId)
+//   res.render("user/women", { username:user.name ,products});
+//  }
+// catch(error){
+//   console.log(error);
+//   res.status(500).json({ error: "An error occurred" });
+// }
+// };
 
-exports.kidPage = async (req, res) => {
-  try{
-    const user = await User.findById(req.session.userId)
-    res.render("user/kids", { username:user.name });
-  }
-  catch(error){
-    console.log(error);
-    res.status(500).json({ error: "An error occurred" });
-  }
+// exports.kidPage = async (req, res) => {
+//   try{
+//     const user = await User.findById(req.session.userId)
+//     res.render("user/kids", { username:user.name });
+//   }
+//   catch(error){
+//     console.log(error);
+//     res.status(500).json({ error: "An error occurred" });
+//   }
     
   
-};
+// };
 
 exports.accoutPage = async (req, res) => {
  try{

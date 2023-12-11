@@ -11,7 +11,6 @@ exports.productShow = async (req, res) => {
     const user = await User.findById(req.session.userId);
     res.render("user/items", {
       username: User.name,
-      isLogged: req.session.userId,
       categories,
       products,
     });
@@ -37,7 +36,6 @@ exports.brandWise = async (req, res) => {
     }
     res.render("user/items", {
       username: User.name,
-      isLogged: req.session.userId,
       categories,
       products,
       brand,
@@ -101,5 +99,31 @@ exports.colorWise = async(req,res)=>{
   catch(error){
     console.log(error);
     res.status(500).send("Internal Server Error")
+  }
+}
+
+exports.subCategory = async(req,res)=>{
+  try{
+    const categories = await Categories.find()
+    const user = await User.findById(req.session.userId);
+    const subCat = req.query.id
+    let products
+    if(subCat){
+      products = await Product.find({
+        subCategory: subCat,
+        isListed:true
+      })
+    }else{
+       products = await Product.find({isListed:true})
+    }
+    res.render('user/items',{
+      products,
+      username:User.name,
+      categories
+    })
+  }
+  catch(error){
+    console.log(error);
+    res.status(500).send('Internal Server Error')
   }
 }

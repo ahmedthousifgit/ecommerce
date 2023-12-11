@@ -1,13 +1,51 @@
 <%-include('../partials/header') %>
+<style>
+                /* Define the animation */
+                @keyframes animate-from-bottom-to-top {
+                    0% {
+                        transform: translateY(50%);
+                        opacity: 0;
+                    }
+                    100% {
+                        transform: translateY(0);
+                        opacity: 1;
+                    }
+                }
+            
+                /* Apply animation to elements with the animate-from-bottom-to-top class */
+                .animate-from-bottom-to-top {
+                    animation: animate-from-bottom-to-top 1s ease-in-out;
+                }
+            </style>
+            
+            
+            
+            <style>
+                #colorlib-hero {
+    height: 477px;
+    background: #fff url(../images/loader.gif) no-repeat center center;
+    width: 100%;
+    float: left;
+    z-index: 0;
+}
+                  .slider-items {
+        background-size: cover;
+        background-repeat: no-repeat;
+        max-width: 100%;
+        max-height: 450px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+            </style>
 	<body>
 		
-	<div class="colorlib-loader">
-		
-	</div>
+	<div class="colorlib-loader"></div>
 
 	<div id="page">
-
 		<%-include('../partials/nav')  %>
+	
 		<div class="breadcrumbs">
 			<div class="container">
 				<div class="row">   
@@ -65,66 +103,147 @@
 				</div>
 			</div>
 		</div>
+		<div class="colorlib-product">
+			<div class="container">
+				<div class="row">
+					<%-include('../partials/productAside')%>
+				 
+					<div class="col-lg-9 col-xl-9">
+						    <div class="row row-pb-md">
+							<%if(products.length==0){%>
+								<div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+									<img src="/images/noproduct.png" alt="Product Not Found" style="height: 60%; width: 60%;">
+								  </div>
+								  
+								<%}else{%>
+							
 
-		<!-- card start -->
-		<div class="tab-content wow fadeIn animated animated animated" id="myTabContent" style="visibility: visible;">
-			<div class="tab-pane fade show active" id="tab-one" role="tabpanel" aria-labelledby="tab-one">
-				<div class="row product-grid-4 padding-custom">
-				
-					<% products.forEach(product => { %>
-						<div class="col-lg-3 col-md-4 col-12 col-sm-6">
-							<div class="product-cart-wrap mb-30">
-								<div class="product-img-action-wrap">
-									<div class="product-img product-img-zoom">
-										<a href="#">
-											<img class="default-img" src="/uploads/products/<%= product.image[0] %>" style="height: 270px; width: 270px;"  alt="">
-											<img class="hover-img" src="frontendassets/imgs/shop/product-1-2.jpg" alt="">
-										</a>
+							<% products.forEach(product => { %>
+								<div class="col-lg-4 mb-4 text-center">
+									<div class="product-cart-wrap mb-30">
+										<div class="product-img-action-wrap">
+											<div class="product-img product-img-zoom">
+												<a href="#">
+													<img class="default-img" src="/uploads/products/<%= product.image[0] %>" style="height: 270px; width: 270px;"  alt="">
+													<img class="hover-img" src="frontendassets/imgs/shop/product-1-2.jpg" alt="">
+												</a>
+											</div>
+											<div class="product-action-1">
+												<a aria-label="Quick view" class="action-btn hover-up" data-bs-toggle="modal" data-bs-target="#quickViewModal"><i class="fi-rs-eye"></i></a>
+												<a aria-label="Add To Wishlist" class="action-btn hover-up" href="shop-wishlist.html"><i class="fi-rs-heart"></i></a>
+												<a aria-label="Compare" class="action-btn hover-up" href="shop-compare.html"><i class="fi-rs-shuffle"></i></a>
+											</div>
+											
+										</div>
+										<div class="product-content-wrap">
+											<div class="product-category">
+												<a href="shop-grid-right.html">Shoes</a>
+											</div>
+											<h2><a href="/product-details?productId=<%= product._id %>"><%= product.name %></a></h2>
+											
+											<div class="product-price">
+												<span><%= product.salePrice %></span>
+												<span class="old-price">$5000.8</span>
+											</div>
+											<div class="product-action-1 show">
+												<% if(product.units === 0){ %>
+													<p class="text-danger">Out of stock</p>
+													<% } else { %>
+		
+												
+												<a aria-label="Add To Cart" class="action-btn hover-up" href="shop-cart.html"><i class="fi-rs-shopping-bag-add"></i></a>
+											  <% } %>
+											</div>
+										</div>
 									</div>
-									<div class="product-action-1">
-										<a aria-label="Quick view" class="action-btn hover-up" data-bs-toggle="modal" data-bs-target="#quickViewModal"><i class="fi-rs-eye"></i></a>
-										<a aria-label="Add To Wishlist" class="action-btn hover-up" href="shop-wishlist.html"><i class="fi-rs-heart"></i></a>
-										<a aria-label="Compare" class="action-btn hover-up" href="shop-compare.html"><i class="fi-rs-shuffle"></i></a>
-									</div>
-									
 								</div>
-								<div class="product-content-wrap">
-									<div class="product-category">
-										<a href="shop-grid-right.html">Shoes</a>
-									</div>
-									<h2><a href="/product-details?productId=<%= product._id %>"><%= product.name %></a></h2>
-									
-									<div class="product-price">
-										<span><%= product.salePrice %></span>
-										<span class="old-price">$5000.8</span>
-									</div>
-									<div class="product-action-1 show">
-										<% if(product.units === 0){ %>
-											<p class="text-danger">Out of stock</p>
-											<% } else { %>
+								 <% });  %>
+								 <% } %>
 
-										
-										<a aria-label="Add To Cart" class="action-btn hover-up" href="shop-cart.html"><i class="fi-rs-shopping-bag-add"></i></a>
-                                      <% } %>
-									</div>
-								</div>
-							</div>
-						</div>
-						 <% });  %>
+						    
+					</div>
+
+					</div>
 				</div>
-				<!--End product-grid-4-->
 			</div>
-			
 		</div>
-		<!-- card end -->
-		  
+
+
+		
+	<style>
+		.side ul li{
+			margin-top: 5%;
+		}
+		.side ul li:hover {
+			background-color: rgb(223, 222, 222); /* Change to your desired background color on hover */
+			border-radius: 6%;
+			color:black; /* Change to your desired text color on hover */
+		}
+		
+		
+		element.style {
+		}
+		hr:not([size]) {
+			height: 0px;
+		}
+		hr:not([size]) {
+			height: 1px;
+		}
+		hr {
+			margin-top: 0rem;
+			margin-bottom: 0rem;
+			border: 0;
+			border-top: 1px solid rgba(0, 0, 0, 0.1);
+		}
+		
+				/* Add your global styles here */
+		
+				/* Media Query for small screens */
+				@media (max-width: 768px) {
+					.col-lg-3 {
+						flex: 100%;
+						max-width: 100%;
+						padding: 10px;
+					}
+		
+					.col-lg-9 {
+						flex: 100%;
+						max-width: 100%;
+						padding: 10px;
+					}
+				}
+				.pagination {
+		  display: flex;
+		  justify-content: center;
+		  align-items: center;
+		  margin-top: 20px;
+		}
+		
+		.pagination button {
+		  background-color: #f5f5f5;
+		  border: 1px solid #ccc;
+		  padding: 6px 12px;
+		  margin: 0 3px;
+		  cursor: pointer;
+		  transition: background-color 0.3s, color 0.3s;
+		}
+		
+		.pagination button.active {
+		  background-color: #007bff;
+		  color: #fff;
+		  border-color: #007bff;
+		}
+		
+		.pagination button:hover {
+		  background-color: #ddd;
+		}
+		
+			</style>
 
 		<%-include('../partials/footer') %>
 	</div>
 
-	<div class="gototop js-top">
-		<a href="#" class="js-gotop"><i class="ion-ios-arrow-up"></i></a>
-	</div>
+	
 	
 	<!-- jQuery -->
 	<script src="js/jquery.min.js"></script>
@@ -147,8 +266,11 @@
 	<script src="js/bootstrap-datepicker.js"></script>
 	<!-- Stellar Parallax -->
 	<script src="js/jquery.stellar.min.js"></script>
+	<!-- Google Map -->
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCefOgb1ZWqYtj7raVSmN4PL2WkTrc-KyA&sensor=false"></script>
+	<script src="js/google_map.js"></script>
 	<!-- Main -->
 	<script src="js/main.js"></script>
-
-	</body>
+</body>
 </html>
+

@@ -39,15 +39,17 @@ router.get('/forget-password',userController.forgetPswdload)
 router.post('/forget-password', userController.resetPswd)
 
 //SHOW PRODUCT
-router.get("/show-products", productController.productShow);
+router.get("/show-products",auth.isLogged, productController.productShow);
 
-router.get('/product-details',userController.productDetail)
+router.get('/product-details',auth.isLogged,userController.productDetail)
 
-router.get('/brand',productController.brandWise)
+router.get('/brand',auth.isLogged,productController.brandWise)
 
-router.get('/priceFilter',productController.priceWise)
+router.get('/priceFilter',auth.isLogged,productController.priceWise)
 
-router.get("/color",productController.colorWise);
+router.get("/color",auth.isLogged,productController.colorWise);
+
+router.get('/subCategory',productController.subCategory)
 //PROFILE
 router.get('/account',auth.isLogged,userController.account)
 
@@ -93,9 +95,9 @@ router.post('/create-order',auth.isLogged,cartController.createOrder)
 
 router.get("/men", auth.isLogged,userController.menPage);
 
-router.get("/women",auth.isLogged, userController.womenPage);
+// router.get("/women",auth.isLogged, userController.womenPage);
 
-router.get("/kids",auth.isLogged,userController.kidPage);
+// router.get("/kids",auth.isLogged,userController.kidPage);
 
 router.get("/items", auth.isLogged, userController.productPage);
 
