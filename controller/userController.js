@@ -739,6 +739,19 @@ exports.returnOrder= async(req,res)=>{
   }
 }
 
+exports.wallet= async(req,res)=>{
+  try{
+    const user = await User.findById(req.session.userId);
+    res.render('user/wallet',{
+      username:User.name
+    })
+  }
+  catch(error){
+    console.error('Error in returnOrder controller:', error);
+    res.status(500).json({ error: 'An error occurred' });
+  }
+}
+
 exports.logOut = async (req, res) => {
   req.session.destroy((err) => {
     if (err) {

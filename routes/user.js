@@ -99,6 +99,10 @@ router.get("/items", auth.isLogged, userController.productPage);
 
 router.get("/account", auth.isLogged,userController.accoutPage);
 
+//WALLET
+
+router.get('/wallet',auth.isLogged,userController.wallet)
+
 //ORDER DETAILS
 
 router.get('/order-list',auth.isLogged,userController.orderList);
