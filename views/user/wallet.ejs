@@ -37,7 +37,7 @@
       href="https://fonts.googleapis.com/css2?family=Poppins&display=swap"
       rel="stylesheet"
     />
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    
     <style>
       .mainDiv {
         display: flex;
@@ -131,7 +131,7 @@
           <h4 class="formTitle">Wallet</h4>
 
           <div class="inputDiv text-center">
-            <h1>&#8377;</h1>
+            <h1>&#8377;<%=userData.wallet%></h1>
           </div>
           <div class="inputDiv mt-4 d-flex justify-content-center"></div>
           <div class="inputDiv mt-4 d-flex justify-content-center">
@@ -142,6 +142,83 @@
           </div>
         </div>
       </div>
+      <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+        <script>
+          function verifyPayment(response, order) {
+            $.ajax({
+                url: '/verify-payment',
+                method: 'post',
+                data: {
+                    response,
+                    order,
+                    from:'wallet',
+                },
+                success: (response) => {
+                    if (response) {
+                        Swal.fire({
+                            title: "Success",
+                            text: "Payment has been succesful",
+                            icon: "success",
+                        }).then(()=>{
+                          location.reload()
+                        })
+                    } else {
+                        Swal.fire("PAYMENT ERROR!", "Something wrong occured while processing the payment.", "error");
+                        location.reload()
+                    }
+                }
+            })
+        }
+    
+          async function addMoney(){
+            const { value: number } = await Swal.fire({
+              title: 'Enter the Amount',
+              input: 'number',
+              inputLabel: 'Amount',
+              inputPlaceholder: '₹'
+            })
+            $.ajax({
+              url:'/add-money',
+              method:'post',
+              data:{
+                total:number
+              },
+              success:(data)=>{
+                if(data.razorpay){
+                  var options = {
+                "key": 'rzp_test_mu3Z5SNU9tR58R', 
+                "amount": data.order.amount, 
+                "name": "shoes.in",
+                "description": "Test Transaction",
+                "image": "http://localhost:3000/images/logo.png",
+                "order_id": data.order.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+                "handler": function (response) {
+                    verifyPayment(response, data);
+                },
+                "prefill": {
+                    "name": "Shoes.in",
+                    "email": "ahmedthousiii@gmail.com",
+                    "contact": "8139057899"
+                },
+                "notes": {
+                    "address": "Razorpay Corporate Office"
+                },
+                "theme": {
+                    "color": "#3399cc"
+                }
+            };
+            var rzp1 = new Razorpay(options);
+            rzp1.open();
+            
+                }
+              }
+            })
+          }
+    
+          
+        </script>
+      
     </div>
   </body>
 </html>
+

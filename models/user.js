@@ -26,17 +26,22 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  cart:{
-    type:Array
-
+  cart: {
+    type: Array,
   },
-  token:{
-    type:String,
-    default:''
+  token: {
+    type: String,
+    default: "",
   },
-  wishList:{
-    type:Array,
-    
+  wishList: {
+    type: Array,
+  },
+  wallet: {
+    type: Number,
+    default: 0,
+  },
+  history: {
+    type: Array,
   },
   addresses: [
     {

@@ -301,7 +301,7 @@ exports.checkout = async (req, res) => {
 
 exports.createRazorpayOrder = async (req, res) => {
   try {
-    console.log('\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\RAZORPAY');
+    
     const userId = req.session.userId;
     const { selectedAdd } = req.body;
     const user = await User.findById(userId).populate('addresses');

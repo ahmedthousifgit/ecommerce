@@ -11,7 +11,12 @@ const Address = require('../models/address-model');
 const Order= require('../models/order-model')
 const { json } = require("express");
 const randomstring = require('randomstring')
+const Razorpay = require('razorpay')
 
+var instance = new Razorpay({
+  key_id: 'rzp_test_mu3Z5SNU9tR58R',
+  key_secret: 'Oh5tMzxzueElUJUzM3Oo8fCa',
+});
 
 exports.home = async (req, res) => {
   try{
@@ -742,15 +747,53 @@ exports.returnOrder= async(req,res)=>{
 exports.wallet= async(req,res)=>{
   try{
     const user = await User.findById(req.session.userId);
-    res.render('user/wallet',{
-      username:User.name
-    })
+    var userData = await User.findOne({ _id: req.session.userId });
+    res.render("user/wallet", { isLogged: req.session.userId,userData, username:User.name });
   }
   catch(error){
     console.error('Error in returnOrder controller:', error);
     res.status(500).json({ error: 'An error occurred' });
   }
 }
+
+exports.addMoney = (req, res) => {
+  try {
+    var options = {
+      amount: req.body.total * 100,
+      currency: "INR",
+      receipt: "" + Date.now(),
+    };
+    instance.orders.create(options, async function (err, order) {
+      if (err) {
+        console.log("Error while creating order : ", err);
+      } else {
+        var amount = order.amount / 100;
+        console.log(amount);
+        var x = await User.findByIdAndUpdate(
+          req.session.user,
+          {
+            $push: {
+              history: { amount: amount, status: "credit", date: Date.now() },
+            },
+          },
+          { new: true }
+        );
+        res.json({ order: order, razorpay: true });
+      }
+    });
+  } catch (err) {
+    console.log(err);
+    res.send("Cannot add amount into your acccount");
+  }
+};
+
+exports.verifyPayment = async (req, res) => {
+  var details = req.body;
+  var amount = details["order[order][amount]"] / 100;
+  await User.findByIdAndUpdate(req.session.userId, { $inc: { wallet: amount } });
+};
+
+
 
 exports.logOut = async (req, res) => {
   req.session.destroy((err) => {
