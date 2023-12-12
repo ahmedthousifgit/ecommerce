@@ -718,6 +718,12 @@ exports.returnOrder= async(req,res)=>{
     const Reason = req.body.reason
     const products = await Product.find()
     const order = await Order.findById(orderId).populate('products.product').populate(products.quantity)
+    const refundAmount = order.totalPrice
+    if(order.payment=== "razorpay"){
+      await User.findByIdAndUpdate(req.session.userId,{
+        $inc:{wallet:refundAmount}
+      })
+    }
     
     for(const item of order.products ){
       const product = item.product

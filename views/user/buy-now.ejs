@@ -376,7 +376,44 @@
         </div>
       </div>
 
+      
+
       <div class="col-lg-3">
+
+        <div class="card mb-3 border shadow-0">
+          <div class="card-body">
+            <form>
+              <button
+                type="button"
+                id="availableCoupon"
+                class="btn btn-outline-primary mt-2"
+                data-bs-toggle="modal"
+                data-bs-target="#modalCoupon"
+              >
+                Available Coupons
+              </button>
+              <div class="form-group">
+                <label class="form-label">Have coupon?</label>
+                <div class="input-group">
+                  <input
+                    type="text"
+                    class="form-control border mb-1"
+                    id="coupon"
+                    name="coupon"
+                    placeholder="Coupon code"
+                  />
+                  <a
+                    onclick="applyCoupon()"
+                    id="applyButton"
+                    class="btn btn-light border"
+                    >Apply</a
+                  >
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+
         <div class="card shadow-0 border">
           <div class="card-body">
             <div class="d-flex justify-content-between">
@@ -497,33 +534,32 @@
               // Handle successful payment response here
               console.log("Payment successful:", response);
               if (response.razorpay_payment_id) {
-              // Move the order creation logic here
-              console.log('Razorpay payment ID available. Proceeding to order creation...');
-              
-              
-              const createOrderResponse = await fetch("/create-order", {
-             
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  selectedAdd: billingAddress.value,
-                }),
-              });
-              
+                // Move the order creation logic here
+                console.log(
+                  "Razorpay payment ID available. Proceeding to order creation..."
+                );
 
-              const orderData = await createOrderResponse.json();
+                const createOrderResponse = await fetch("/create-order", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    selectedAdd: billingAddress.value,
+                  }),
+                });
 
-              if (orderData.success) {
-                console.log("Order created successfully");
-                // Redirect to order confirmation page or any other desired action
-                window.location.href = "/order-list";
-              } else {
-                // Handle error in order creation
-                console.error("Error in order creation:", orderData.error);
+                const orderData = await createOrderResponse.json();
+
+                if (orderData.success) {
+                  console.log("Order created successfully");
+                  // Redirect to order confirmation page or any other desired action
+                  window.location.href = "/order-list";
+                } else {
+                  // Handle error in order creation
+                  console.error("Error in order creation:", orderData.error);
+                }
               }
-            }
             },
             prefill: {
               name: "<%= user.name %>",
@@ -541,8 +577,6 @@
           console.error("Error in Razorpay order creation:", data.error);
         }
       } else if (paymentMethod === "cod") {
-      
-        
         // Handle Cash on Delivery (COD) payment
         try {
           const response = await fetch("/checkout", {
@@ -574,4 +608,3 @@
       }
     });
 </script>
-

@@ -3,6 +3,7 @@ const session = require('express-session')
 var router = express.Router();
 const adminController = require("../controller/adminController");
 const salesController = require('../controller/salesController')
+const couponController = require('../controller/coupon-controller')
 const auth = require("../middleware/auth");
 const multer = require("../multer/multers");
 const update = multer.update;
@@ -66,6 +67,9 @@ router.post('/updateOrderStatus',adminController.updateOrderStatus)
 router.get('/sales-report',auth.adminlogged,salesController.salesReport)
 
 router.get('/downloadPdf',auth.adminlogged,salesController.downloadPdf)
+
+//COUPON
+router.get('/coupon',auth.adminlogged,couponController.coupon)
 
 //LOGOUT
 router.get("/logout", adminController.logOut);
