@@ -672,29 +672,25 @@ exports.orderDetails = async (req, res) => {
 
 exports.cancelOrder = async (req, res) => {
   try {
-   
     const orderId = req.body.orderId;
     console.log(orderId);
-  
     const order = await Order.findById(orderId).populate('products.product').populate('products.quantity');
     const products = await Product.find()
-    
-    // console.log(order.status);
-    // console.log('+++++++++++++++++++++');
-    // console.log(order);
-    // console.log('__________');
-    // console.log(order.products);
+    console.log(order);
+    const refundAmount = order.totalPrice
+    console.log("REFUNDAMOUNT:",refundAmount);
+    if(order.payment=== "razorpay"){
+      await User.findByIdAndUpdate(req.session.userId,{
+        $inc:{wallet:refundAmount}
+      })
+    }
 
     // Update product stock for each product in the order
     for (const item of order.products) {
       const product = item.product;
 
-     
-     
       if (product ) {
-        // Increase the product stock by the canceled quantity
-        // console.log('item quantity::::::::',item.quantity)
-        
+        // Increase the product stock by the canceled quantity        
         product.units += item.quantity;
 
         // Save the updated product
@@ -703,7 +699,6 @@ exports.cancelOrder = async (req, res) => {
         console.log('product not found');
       }
       
-      console.log(item.quantity)
     
     }
     order.status = 'Cancel Order'
@@ -797,7 +792,6 @@ exports.history = async(req,res)=>{
   try{
     const userData = await User.findOne({_id:req.session.userId})
     const history = userData.history;
-    console.log(history,'jdjhjashfjhs');
     const user = await User.findById(req.session.userId);
 
     const formattedHistory = history.map((entry)=>{
