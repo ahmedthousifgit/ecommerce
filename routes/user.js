@@ -103,6 +103,8 @@ router.get("/account", auth.isLogged,userController.accoutPage);
 
 router.get('/wallet',auth.isLogged,userController.wallet)
 
+router.get('/getHistory',auth.isLogged,userController.history)
+
 router.post('/add-money',auth.isLogged,userController.addMoney)
 
 router.post('/verify-payment',auth.isLogged,userController.verifyPayment)

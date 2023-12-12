@@ -770,7 +770,7 @@ exports.addMoney = (req, res) => {
         var amount = order.amount / 100;
         console.log(amount);
         var x = await User.findByIdAndUpdate(
-          req.session.user,
+          req.session.userId,
           {
             $push: {
               history: { amount: amount, status: "credit", date: Date.now() },
@@ -793,6 +793,42 @@ exports.verifyPayment = async (req, res) => {
   await User.findByIdAndUpdate(req.session.userId, { $inc: { wallet: amount } });
 };
 
+exports.history = async(req,res)=>{
+  try{
+    const userData = await User.findOne({_id:req.session.userId})
+    const history = userData.history;
+    console.log(history,'jdjhjashfjhs');
+    const user = await User.findById(req.session.userId);
+
+    const formattedHistory = history.map((entry)=>{
+    const timestamp = entry.date
+    const date = new Date(timestamp)
+    const month = date.getMonth() + 1
+    const day = date.getDate()
+    const year = date.getFullYear();
+    const formattedDate = `${month}/${day}/${year}`
+    return {...entry,formattedDate}
+  })
+  const wallet = userData.wallet
+  const itemsperpage = 15;
+  const currentpage = parseInt(req.query.page) || 1;
+  const startindex = (currentpage - 1) * itemsperpage;
+  const endindex = startindex + itemsperpage;
+  const totalpages = Math.ceil(formattedHistory.length / 15);
+  var currentHistory = formattedHistory.slice(startindex, endindex);
+  res.render('user/history',{
+    history: currentHistory,
+    username:User.name,
+    currentpage,
+    totalpages,
+    wallet,
+  })
+  }
+  catch(error){
+    console.error('Error in returnOrder controller:', error);
+    res.status(500).json({ error: 'An error occurred' });
+  }
+}
 
 
 exports.logOut = async (req, res) => {
