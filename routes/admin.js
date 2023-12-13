@@ -73,6 +73,8 @@ router.get('/coupon',auth.adminlogged,couponController.coupon)
 
 router.post('/coupon',auth.adminlogged,couponController.addCoupon)
 
+router.post('/couponStatus',auth.adminlogged,couponController.couponStatus)
+
 //LOGOUT
 router.get("/logout", adminController.logOut);
 

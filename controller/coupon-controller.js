@@ -3,6 +3,26 @@ const Product = require('../models/products-model')
 const User = require('../models/user')
 const Coupon = require('../models/coupon')
 const voucher_codes= require('voucher-code-generator')
+const cron = require('node-cron')
+
+cron.schedule('0 0 * * *', async () => {
+  try {
+    const currentDate = new Date();
+    const expiredCoupons = await Coupon.find({
+      expiry: { $lt: currentDate },
+      status: 1,
+    });
+
+    if (expiredCoupons.length > 0) {
+      await Coupon.updateMany(
+        { _id: { $in: expiredCoupons.map((c) => c._id) } },
+        { $set: { status: 2 } }
+      );
+    }
+  } catch (error) {
+    console.error('Error updating coupon status:', error);
+  }
+});
 
 exports.coupon = async(req,res)=>{
     try{
@@ -48,7 +68,7 @@ exports.addCoupon = async(req,res)=>{
        expiry:formattedEndDate,
        offerPrice:req.body.offerPrice,
        minimumPrice:req.body.minimumPrice,
-       status:1
+       status: "1"
     })
     create.save()
     res.redirect('/admin/coupon')
@@ -58,4 +78,14 @@ exports.addCoupon = async(req,res)=>{
     console.log(error)
     res.status(500).json({error:"An error occured"})
   }
+}
+
+
+exports.couponStatus=async (req,res)=>{
+  const id=req.body.id
+  const status=req.body.status
+  await Coupon.findByIdAndUpdate(id,{status:status},{new:true}).lean()
+  .then((data)=>{
+      res.json(true)
+  })
 }
