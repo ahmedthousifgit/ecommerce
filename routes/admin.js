@@ -71,6 +71,8 @@ router.get('/downloadPdf',auth.adminlogged,salesController.downloadPdf)
 //COUPON
 router.get('/coupon',auth.adminlogged,couponController.coupon)
 
+router.post('/coupon',auth.adminlogged,couponController.addCoupon)
+
 //LOGOUT
 router.get("/logout", adminController.logOut);
 

@@ -1,6 +1,6 @@
 <%-include('../partials/adminheader') %>
 
-<body>
+<tbody>
     <div class="screen-overlay"></div>
     <%-include('../partials/adminaside') %>
     <main class="main-wrap">
@@ -16,9 +16,9 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-3">
-                          
-
-
+                            <%if(locals.err){%>
+                                <p id="exist" class="text-danger"><%=err%></p>
+                                <%}%>
 
                             <form method="post" action="/admin/coupon">
                                 <div class="mb-4">
@@ -61,17 +61,58 @@
                                             <th>Status</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                    
-                                   
-                                        
-                                              
-                                           
-                                    </tbody>
+                                <tbody>
+                
+                                    <%if(locals.data){%>
+                                    <% data.forEach((coupon) => { %>
+                                    <tr>
+                                        <td><b><%= coupon.name %></b></td>
+                                        <td><%= coupon.created %></td>
+                                        <td><%= coupon.expiry %></td>
+                                        <td><%= coupon.offerPrice %></td>
+                                        <td><%= coupon.minimumPrice %></td>
+                                        <% if (coupon.status == 1) { %>
+                                            <td>
+                                              <button onclick="couponStatus('<%= coupon._id %>', -1)" class="btn btn-outline-success">Listed</button>
+                                              <span id="status_<%= coupon._id %>"></span>
+                                            </td>
+                                          <% } else if (coupon.status == -1) { %>
+                                            <td>
+                                              <button onclick="couponStatus('<%= coupon._id %>', 1)" class="btn btn-outline-danger">Unlisted</button>
+                                              <span id="status_<%= coupon._id %>"></span>
+                                            </td>
+                                          <% }else if (coupon.status == 2) { %>
+                                            <td>
+                                              <button class="btn btn-outline-danger" disabled>Expired</button>
+                                              <span id="status_<%= coupon._id %>"></span>
+                                            </td>
+                                          <% } else { %>
+                                            <td>
+                                              <button class="btn btn-warning">Expired</button>
+                                              <span id="status_<%= coupon._id %>">Expired</span>
+                                            </td>
+                                          <% } %>
+                                        <%})%>
+                                    <%}%>
+                                </tbody>
                                 </table>
                                 
                               <!-- pagination start -->
-
+                              <% if (totalpages) { %>
+                                <div class="pagination">
+                                  <% if (currentpage > 1) { %>
+                                    <button><a href="?page=<%= currentpage - 1 %>">Previous</a></button>
+                                  <% } %>
+                              
+                                  <% for (let i = 1; i <= totalpages; i++) { %> <!-- Change the loop to start from 1 and go up to totalpages -->
+                                    <button><a href="?page=<%= i %>" class="<%= i === currentpage ? 'active' : '' %>"><%= i %></a></button>
+                                  <% } %>
+                              
+                                  <% if (currentpage < totalpages) { %>
+                                    <button><a href="?page=<%= currentpage + 1 %>">Next</a></button>
+                                  <% } %>
+                                </div>
+                              <% } %> 
                               <!-- pagination end -->
 
                             </div>
@@ -199,7 +240,7 @@ todayDateObj.setHours(0, 0, 0, 0);
     if (isNaN(offerPrice) || isNaN(minimumPrice) || offerPrice >= minimumPrice) {
         document.getElementById('offerPrice').style.borderColor = 'red';
         document.getElementById('minimumPrice').style.borderColor = 'red';
-        document.getElementById('err-msg').innerHTML += '<br> Offer Price must be greater than Minimum Price';
+        document.getElementById('err-msg').innerHTML += '<br> Minimum Price must be greater than Offer Price';
         event.preventDefault();
     }
 }
