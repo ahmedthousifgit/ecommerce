@@ -2,6 +2,7 @@
    const User = require("../models/user");
    const Product = require("../models/products-model");
    const Order = require("../models/order-model");
+   const Coupon = require('../models/coupon')
    const { addAddress } = require("./userController");
    const Razorpay = require('razorpay')
  
@@ -176,7 +177,12 @@ exports.buyNow = async (req, res) => {
         
                const userId = req.session.userId;
                const user = await User.findById(userId).populate('addresses');
-
+               const coupons = await Coupon.find({status:1}).lean();
+               const sessionUser = req.session.user;
+               const userData = await User.findById(userId)
+               console.log("COUPON:",coupons);
+               console.log("USER:",userData);
+               
             if (user && !user.blocked) {
                 // Check if the user has items in the cart
                 
@@ -189,17 +195,48 @@ exports.buyNow = async (req, res) => {
                     }
                     return total;
                   }, 0);
-                console.log(user.cart);
-
-                // Render the buy-now page with user data and addresses
-                res.render('user/buy-now', {
+                if(coupons.length ===0){
+                  res.render('user/buy-now', {
                     user,
+                    userData,
                     username: user.name,
+                    coupons:null,
                     cart: user.cart,
                     addresses: user.addresses,
                     paymentMethod: req.query.paymentMethod || 'cod',
                     totalPrice
                 });
+                }else{
+                  const filteredCoupons = coupons.filter(
+                    (couponData) => !couponData.user.includes(sessionUser)
+                  )
+                  if(filteredCoupons.length ===0){
+                    res.render('user/buy-now', {
+                      user,
+                      userData,
+                      username: user.name,
+                      coupons:null,
+                      cart: user.cart,
+                      addresses: user.addresses,
+                      paymentMethod: req.query.paymentMethod || 'cod',
+                      totalPrice
+                  });
+                  }else{
+                    res.render('user/buy-now', {
+                      user,
+                      userData,
+                      username: user.name,
+                      coupons:filteredCoupons,
+                      cart: user.cart,
+                      addresses: user.addresses,
+                      paymentMethod: req.query.paymentMethod || 'cod',
+                      totalPrice
+                  });
+                  }
+                }
+
+                // Render the buy-now page with user data and addresses
+                
             } else {
                 res.redirect('/login');
             }
@@ -209,6 +246,8 @@ exports.buyNow = async (req, res) => {
         res.status(500).json({ error: "An error occurred" });
     }
 };
+
+
 
 
 exports.checkout = async (req, res) => {

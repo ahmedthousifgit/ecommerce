@@ -82,6 +82,8 @@ router.post('/buy-now',auth.isLogged,cartController.buyNow)
 
 router.get('/buy-now',auth.isLogged,cartController.buyNow)
 
+router.post('/apply-coupon',auth.isLogged,userController.applyCoupon)
+
 router.post('/checkout',auth.isLogged,cartController.checkout)
 
 //RAZORPAY

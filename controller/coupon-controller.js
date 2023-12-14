@@ -53,11 +53,18 @@ exports.addCoupon = async(req,res)=>{
     prefix:"promo-",
     postfix:"-2015"
    })
+   
+        
    let exist = await Coupon.find({name:req.body.name})
    if(exist.length){
     await Coupon.find().lean()
     .then((data)=>{
-     res.render('admin/coupon',{data:data,err:"Coupon Already Exist"})
+      const itemsperpage = 5;
+        const currentpage = parseInt(req.query.page) || 1;
+        const startindex = (currentpage - 1) * itemsperpage;
+        const endindex = startindex + itemsperpage;
+        const totalpages = Math.ceil(data.length / 5);
+     res.render('admin/coupon',{data:data,totalpages,currentpage,err:"Coupon Already Exist"})
     })
    }
    else{
