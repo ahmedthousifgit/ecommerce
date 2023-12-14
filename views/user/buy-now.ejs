@@ -552,14 +552,14 @@ function applyCoupon(total,wallet){
                 document.getElementById('availableCoupon').style.display = 'none';
                 document.getElementById('applyButton').disabled =true;
                 const gtElement = document.getElementById('gt');
-    const discountElement = document.getElementById('discount');
+                const discountElement = document.getElementById('discount');
 
-    // Update the displayed total with the discount
-    const gt = parseFloat(gtElement.innerHTML);
-    gtElement.innerHTML = `₹ ${(gt - parseFloat(response.offerPrice)).toFixed(2)}`;
+               // Update the displayed total with the discount
+               const gt = parseFloat(gtElement.innerHTML);
+               gtElement.innerHTML = ` ${(gt - parseFloat(response.offerPrice)).toFixed(2)}`;
                  // Update the discount
-    const discount = parseFloat(discountElement.innerHTML);
-    discountElement.innerHTML = (discount + response.offerPrice).toFixed(2);
+               const discount = parseFloat(discountElement.innerHTML);
+               discountElement.innerHTML = (discount + response.offerPrice).toFixed(2);
 
     const tot = parseFloat(gtElement.innerHTML);
                 if (tot >=wallet) {
@@ -597,6 +597,7 @@ function applyCoupon(total,wallet){
 </script>
 
 <script>
+   const gtElement = document.getElementById('gt');
   const handlePaymentSelection = (selectedPaymentMethod) => {
     const paymentMethods = document.querySelectorAll(
       'input[name="paymentMethod"]'
@@ -625,6 +626,8 @@ function applyCoupon(total,wallet){
         alert("Please select an address or add a product to the cart");
         return;
       }
+      let discountTotal = gtElement.innerText
+     
 
       if (paymentMethod === "razorpay") {
         // Handle Razorpay payment
@@ -635,6 +638,8 @@ function applyCoupon(total,wallet){
           },
           body: JSON.stringify({
             selectedAdd: billingAddress.value,
+            discountTotal
+            
           }),
         });
 
@@ -665,6 +670,7 @@ function applyCoupon(total,wallet){
                   },
                   body: JSON.stringify({
                     selectedAdd: billingAddress.value,
+                    totalPrice: data.order.amount/100
                   }),
                 });
 
@@ -676,6 +682,7 @@ function applyCoupon(total,wallet){
                   window.location.href = "/order-list";
                 } else {
                   // Handle error in order creation
+                  console.log("error found");
                   console.error("Error in order creation:", orderData.error);
                 }
               }

@@ -180,6 +180,7 @@ exports.buyNow = async (req, res) => {
                const coupons = await Coupon.find({status:1}).lean();
                const sessionUser = req.session.user;
                const userData = await User.findById(userId)
+               console.log(user,"++++++++++++++++++");
                console.log("COUPON:",coupons);
                console.log("USER:",userData);
                
@@ -195,6 +196,8 @@ exports.buyNow = async (req, res) => {
                     }
                     return total;
                   }, 0);
+                  console.log("0000000000000000000000");
+                  console.log(user.cart);
                 if(coupons.length ===0){
                   res.render('user/buy-now', {
                     user,
@@ -204,7 +207,7 @@ exports.buyNow = async (req, res) => {
                     cart: user.cart,
                     addresses: user.addresses,
                     paymentMethod: req.query.paymentMethod || 'cod',
-                    totalPrice
+                    totalPrice 
                 });
                 }else{
                   const filteredCoupons = coupons.filter(
@@ -230,7 +233,7 @@ exports.buyNow = async (req, res) => {
                       cart: user.cart,
                       addresses: user.addresses,
                       paymentMethod: req.query.paymentMethod || 'cod',
-                      totalPrice
+                      totalPrice 
                   });
                   }
                 }
@@ -342,19 +345,27 @@ exports.createRazorpayOrder = async (req, res) => {
   try {
     
     const userId = req.session.userId;
-    const { selectedAdd } = req.body;
+    const { selectedAdd,discountTotal } = req.body;
+    console.log(discountTotal);
     const user = await User.findById(userId).populate('addresses');
       
       const selectedAddress = user.addresses.find(address => address._id.toString() === selectedAdd);
       const productIds = user.cart.map(item => item.productId);
       const selectedProducts = await Product.find({ _id: { $in: productIds } });
+      let totalPrice
+      if(totalPrice==discountTotal){
 
-      const totalPrice = user.cart.reduce((total, item) => {
+      
+       totalPrice = user.cart.reduce((total, item) => {
         if (item.product && item.product.salePrice) {
           return total + item.product.salePrice * item.quantity;
         }
         return total;
       }, 0);
+    }else{
+      totalPrice=discountTotal
+    }
+    console.log(totalPrice);
 
       // Create Razorpay order using the initialized instance
       const orderOptions = {
@@ -390,7 +401,9 @@ exports.createOrder= async(req,res)=>{
   try{
     console.log('----------[[[[[[[[[[[[[[[[[[[[[[[[[[[[[');
     const userId = req.session.userId;
-    const { selectedAdd } = req.body;
+    const { selectedAdd,totalPrice } = req.body;
+    console.log(totalPrice);
+    console.log(typeof(totalPrice));
     console.log(req.body,'0000000000000000000000000000000');
     console.log(selectedAdd,'-==================');
     const user = await User.findById(userId).populate('addresses');
@@ -400,13 +413,13 @@ exports.createOrder= async(req,res)=>{
       const productIds = user.cart.map(item => item.productId);
       const selectedProducts = await Product.find({ _id: { $in: productIds } });
      console.log(selectedProducts);
-      const totalPrice = user.cart.reduce((total, item) => {
-        if (item.product && item.product.salePrice) {
-          return total + item.product.salePrice * item.quantity;
-        }
-        return total;
-      }, 0);
-      console.log(totalPrice);
+      // const totalPrice = user.cart.reduce((total, item) => {
+      //   if (item.product && item.product.salePrice) {
+      //     return total + item.product.salePrice * item.quantity;
+      //   }
+      //   return total;
+      // }, 0);
+      // console.log(totalPrice);
 
       const order = new Order({
         userId: new mongoose.Types.ObjectId(req.session.userId),
@@ -417,7 +430,7 @@ exports.createOrder= async(req,res)=>{
           quantity: item.quantity,
           pricePerQnt: item.salePrice,
         })),
-        totalPrice: totalPrice,
+        totalPrice,
         status: 'pending',
       });
   
