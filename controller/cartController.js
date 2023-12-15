@@ -256,20 +256,25 @@ exports.buyNow = async (req, res) => {
 exports.checkout = async (req, res) => {
   try {
           const userId = req.session.userId;
-          const {selectedAdd}=req.body;      
+          const {selectedAdd,discountTotal}=req.body;      
           const user = await User.findById(userId).populate('addresses');
           if (user && !user.blocked) {
               const selectedAddress = user.addresses.find(address => address._id.toString() === selectedAdd);
               const productIds = user.cart.map(item => item.productId);
               // console.log(productIds,'------------');
               const selectedProducts = await Product.find({ _id: { $in: productIds } });
-             
-              const totalPrice = user.cart.reduce((total, item) => {
+             let totalPrice
+             if(totalPrice==discountTotal){
+              totalPrice = user.cart.reduce((total, item) => {
                 if (item.product && item.product.salePrice) {
                   return total + item.product.salePrice * item.quantity;
                 }
                 return total;
               }, 0);
+             }else{
+              totalPrice=discountTotal
+             }
+              
               // Check if the user has items in the cart
               // console.log('---------cart-----------------');
               // console.log(user.cart);
@@ -306,7 +311,7 @@ exports.checkout = async (req, res) => {
                     quantity: item.quantity,
                     pricePerQnt: item.product.salePrice,
                   })),
-                  totalPrice: totalPrice,
+                  totalPrice,
                   status:'pending',     
               });
               
