@@ -831,6 +831,28 @@ exports.history = async(req,res)=>{
   }
 }
 
+// exports.applyCoupon = async(req,res)=>{
+//   try{
+//    var offerPrice
+//    const offer = await Coupon.findOne({code:req.body.coupon})
+//    if(!offer){
+//     return res.status(404).json({message:"Coupon not found"})
+//    }
+//    offerPrice = parseInt(offer.offerPrice)
+//   //  await Coupon.findOneAndUpdate(
+//   //   {code:req.body.coupon},
+//   //   {$push:{user:req.session.user},status:2}
+//   //  )
+//    res.json({offerPrice:offerPrice})
+//   }
+//   catch(error){
+//     console.log(error);
+//     res.status(500).json({error:"An error occured"})
+//   }
+// }
+
+
+
 exports.applyCoupon = async(req,res)=>{
   try{
    var offerPrice
@@ -855,7 +877,6 @@ exports.applyCoupon = async(req,res)=>{
     res.status(500).json({error:"An error occured"})
   }
 }
-
 
 exports.logOut = async (req, res) => {
   req.session.destroy((err) => {

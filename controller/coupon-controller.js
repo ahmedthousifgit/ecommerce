@@ -53,7 +53,6 @@ exports.addCoupon = async(req,res)=>{
     prefix:"promo-",
     postfix:"-2015"
    })
-   console.log(code);
    
         
    let exist = await Coupon.find({name:req.body.name})
@@ -70,9 +69,9 @@ exports.addCoupon = async(req,res)=>{
    }
    else{
     const create = new Coupon({
+       created:formattedStartDate,
        name:req.body.name,
        code:code,
-       created:formattedStartDate,
        expiry:formattedEndDate,
        offerPrice:req.body.offerPrice,
        minimumPrice:req.body.minimumPrice,
