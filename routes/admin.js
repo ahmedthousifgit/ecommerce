@@ -35,7 +35,7 @@ router.get('/deleteCategory/:categoryId',auth.adminlogged,adminController.delete
 //PRODUCT
 router.get("/add-product",auth.adminlogged, adminController.addProductForm);
 
-router.post("/add-product",auth.adminlogged,update.array("image",4), adminController.addProduct);
+router.post("/add-product",auth.adminlogged,update.array("imageData",4), adminController.addProduct);
 
 router.get("/product-list",auth.adminlogged, adminController.listProduct);
 
