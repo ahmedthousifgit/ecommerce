@@ -350,8 +350,14 @@ exports.createRazorpayOrder = async (req, res) => {
   try {
     
     const userId = req.session.userId;
-    const { selectedAdd,discountTotal } = req.body;
+    const { selectedAdd,discountTotal,couponCode } = req.body;
+    console.log(couponCode,"--------------------------");
     console.log(discountTotal);
+    const coupons = await Coupon.findOne({code:couponCode})
+    coupons.user.push(userId)
+    await coupons.save()
+    console.log(coupons);
+
     const user = await User.findById(userId).populate('addresses');
       
       const selectedAddress = user.addresses.find(address => address._id.toString() === selectedAdd);

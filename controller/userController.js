@@ -838,12 +838,17 @@ exports.applyCoupon = async(req,res)=>{
    if(!offer){
     return res.status(404).json({message:"Coupon not found"})
    }
-   offerPrice = parseInt(offer.offerPrice)
-   await Coupon.findOneAndUpdate(
-    {code:req.body.coupon},
-    {$push:{user:req.session.user}}
-   )
-   res.json({offerPrice:offerPrice})
+   if(offer.user.includes(req.session.userId)){
+    return res.status(201).json({message:"coupon is already used"})
+   }else{
+     offerPrice = parseInt(offer.offerPrice)
+    //  await Coupon.findOneAndUpdate(
+    //   {code:req.body.coupon},
+    //   {$push:{user:req.session.user}}
+    //  )
+     res.status(200).json({offerPrice:offerPrice})
+
+   }
   }
   catch(error){
     console.log(error);

@@ -53,6 +53,7 @@ exports.addCoupon = async(req,res)=>{
     prefix:"promo-",
     postfix:"-2015"
    })
+   console.log(code);
    
         
    let exist = await Coupon.find({name:req.body.name})
@@ -75,7 +76,7 @@ exports.addCoupon = async(req,res)=>{
        expiry:formattedEndDate,
        offerPrice:req.body.offerPrice,
        minimumPrice:req.body.minimumPrice,
-       status: "1"
+       status: 1
     })
     create.save()
     res.redirect('/admin/coupon')

@@ -431,32 +431,33 @@
 
 
       <div class="col-lg-3">
-<!-- coupons -->
+        <!-- coupons -->
       <% if(coupons){ %>
         <div class="card mb-3 border shadow-0">
           <div class="card-body">
             <form>
               <button type="button" id="availableCoupon" class="btn btn-outline-primary mt-2" data-bs-toggle="modal"
-data-bs-target="#modalCoupon">Available Coupons</button>
+              data-bs-target="#modalCoupon">Available Coupons</button>
               <div class="form-group">
-                  <label class="form-label">Have coupon?</label>
-                  <div class="input-group">
-                      <input type="text" class="form-control border mb-1" id="coupon" name="coupon" placeholder="Coupon code" />
-                      <a onclick="applyCoupon(' <%= totalPrice %>','<%=userData.wallet%>')" id="applyButton" class="btn btn-light border">Apply</a>
-                  </div>
+                <label class="form-label">Have coupon?</label>
+                <div class="input-group">
+                  <input type="text" class="form-control border mb-1" id="coupon" name="coupon" placeholder="Coupon code" />
+                  <a onclick="applyCoupon(' <%= totalPrice %>','<%=userData.wallet%>')" id="applyButton" class="btn btn-light border">Apply</a>
+                </div>
               </div>
-          </form>
+              <p id="errorMessage" style="color: red;"></p>
+            </form>
           </div>
         </div>
         <% }else{ %>
           <input type="hidden" class="form-control border" id="coupon" name="coupon" value="0" placeholder="Coupon code" />
           <%}%>
-        <!-- coupons end -->
-
-        <div class="card shadow-0 border">
-          <div class="card-body">
-            <div class="d-flex justify-content-between">
-              
+          <!-- coupons end -->
+          
+          <div class="card shadow-0 border">
+            <div class="card-body">
+              <div class="d-flex justify-content-between">
+                
               <p class="mb-2">Total price:</p>
               
               <input
@@ -537,43 +538,73 @@ data-bs-target="#modalCoupon">Available Coupons</button>
 
 
 <script>
+let coupon;
+let statusFlag = false;
+function applyCoupon(total, wallet) {
+  let errorMessage = document.querySelector('#errorMessage');
+   coupon = document.getElementById('coupon').value;
 
-function applyCoupon(total,wallet){
-        const coupon = document.getElementById('coupon').value
-        $.ajax({
-            url:'/apply-coupon',
-            method:'post',
-            data:{
-                coupon,
-                total,
-            },
-                success:(response)=>{
-                document.getElementById('coupon').readOnly = true;
-                document.getElementById('availableCoupon').style.display = 'none';
-                document.getElementById('applyButton').disabled =true;
-                const gtElement = document.getElementById('gt');
-                const discountElement = document.getElementById('discount');
+  fetch('/apply-coupon', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      coupon,
+      total,
+    }),
+  })
+  .then(response => {
+    console.log('b4 parsing',response)
+    const res = response.json()
+    if(response.status === 201){
+      console.log('inside if')
+      statusFlag = true;
+    };
+    return res;  
+  })
+  .then(response => {
+    alert("response")
+    console.log('after parsing',response,statusFlag);
+    console.log(response.status);
+    if (statusFlag) {
+      alert('inside 201')
+      errorMessage.innerHTML = response.message;
+      setTimeout(() => {
+        errorMessage.innerHTML = '';
+      }, 2000);
+    } else if(response.status==200) {
+      document.getElementById('coupon').readOnly = true;
+      document.getElementById('availableCoupon').style.display = 'none';
+      document.getElementById('applyButton').disabled = true;
+      const gtElement = document.getElementById('gt');
+      const discountElement = document.getElementById('discount');
 
-               // Update the displayed total with the discount
-               const gt = parseFloat(gtElement.innerHTML);
-               gtElement.innerHTML = ` ${(gt - parseFloat(response.offerPrice)).toFixed(2)}`;
-                 // Update the discount
-               const discount = parseFloat(discountElement.innerHTML);
-               discountElement.innerHTML = (discount + response.offerPrice).toFixed(2);
+      // Update the displayed total with the discount
+      const gt = parseFloat(gtElement.innerHTML);
+      gtElement.innerHTML = ` ${(gt - parseFloat(response.offerPrice)).toFixed(2)}`;
+      // Update the discount
+      const discount = parseFloat(discountElement.innerHTML);
+      discountElement.innerHTML = (discount + response.offerPrice).toFixed(2);
 
-    const tot = parseFloat(gtElement.innerHTML);
-                if (tot >=wallet) {
-                // Enable the button
-                document.getElementById('walletButton').disabled = false;
-                document.getElementById('walletButton').innerHTML = "Use wallet";
-            } else {
-                // Disable the button and display "Insufficient Funds"
-                document.getElementById('walletButton').disabled = true;
-                document.getElementById('walletButton').innerHTML = "Insufficient Funds";
-            }
-            }
-        })
+      const tot = parseFloat(gtElement.innerHTML);
+      if (tot >= wallet) {
+        // Enable the button
+        document.getElementById('walletButton').disabled = false;
+        document.getElementById('walletButton').innerHTML = 'Use wallet';
+      } else {
+        // Disable the button and display "Insufficient Funds"
+        document.getElementById('walletButton').disabled = true;
+        document.getElementById('walletButton').innerHTML = 'Insufficient Funds';
+      }
     }
+  })
+  .catch(error => {
+    console.error(error);
+    // Handle errors as needed
+  });
+}
+
 
 
       
@@ -627,7 +658,13 @@ function applyCoupon(total,wallet){
         return;
       }
       let discountTotal = gtElement.innerText
-     
+      coupon = document.getElementById('coupon').value
+      console.log(coupon);
+      if(coupon.length!==0){
+        couponCode = coupon
+      }else{
+        couponCode= null
+      }
 
       if (paymentMethod === "razorpay") {
         // Handle Razorpay payment
@@ -638,13 +675,17 @@ function applyCoupon(total,wallet){
           },
           body: JSON.stringify({
             selectedAdd: billingAddress.value,
-            discountTotal
+            discountTotal,
+            couponCode
             
           }),
         });
 
         const data = await response.json();
         console.log(data);
+     
+
+      
 
         if (data.success) {
           const options = {
@@ -702,6 +743,7 @@ function applyCoupon(total,wallet){
           // Handle error in Razorpay order creation
           console.error("Error in Razorpay order creation:", data.error);
         }
+      
       } else if (paymentMethod === "cod") {
         // Handle Cash on Delivery (COD) payment
         try {
@@ -712,7 +754,8 @@ function applyCoupon(total,wallet){
             },
             body: JSON.stringify({
               selectedAdd: billingAddress.value,
-              discountTotal
+              discountTotal,
+              couponCode
             }),
           });
 
