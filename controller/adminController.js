@@ -298,7 +298,7 @@ exports.addProduct = async (req, res) => {
         .toFile(imagePath);
 
       if (croppedImage) {
-        imageData.push(imgFileName);
+        imageData.push(imgFileName); 
       }
     }
     const productData = {
@@ -440,6 +440,41 @@ exports.editedProducts = async (req, res) => {
       req.files[3].filename,
     ];
     await product.save();
+    res.redirect("/admin/product-list");
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "An error occurred" });
+  }
+};
+
+exports.listProducts = async (req, res) => {
+  try {
+    const productId = req.params.productId;
+    const products = await Product.findByIdAndUpdate(productId, {
+      isListed: true,
+    });
+    if (!products) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    res.redirect("/admin/product-list");
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "An error occurred" });
+  }
+};
+
+
+exports.unlistProducts = async (req, res) => {
+  try {
+    const productId = req.params.productId;
+    const products = await Product.findByIdAndUpdate(productId, {
+      isListed: false,
+    });
+    if (!products) {
+      return res.status(404).json({ error: "Category not found" });
+    }
+
     res.redirect("/admin/product-list");
   } catch (error) {
     console.log(error);

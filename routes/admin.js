@@ -44,6 +44,10 @@ router.get('/edit-products/:productId',auth.adminlogged,adminController.editProd
 
 router.post('/edit-products/:productId',auth.adminlogged,update.array("image",4),adminController.editedProducts)
 
+router.get('/listproducts/:productId',auth.adminlogged,adminController.listProducts)
+
+router.get('/unlistproducts/:productId',auth.adminlogged,adminController.unlistProducts)
+
 router.get('/deleteProduct/:productId',auth.adminlogged,adminController.deleteProduct)
 
 //USERLIST
