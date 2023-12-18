@@ -242,32 +242,38 @@
   <script>
 function referal(id) {
   var copyText = `http://localhost:3000/signup?id=${id}`;
-  
-  // Display success message with SweetAlert2
-  Swal.fire({
 
-    icon: 'success',
-    title: 'Copied SuccessFull',
-    showConfirmButton: false,
-    timer: 1500
-  });
+  // Send a request to the server to credit referral amount
+  fetch('/creditRefferal', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ userId: id }),
+  })
+    .then(response => response.json())
+    .then(data => {
+      // Display success message with SweetAlert2
+      Swal.fire({
+        icon: 'success',
+        title: 'Copied Successfully',
+        showConfirmButton: false,
+        timer: 1500,
+      });
 
-  // Copy the text to the clipboard
-  navigator.clipboard.writeText(copyText)
-    .then(function() {
-      console.log("Text copied to clipboard: " + copyText);
-      
-      // If you want to close something with the class 'close-container' here
-      var noThanksButton = document.querySelector('.close-container button');
-      if (noThanksButton) {
-        noThanksButton.click();
-      }
+      // Copy the text to the clipboard
+      navigator.clipboard.writeText(copyText)
+        .then(function () {
+          console.log("Text copied to clipboard: " + copyText);
+        })
+        .catch(function (err) {
+          console.error("Failed to copy text: " + err);
+        });
     })
-    .catch(function(err) {
-      console.error("Failed to copy text: " + err);
+    .catch(error => {
+      console.error("Error crediting referral amount: " + error);
     });
 }
-
 
 
        function removeAddress(userId,addressId){

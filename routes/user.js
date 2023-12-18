@@ -19,6 +19,8 @@ router.get('/sendOTP',userController.sendOTPpage)
 
 router.post('/sendOTP',userController.verifyOTP)
 
+router.post('/creditRefferal',userController.creditRefferal)
+
 router.get('/reSendOTP',userController.reSendOTP)
 
 router.post('/reSendOTP',userController.verifyResendOTP)

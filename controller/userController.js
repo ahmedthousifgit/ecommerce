@@ -125,6 +125,22 @@ exports.verifyOTP = async (req, res) => {
   }
 };
 
+exports.creditRefferal = async(req,res)=>{
+  try{
+    const refferedUserId = req.body.userId
+    
+    const refferedUser = await User.findByIdAndUpdate(refferedUserId,
+      {$inc:{wallet:100}},
+      {new:true}
+      )
+      res.json({success :true,message:'Referral amount credited successfully.'})
+  }
+  catch (error) {
+    console.error('Error crediting referral amount:', error);
+    res.status(500).json({ error: 'An error occurred while crediting referral amount.' });
+  }
+}
+
 exports.
 reSendOTP = async (req, res) => {
   try {
