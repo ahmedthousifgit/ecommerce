@@ -18,8 +18,8 @@ exports.showCart = async (req, res) => {
 
     const totalPrice = user.cart.reduce((total, item) => {
       // Check if item.product is not null before accessing properties
-      if (item.product && item.product.salePrice) {
-        return total + item.product.salePrice * item.quantity;
+      if (item.product && item.product.offerPrice) {
+        return total + item.product.offerPrice * item.quantity;
       }
       return total;
     }, 0);
@@ -187,8 +187,8 @@ exports.buyNow = async (req, res) => {
       // Calculate total price
       const totalPrice = user.cart.reduce((total, item) => {
         // Check if item.product is not null before accessing properties
-        if (item.product && item.product.salePrice) {
-          return total + item.product.salePrice * item.quantity;
+        if (item.product && item.product.offerPrice) {
+          return total + item.product.offerPrice * item.quantity;
         }
         return total;
       }, 0);

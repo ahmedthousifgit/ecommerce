@@ -25,6 +25,9 @@ const productModel = mongoose.Schema({
     type: Number,
     require: true,
   },
+  offerPrice: {
+    type: Number,
+  },
   color: {
     type: String,
     require: true,

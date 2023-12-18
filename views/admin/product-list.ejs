@@ -48,6 +48,12 @@ const ITEMS_PER_PAGE = 10; <%- include('../partials/adminheader') %>
                 </td>
                 <td><%= product.units%></td>
                 <td>
+                  <a
+                  href="/admin/edit-products/<%= product._id %>"
+                  class="btn btn-sm font-sm rounded btn-brand"
+                >
+                  <i class="material-icons md-edit"></i> Edit
+                </a>
                   <!-- product list unlist dropdown -->
                   <div class="dropdown">
                     <a

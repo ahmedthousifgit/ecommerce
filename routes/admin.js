@@ -39,6 +39,15 @@ router.post("/add-product",auth.adminlogged,update.array("imageData",4), adminCo
 
 router.get("/product-list",auth.adminlogged, adminController.listProduct);
 
+// offers
+router.get('/offerProduct',auth.adminlogged,adminController.loadProductOffer)
+
+router.post('/updateOffer',auth.adminlogged,adminController.updateProductOffer)
+
+router.get('/offerCategory',auth.adminlogged,adminController.loadCategoryOffer)
+
+router.post('/updateCatogaryOffer',auth.adminlogged,adminController.updateCategoryOffer)
+
 //EDIT PRODUCTS
 router.get('/edit-products/:productId',auth.adminlogged,adminController.editProductForm)
 

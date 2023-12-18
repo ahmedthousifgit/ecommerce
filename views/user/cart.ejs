@@ -59,9 +59,9 @@
 					<div class="col-lg-2 col-sm-6 col-6 d-flex flex-row flex-lg-column flex-xl-row text-nowrap">
 						<div class="">₹
 							<text id="pro-total-<%= item.productId %>" class="h6">
-								<%= item.product.salePrice * item.quantity %>
+								<%= item.product.offerPrice * item.quantity %>
 							</text> <br />
-							<small class="text-muted text-nowrap">₹<span id="price-<%= item.productId %>"></span> <%= item.product.salePrice %>/ per item </small>
+							<small class="text-muted text-nowrap">₹<span id="price-<%= item.productId %>"></span> <%= item.product.offerPrice %>/ per item </small>
 						</div>
 					</div>
 					<div

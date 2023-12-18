@@ -1,0 +1,72 @@
+
+
+<%- include('../partials/adminheader') %>
+<%-include('../partials/adminNav') %>
+<%-include('../partials/adminaside') %>
+<br>
+<br>
+<br>
+<br>
+
+<section class="content-main">
+<div class="container">
+    <div class="row">
+       
+            
+          
+                <% categories.forEach(category=>{  %>
+                <div class="col-lg-3">
+            <div class="card ">
+                <div class="card-header">
+                    <h4>Offer</h4>
+                </div>
+                <div class="card-body">
+                    <div class="input-upload">
+                        
+                        <form action="/admin/updateCatogaryOffer" method="post">
+                            <h4><%= category.name  %></h4><br>
+                            <h6><label for="offer">Update Catogary offer</label></h6>
+                            <input class="form-control" name="offerPercentage" type="text">
+                            <input class="form-control" name="id" type="hidden" value="<%= category._id %>">
+                            <button class="btn btn-sm btn-light rounded " style="color: rgb(255, 255, 255); background-color: rgb(70, 149, 122);" type="submit">save</button>
+                        </form>
+                    </div>
+                </div>
+            </div> <!-- card end// -->
+
+        </div>
+
+            <%})%>
+
+           <!-- pagination  -->
+           <% if (totalpages) { %>
+            <div class="pagination justify-content-center">
+              <% if (currentpage > 1) { %>
+                <button class="btn btn-sm"><a href="?page=<%= currentpage - 1 %>">Previous</a></button>
+              <% } %>
+          
+              <% for (let i = 1; i <= totalpages; i++) { %> <!-- Change the loop to start from 1 and go up to totalpages -->
+                <button class="btn btn-sm"><a href="?page=<%= i %>" class="<%= i === currentpage ? 'active' : '' %>"><%= i %></a></button>
+              <% } %>
+          
+              <% if (currentpage < totalpages) { %>
+                <button class="btn btn-sm"><a href="?page=<%= currentpage + 1 %>">Next</a></button>
+              <% } %>
+            </div>
+          <% } %>
+
+           <!-- pagination ends -->
+
+       
+    </div>
+</div>
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+</section>
+
+<%-include('../partials/adminfooter') %>

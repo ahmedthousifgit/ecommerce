@@ -281,8 +281,8 @@
                         <h2><a href="/product-details?productId=<%= product._id %>"><%= product.name %></a></h2>
                         
                         <div class="product-price">
-                          <span><%= product.salePrice %></span>
-                          <span class="old-price">$5000.8</span>
+                          <span><%=product.offerPrice%> </span>
+                          <span class="old-price"><%=product.salePrice%></span>
                         </div>
                         <div class="product-action-1 show">
                           <% if(product.units === 0){ %>

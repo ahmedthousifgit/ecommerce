@@ -2,8 +2,8 @@ const adminModel = require("../models/admin");
 const Category = require("../models/category");
 const bcrypt = require("bcrypt");
 const auth = require("../middleware/auth");
-const path = require('path')
-const sharp = require('sharp')
+const path = require("path");
+const sharp = require("sharp");
 const Product = require("../models/products-model");
 const User = require("../models/user");
 const { formatDate } = require("../utility/formatDate");
@@ -12,9 +12,9 @@ const Order = require("../models/order-model");
 const Address = require("../models/address-model");
 const multer = require("../multer/multers");
 const adminAuth = require("../middleware/auth");
+const { log } = require("console");
 const update = multer.update;
 const upload = multer.upload;
-
 
 exports.authenticateAdmin = async (req, res) => {
   const { username, password } = req.body;
@@ -113,39 +113,43 @@ exports.loadHome = async (req, res) => {
 
     const orderStatus = await Order.aggregate([
       {
-          $match: {
-              status: {
-                  $in: ['delivered', 'pending', 'Cancel Order', 'Out of delivery']
-              }
+        $match: {
+          status: {
+            $in: ["delivered", "pending", "Cancel Order", "Out of delivery"],
           },
+        },
       },
       {
-          $group: {
-              _id: '$status', // Group by status instead of month
-              count: { $sum: 1 },
-          },
+        $group: {
+          _id: "$status", // Group by status instead of month
+          count: { $sum: 1 },
+        },
       },
       {
-          $sort: {
-              '_id': 1,
-          },
+        $sort: {
+          _id: 1,
+        },
       },
-  ]);
+    ]);
 
-  const orderStatusArray = Array.from({ length: 4 }, (_, index) => {
-      const status = ['delivered', 'pending', 'Cancel Order', 'Out of delivery'][index];
+    const orderStatusArray = Array.from({ length: 4 }, (_, index) => {
+      const status = [
+        "delivered",
+        "pending",
+        "Cancel Order",
+        "Out of delivery",
+      ][index];
       const statusData = orderStatus.find((item) => item._id === status);
       return statusData ? statusData.count : 0;
-  });
-  
-console.log(orderStatusArray);
-//-----------end order status
+    });
+
+    console.log(orderStatusArray);
+    //-----------end order status
 
     //---------product graph---------------
-  
+
     const totalRevenue =
       aggregationResult.length > 0 ? aggregationResult[0].totalPrice : 0;
- 
 
     res.render("admin/dashboard", {
       title: "Admin dashboard",
@@ -159,7 +163,7 @@ console.log(orderStatusArray);
       totalRevenue,
       orders,
       orderStatusArray,
-      formatDate
+      formatDate,
     });
   } catch (error) {
     console.log(error);
@@ -285,7 +289,7 @@ exports.addProduct = async (req, res) => {
       console.log(file, "File received");
 
       const randomInteger = Math.floor(Math.random() * 20000001);
-      const imageDirectory = path.join('public', 'uploads', 'products');
+      const imageDirectory = path.join("public", "uploads", "products");
       const imgFileName = "cropped" + randomInteger + ".jpg";
       const imagePath = path.join(imageDirectory, imgFileName);
 
@@ -298,23 +302,22 @@ exports.addProduct = async (req, res) => {
         .toFile(imagePath);
 
       if (croppedImage) {
-        imageData.push(imgFileName); 
+        imageData.push(imgFileName);
       }
     }
     const productData = {
-      
       name: req.body.name,
       description: req.body.description,
       category: req.body.category,
       subCategory: req.body.subCategory,
-      regularPrice: req.body.regularPrice,  
+      regularPrice: req.body.regularPrice,
       salePrice: req.body.salePrice,
       createdOn: Date.now(),
-      color:req.body.color,
+      color: req.body.color,
       taxRate: req.body.taxRate,
       units: req.body.units,
-      size : x,
-      image: imageData
+      size: x,
+      image: imageData,
     };
 
     const product = new Product(productData);
@@ -325,24 +328,21 @@ exports.addProduct = async (req, res) => {
     res.status(500).json({ error: "An error occurred" });
   }
 };
-const ITEMS_PER_PAGE = 4
+const ITEMS_PER_PAGE = 4;
 exports.listProduct = async (req, res) => {
   try {
-    const page = parseInt(req.query.page)
-    const totalProducts = await Product.countDocuments()
-    const totalPages = Math.ceil(totalProducts/ITEMS_PER_PAGE)
+    const page = parseInt(req.query.page);
+    const totalProducts = await Product.countDocuments();
+    const totalPages = Math.ceil(totalProducts / ITEMS_PER_PAGE);
     const products = await Product.find()
-    .sort({createdOn:-1})
-    .skip((page-1)* ITEMS_PER_PAGE)
-    .limit(ITEMS_PER_PAGE)
-    
+      .sort({ createdOn: -1 })
+      .skip((page - 1) * ITEMS_PER_PAGE)
+      .limit(ITEMS_PER_PAGE);
 
-    res.render("admin/product-list", 
-    {
-       products,
-       currentPage:page,
-       totalPages 
-    
+    res.render("admin/product-list", {
+      products,
+      currentPage: page,
+      totalPages,
     });
   } catch (error) {
     console.log(error);
@@ -350,17 +350,104 @@ exports.listProduct = async (req, res) => {
   }
 };
 
+//-----------offer---------------------------------------------------------------------------------
+exports.loadProductOffer = async (req, res) => {
+  try {
+    const product = await Product.find();
+    // console.log("PRODUCT:",product);
+    res.render("admin/productOffer", { product });
+  } catch (error) {
+    console.log(
+      "Error happence in the offerctrl in the funtion productOfferpage "
+    );
+  }
+};
+
+exports.updateProductOffer = async (req, res) => {
+  try {
+    console.log('hiiiiiiiiiiiiiiiiii');
+    const { id, offerPrice } = req.body;
+    console.log(id, offerPrice, "id,offerPrice");
+
+    const product = await Product.findById(id);
+    console.log(product, "product");
+
+     const cappedPercentage = Math.min(offerPrice, 100);
+     console.log("CAPPEDPERCENTAGE:",cappedPercentage);
+
+     const percentage = (product.salePrice * cappedPercentage) / 100;
+     product.offerPrice=Math.round( product.salePrice-percentage);
+     product.offerPercentage=cappedPercentage;
+     console.log("PERCENTGE:",percentage);
+
+    await product.save();
+
+    console.log(product.offerPrice, "updated product price");
+
+    await product.save();
+
+    console.log(product.offerPrice, "updated product price");
+    res.redirect("/admin/offerProduct");
+  } catch (error) {
+    console.log(error, "error");
+  }
+};
+
+exports.loadCategoryOffer = async(req,res)=>{
+  try{
+    const categories = await Category.find()
+
+    const itemsperpage = 8;
+        const currentpage = parseInt(req.query.page) || 1;
+        const startindex = (currentpage - 1) * itemsperpage;
+        const endindex = startindex + itemsperpage;
+        const totalpages = Math.ceil(categories.length / 8);
+        const currentproduct = categories.slice(startindex,endindex);
+
+    res.render('admin/categoryOffer',{categories:currentproduct,totalpages,currentpage})
+  }
+  catch(error){
+    console.log('Error happened in the offerctrl in the function catogaryOffer:', error);
+  }
+}
+
+exports.updateCategoryOffer = async(req,res)=>{
+  try{
+      const {id,offerPercentage}= req.body;
+      const category = await Category.findById(id)
+
+      const products = await Product.find({category:category.name})
+
+      products.forEach(async (product)=>{
+        const discountAmount = (offerPercentage /100)*product.salePrice
+        const newOfferPrice = Math.round(product.salePrice - discountAmount)
+        const newPrice = product.salePrice
+
+        await Product.findByIdAndUpdate(product._id,{
+          offerPrice: newOfferPrice,
+          salePrice: newPrice
+        })
+      })
+      res.redirect('/admin/offerProduct')
+  }
+  catch(error){
+    console.log('Error happened in the offerctrl in the function catogaryOffer:', error);
+  }
+
+}
+//-------------------------------------------------------------------------------------------
+
 //USERS
 exports.users = async (req, res) => {
   try {
-    const page= parseInt(req.query.page)
-    const totalusers = await User.countDocuments()
-    const totalPages = Math.ceil(totalusers/ITEMS_PER_PAGE)
+    const page = parseInt(req.query.page);
+    const totalusers = await User.countDocuments();
+    const totalPages = Math.ceil(totalusers / ITEMS_PER_PAGE);
     const users = await User.find()
-    .sort({createdOn:-1})
-    .skip((page-1)*ITEMS_PER_PAGE)
-    .limit(ITEMS_PER_PAGE)
-    res.render("admin/users", { users,currentPage:page,totalPages });
+      .sort({ createdOn: -1 })
+      .skip((page - 1) * ITEMS_PER_PAGE)
+      .limit(ITEMS_PER_PAGE);
+    res.render("admin/users", { users, currentPage: page, totalPages });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "An error occurred" });
@@ -464,7 +551,6 @@ exports.listProducts = async (req, res) => {
   }
 };
 
-
 exports.unlistProducts = async (req, res) => {
   try {
     const productId = req.params.productId;
@@ -498,21 +584,21 @@ exports.deleteProduct = async (req, res) => {
   }
 };
 
-
 exports.orderList = async (req, res) => {
   try {
-    const page = parseInt(req.query.page)
-    const totalOrders = await Order.countDocuments({}).populate('userId')
-    const totalPages = Math.ceil(totalOrders/ITEMS_PER_PAGE)
-    const orders = await Order.find({}).populate("userId")
-    .sort({createdOn:-1})
-    .skip((page-1)*ITEMS_PER_PAGE)
-    .limit(ITEMS_PER_PAGE)
+    const page = parseInt(req.query.page);
+    const totalOrders = await Order.countDocuments({}).populate("userId");
+    const totalPages = Math.ceil(totalOrders / ITEMS_PER_PAGE);
+    const orders = await Order.find({})
+      .populate("userId")
+      .sort({ createdOn: -1 })
+      .skip((page - 1) * ITEMS_PER_PAGE)
+      .limit(ITEMS_PER_PAGE);
     res.render("admin/orderList", {
       orders,
       formatDate,
       totalPages,
-      currentPage:page
+      currentPage: page,
     });
 
     //  console.log(orders.user);
