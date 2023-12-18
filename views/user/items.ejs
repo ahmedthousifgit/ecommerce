@@ -140,7 +140,9 @@
 												<a href="shop-grid-right.html">Shoes</a>
 											</div>
 											<h2><a href="/product-details?productId=<%= product._id %>"><%= product.name %></a></h2>
-											
+											<span  style="font-weight: 900 ;color: green; margin-left: 5px;">
+												(Save <%= Math.round(((product.salePrice - product.offerPrice) / product.salePrice) * 100) %> %)
+											  </span>
 											<div class="product-price">
 												<span><%=product.offerPrice%> </span>
 												<span class="old-price"><%=product.salePrice%></span>

@@ -3946,8 +3946,8 @@ body.offcanvas-active {
 }
 
 .content-main {
-  padding: 30px;
-  margin-left: 300px;
+  padding: 30px 3%;
+  margin-left: auto;
   margin-right: auto;
   background-color: #f8f9fa;
 }
