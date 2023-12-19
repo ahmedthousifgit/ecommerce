@@ -365,22 +365,33 @@ exports.loadProductOffer = async (req, res) => {
 
 exports.updateProductOffer = async (req, res) => {
   try {
-    console.log('hiiiiiiiiiiiiiiiiii');
+    console.log("hiiiiiiiiiiiiiiiiii");
     const { id, offerPrice } = req.body;
     console.log(id, offerPrice, "id,offerPrice");
 
+    const userId = req.session.userId;
+
     const product = await Product.findById(id);
+    let productData = product._id;
+    let users = await User.find({});
     console.log(product, "product");
+    console.log("----------------+++++++++++++++");
+    const cappedPercentage = Math.min(offerPrice, 100);
 
-     const cappedPercentage = Math.min(offerPrice, 100);
-     console.log("CAPPEDPERCENTAGE:",cappedPercentage);
+    const percentage = (product.salePrice * cappedPercentage) / 100;
+    product.offerPrice = Math.round(product.salePrice - percentage);
+    product.offerPercentage = cappedPercentage;
 
-     const percentage = (product.salePrice * cappedPercentage) / 100;
-     product.offerPrice=Math.round( product.salePrice-percentage);
-     product.offerPercentage=cappedPercentage;
-     console.log("PERCENTGE:",percentage);
-
-    await product.save();
+    users.forEach(async (user) => {
+      user.cart.forEach((cart) => {
+        console.log(offerPrice, "1234567890");
+        if (cart.productId == product._id + "") {
+          cart.product.offerPrice = product.offerPrice;
+          console.log(cart.product.offerPrice, "qwertyuiop");
+        }
+      });
+      await User.findByIdAndUpdate(user._id, { $set: { cart: user.cart } });
+    });
 
     console.log(product.offerPrice, "updated product price");
 
@@ -393,48 +404,55 @@ exports.updateProductOffer = async (req, res) => {
   }
 };
 
-exports.loadCategoryOffer = async(req,res)=>{
-  try{
-    const categories = await Category.find()
+exports.loadCategoryOffer = async (req, res) => {
+  try {
+    const categories = await Category.find();
 
     const itemsperpage = 8;
-        const currentpage = parseInt(req.query.page) || 1;
-        const startindex = (currentpage - 1) * itemsperpage;
-        const endindex = startindex + itemsperpage;
-        const totalpages = Math.ceil(categories.length / 8);
-        const currentproduct = categories.slice(startindex,endindex);
+    const currentpage = parseInt(req.query.page) || 1;
+    const startindex = (currentpage - 1) * itemsperpage;
+    const endindex = startindex + itemsperpage;
+    const totalpages = Math.ceil(categories.length / 8);
+    const currentproduct = categories.slice(startindex, endindex);
 
-    res.render('admin/categoryOffer',{categories:currentproduct,totalpages,currentpage})
+    res.render("admin/categoryOffer", {
+      categories: currentproduct,
+      totalpages,
+      currentpage,
+    });
+  } catch (error) {
+    console.log(
+      "Error happened in the offerctrl in the function catogaryOffer:",
+      error
+    );
   }
-  catch(error){
-    console.log('Error happened in the offerctrl in the function catogaryOffer:', error);
+};
+
+exports.updateCategoryOffer = async (req, res) => {
+  try {
+    const { id, offerPercentage } = req.body;
+    const category = await Category.findById(id);
+
+    const products = await Product.find({ category: category.name });
+
+    products.forEach(async (product) => {
+      const discountAmount = (offerPercentage / 100) * product.salePrice;
+      const newOfferPrice = Math.round(product.salePrice - discountAmount);
+      const newPrice = product.salePrice;
+
+      await Product.findByIdAndUpdate(product._id, {
+        offerPrice: newOfferPrice,
+        salePrice: newPrice,
+      });
+    });
+    res.redirect("/admin/offerProduct");
+  } catch (error) {
+    console.log(
+      "Error happened in the offerctrl in the function catogaryOffer:",
+      error
+    );
   }
-}
-
-exports.updateCategoryOffer = async(req,res)=>{
-  try{
-      const {id,offerPercentage}= req.body;
-      const category = await Category.findById(id)
-
-      const products = await Product.find({category:category.name})
-
-      products.forEach(async (product)=>{
-        const discountAmount = (offerPercentage /100)*product.salePrice
-        const newOfferPrice = Math.round(product.salePrice - discountAmount)
-        const newPrice = product.salePrice
-
-        await Product.findByIdAndUpdate(product._id,{
-          offerPrice: newOfferPrice,
-          salePrice: newPrice
-        })
-      })
-      res.redirect('/admin/offerProduct')
-  }
-  catch(error){
-    console.log('Error happened in the offerctrl in the function catogaryOffer:', error);
-  }
-
-}
+};
 //-------------------------------------------------------------------------------------------
 
 //USERS
@@ -461,7 +479,7 @@ exports.blockUser = async (req, res) => {
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     } else {
-      user.blocked = true; // Unblock the user
+      user.blocked = !user.blocked; // Unblock the user
       await user.save();
       res.status(200).json({ success: true, redirectTo: "/admin/users-list" });
     }
@@ -471,22 +489,22 @@ exports.blockUser = async (req, res) => {
   }
 };
 
-exports.unblockUser = async (req, res) => {
-  try {
-    const userId = req.params.userId;
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    } else {
-      user.blocked = false; // unblock the user
-      await user.save();
-      res.redirect("/admin/users-list");
-    }
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ error: "An error occurred" });
-  }
-};
+// exports.unblockUser = async (req, res) => {
+//   try {
+//     const userId = req.params.userId;
+//     const user = await User.findById(userId);
+//     if (!user) {
+//       return res.status(404).json({ error: "User not found" });
+//     } else {
+//       user.blocked = false; // unblock the user
+//       await user.save();
+//       res.redirect("/admin/users-list");
+//     }
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).json({ error: "An error occurred" });
+//   }
+// };
 
 exports.editProductForm = async (req, res) => {
   try {

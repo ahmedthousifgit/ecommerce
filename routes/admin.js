@@ -64,7 +64,7 @@ router.get('/users-list',auth.adminlogged,adminController.users)
 
 router.get('/blockUser/:userId',auth.adminlogged, adminController.blockUser);
 
-router.get('/unblockUser/:userId',auth.adminlogged, adminController.unblockUser);
+router.get('/unblockUser/:userId',auth.adminlogged, adminController.blockUser);
 
 //ORDERS
 router.get('/orders',auth.adminlogged,adminController.orderList)

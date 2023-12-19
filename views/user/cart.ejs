@@ -177,13 +177,13 @@
             // Update the quantity input field, the total price, and the price per item
             if (updatedItem) {
                 quantityElement.value = updatedItem.quantity;
-                totalElement.textContent = `₹ ${updatedItem.product.salePrice * updatedItem.quantity}`;
-                priceElement.textContent = `₹ ${updatedItem.product.salePrice}`;
+                totalElement.textContent = `₹ ${updatedItem.product.offerPrice * updatedItem.quantity}`;
+                priceElement.textContent = `₹ ${updatedItem.product.offerPrice}`;
             }
-			const newTotalPrice = updatedCart.reduce((total, item) => total + (item.product.salePrice * item.quantity), 0);
+			const newTotalPrice = updatedCart.reduce((total, item) => total + (item.product.offerPrice * item.quantity), 0);
              totalPriceElement.textContent = `₹ ${newTotalPrice.toFixed(2)}`;
             // Update the total amount in the summary section
-            const newTotalAmount = updatedCart.reduce((total, item) => total + (item.product.salePrice * item.quantity), 0);
+            const newTotalAmount = updatedCart.reduce((total, item) => total + (item.product.offerPrice * item.quantity), 0);
             totalAmountElement.textContent = `₹ ${newTotalAmount.toFixed(2)}`;
 
             console.log(data.cart);

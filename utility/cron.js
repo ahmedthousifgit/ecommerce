@@ -1,6 +1,6 @@
 const cron = require('node-cron')
 const Coupon = require('../models/coupon')
-cron.schedule('0 * * * *', async () => {
+cron.schedule('0 0 * * *', async () => {
   try {
     const currentDate = new Date();
     const expiredCoupons = await Coupon.find({

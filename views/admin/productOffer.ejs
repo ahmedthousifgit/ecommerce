@@ -34,6 +34,12 @@
                             <input class="form-control" name="id" type="hidden" value="<%= products._id %>">
                             <button class="btn btn-sm btn-light rounded " style="color: rgb(255, 255, 255); background-color: rgb(70, 149, 122);" type="submit">save</button>
                         </form>
+                        <!-- Add this after the form in your EJS template -->
+                        <div class="alert alert-danger mt-3" id="error-message" style="display:none;">
+                            <strong>Error!</strong> Product offer should not increase by 100 or more.
+                          </div>
+                       
+  
                     </div>
                 </div>
             </div> <!-- card end// -->
@@ -54,6 +60,36 @@
 <br>
 <br>
 <br>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const forms = document.querySelectorAll("form");
+  
+      forms.forEach(function (form) {
+        form.addEventListener("submit", function (event) {
+          const offerInput = form.querySelector("[name='offerPrice']");
+          const errorMessage = form.closest(".card-body").querySelector("#error-message");
+  
+          // Validate offerPrice using regex
+          const offerPriceRegex = /^\d{1,2}(\.\d{1,2})?$/;
+          const offerPrice = parseFloat(offerInput.value);
+  
+          if (!offerPriceRegex.test(offerInput.value) || offerPrice > 100) {
+            errorMessage.style.display = "block";
+            event.preventDefault(); // Prevent form submission
+          } else {
+            errorMessage.style.display = "none";
+          }
+        });
+      });
+    });
+  </script>
+  
+  
 </section>
+<!-- Add this script at the end of your EJS template, before the closing </section> tag -->
+<!-- Add this script at the end of your EJS template, before the closing </section> tag -->
+
+  
+  
 
 <%- include('../partials/adminfooter') %>

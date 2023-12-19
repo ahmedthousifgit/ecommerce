@@ -15,7 +15,7 @@ exports.showCart = async (req, res) => {
   try {
     const userId = req.session.userId;
     const user = await User.findById(userId).populate("cart.productId");
-
+    // console.log("USER::::",user);
     const totalPrice = user.cart.reduce((total, item) => {
       // Check if item.product is not null before accessing properties
       if (item.product && item.product.offerPrice) {
@@ -109,7 +109,7 @@ exports.updateQuantity = async (req, res) => {
           { new: true }
         );
         const totalAmount = updatedUser.cart.reduce(
-          (total, item) => total + item.product.salePrice * item.quantity,
+          (total, item) => total + item.product.offerPrice * item.quantity,
           0
         );
         res.json({ success: true, cart: updatedUser.cart, totalAmount });
@@ -269,8 +269,8 @@ exports.checkout = async (req, res) => {
       let totalPrice;
       if (totalPrice == discountTotal) {
         totalPrice = user.cart.reduce((total, item) => {
-          if (item.product && item.product.salePrice) {
-            return total + item.product.salePrice * item.quantity;
+          if (item.product && item.product.offerPrice) {
+            return total + item.product.offerPrice * item.quantity;
           }
           return total;
         }, 0);
@@ -311,7 +311,7 @@ exports.checkout = async (req, res) => {
         products: user.cart.map((item) => ({
           product: item.product._id,
           quantity: item.quantity,
-          pricePerQnt: item.product.salePrice,
+          pricePerQnt: item.product.offerPrice,
         })),
         totalPrice,
         status: "pending",
@@ -370,8 +370,8 @@ exports.createRazorpayOrder = async (req, res) => {
     let totalPrice;
     if (totalPrice == discountTotal) {
       totalPrice = user.cart.reduce((total, item) => {
-        if (item.product && item.product.salePrice) {
-          return total + item.product.salePrice * item.quantity;
+        if (item.product && item.product.offerPrice) {
+          return total + item.product.offerPrice * item.quantity;
         }
         return total;
       }, 0);
@@ -430,7 +430,7 @@ exports.createOrder = async (req, res) => {
         products: user.cart.map((item) => ({
           product: item.product._id,
           quantity: item.quantity,
-          pricePerQnt: item.salePrice,
+          pricePerQnt: item.offerPrice,
         })),
         totalPrice,
         status: "pending",
