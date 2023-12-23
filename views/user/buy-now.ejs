@@ -369,9 +369,17 @@
                   </span>
                 </label>
               </div>
-              <div class="col-lg-3">
-                <div class="card shadow-0 border"></div>
-              </div>
+
+              <%if(parseInt(totalPrice)<=parseInt(userData.wallet)){%>
+              <label class="" >
+                <input name="paymentMethod" class="radio payment" type="radio" value="wallet"  checked>
+                <span class="plan-details">
+                  <h3>Use Wallet</h3>
+                </span>
+              </label>
+              <% } %>
+
+             
             </form>
           </div>
         </div>
@@ -751,6 +759,38 @@ function applyCoupon(total, wallet) {
         // Handle Cash on Delivery (COD) payment
         try {
           const response = await fetch("/checkout", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              selectedAdd: billingAddress.value,
+              discountTotal,
+              couponCode
+            }),
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            await Swal.fire({
+              title: "Order Confirmed!",
+              text: "Order Successful. Waiting for response!",
+              icon: "success",
+            });
+            window.location.href = "/order-list";
+          } else {
+            // Handle error in checkout
+            console.error("Error in checkout:", data.error);
+          }
+        } catch (error) {
+          console.error("Error in checkout:", error);
+        }
+      }
+      else if (paymentMethod === "wallet") {
+        // Handle Cash on Delivery (COD) payment
+        try {
+          const response = await fetch("/walletPayment", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",

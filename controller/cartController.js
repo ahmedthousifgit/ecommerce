@@ -348,6 +348,103 @@ exports.checkout = async (req, res) => {
   }
 };
 
+exports.walletPayment = async (req, res) => {
+  try {
+    const userId = req.session.userId;
+    const { selectedAdd, discountTotal, couponCode } = req.body;
+
+    // Fetch the user and selected address
+    const user = await User.findById(userId).populate("addresses");
+    if (couponCode !== null) {
+      const coupons = await Coupon.findOne({ code: couponCode });
+      coupons.user.push(userId);
+      await coupons.save();
+      console.log(coupons);
+    }
+    const selectedAddress = user.addresses.find(
+      (address) => address._id.toString() === selectedAdd
+    );
+
+    // Fetch user's cart and selected products
+    const productIds = user.cart.map((item) => item.productId);
+    const selectedProducts = await Product.find({ _id: { $in: productIds } });
+
+    // Calculate the total price based on the discount
+    let totalPrice;
+    if (discountTotal) {
+      totalPrice = discountTotal;
+    } else {
+      totalPrice = user.cart.reduce((total, item) => {
+        if (item.product && item.product.offerPrice) {
+          return total + item.product.offerPrice * item.quantity;
+        }
+        return total;
+      }, 0);
+    }
+
+    // Check if the order amount is greater than the existing wallet amount
+    if (totalPrice > user.wallet) {
+      return res.status(400).json({ error: "Insufficient wallet balance" });
+    }
+
+    // Check for product availability
+    let outOfStock = false;
+    for (const item of user.cart) {
+      const product = selectedProducts.find(
+        (p) => p._id.toString() === item.productId
+      );
+
+      if (product && product.units < item.quantity) {
+        outOfStock = true;
+      }
+      if (outOfStock) {
+        return res.status(400).json({ error: "Insufficient stock" });
+      }
+    }
+
+    // Deduct the amount from the wallet
+    user.wallet -= totalPrice;
+    await user.save();
+
+    // Create a new order
+    const order = new Order({
+      userId: new mongoose.Types.ObjectId(req.session.userId),
+      address: selectedAddress,
+      payment: "wallet",
+      products: user.cart.map((item) => ({
+        product: item.product._id,
+        quantity: item.quantity,
+        pricePerQnt: item.product.offerPrice,
+      })),
+      totalPrice,
+      status: "pending",
+    });
+
+    // Save the order to the database
+    await order.save();
+
+    // Update stock for each product
+    for (const item of user.cart) {
+      const product = selectedProducts.find(
+        (p) => p._id.toString() === item.productId
+      );
+
+      if (product) {
+        product.units -= item.quantity;
+        await product.save();
+      }
+    }
+
+    // Clear the user's cart after the purchase
+    user.cart = [];
+    await user.save();
+
+    res.status(200).json({ success: true });
+  } catch (error) {
+    console.error("Error in walletPayment controller:", error);
+    res.status(500).json({ error: "An error occurred" });
+  }
+};
 //razorpay(coupon changes)
 
 exports.createRazorpayOrder = async (req, res) => {
@@ -567,7 +664,7 @@ console.log(products);
       "bottom-notice": "Happy shoping and visit Shoes.in again",
     };
     console.log(data+'/////////////////////////////////////////////////////////////////');
-let pdfResult = await easyinvoice.createInvoice(data);
+    let pdfResult = await easyinvoice.createInvoice(data);
     const pdfBuffer = Buffer.from(pdfResult.pdf, "base64");
 
     // Set HTTP headers for the PDF response

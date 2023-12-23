@@ -88,6 +88,8 @@ router.post('/apply-coupon',auth.isLogged,userController.applyCoupon)
 
 router.post('/checkout',auth.isLogged,cartController.checkout)
 
+router.post('/walletPayment',auth.isLogged,cartController.walletPayment)
+
 //INVOICE
 
 router.get('/invoice/:orderId',auth.isLogged,cartController.invoice)

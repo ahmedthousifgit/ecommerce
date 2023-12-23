@@ -696,7 +696,7 @@ exports.cancelOrder = async (req, res) => {
     console.log(order);
     const refundAmount = order.totalPrice
     console.log("REFUNDAMOUNT:",refundAmount);
-    if(order.payment=== "razorpay"){
+    if(order.payment=== "razorpay" || order.payment ==="wallet"){
       await User.findByIdAndUpdate(req.session.userId,{
         $inc:{wallet:refundAmount}
       })
@@ -736,7 +736,7 @@ exports.returnOrder= async(req,res)=>{
     const products = await Product.find()
     const order = await Order.findById(orderId).populate('products.product').populate(products.quantity)
     const refundAmount = order.totalPrice
-    if(order.payment=== "razorpay"){
+    if(order.payment=== "razorpay"|| order.payment ==="wallet" ){
       await User.findByIdAndUpdate(req.session.userId,{
         $inc:{wallet:refundAmount}
       })
@@ -847,25 +847,7 @@ exports.history = async(req,res)=>{
   }
 }
 
-// exports.applyCoupon = async(req,res)=>{
-//   try{
-//    var offerPrice
-//    const offer = await Coupon.findOne({code:req.body.coupon})
-//    if(!offer){
-//     return res.status(404).json({message:"Coupon not found"})
-//    }
-//    offerPrice = parseInt(offer.offerPrice)
-//   //  await Coupon.findOneAndUpdate(
-//   //   {code:req.body.coupon},
-//   //   {$push:{user:req.session.user},status:2}
-//   //  )
-//    res.json({offerPrice:offerPrice})
-//   }
-//   catch(error){
-//     console.log(error);
-//     res.status(500).json({error:"An error occured"})
-//   }
-// }
+
 
 
 
@@ -880,10 +862,7 @@ exports.applyCoupon = async(req,res)=>{
     return res.status(201).json({message:"coupon is already used"})
    }else{
      offerPrice = parseInt(offer.offerPrice)
-    //  await Coupon.findOneAndUpdate(
-    //   {code:req.body.coupon},
-    //   {$push:{user:req.session.user}}
-    //  )
+  
      res.status(200).json({offerPrice:offerPrice})
 
    }
