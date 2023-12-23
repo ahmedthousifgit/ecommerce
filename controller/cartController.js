@@ -3,8 +3,11 @@ const User = require("../models/user");
 const Product = require("../models/products-model");
 const Order = require("../models/order-model");
 const Coupon = require("../models/coupon");
+const Address = require('../models/address-model')
 const { addAddress } = require("./userController");
+const { Readable } = require("stream");
 const Razorpay = require("razorpay");
+var easyinvoice = require('easyinvoice');
 
 var razorpay = new Razorpay({
   key_id: "rzp_test_mu3Z5SNU9tR58R",
@@ -462,3 +465,122 @@ exports.createOrder = async (req, res) => {
     res.status(500).json({ error: "An error occurred" });
   }
 };
+
+exports.invoice = async(req,res)=>{
+  try{
+    const userId = req.session.userId;
+    const orderId = req.params.orderId;
+    const [user, order] = await Promise.all([
+      User.findById(userId).populate('addresses'),
+      Order.findOne({ userId, _id: orderId }).populate('products.product'),
+      
+    ]);
+    const address = await Address.findById({_id:order.address})
+    console.log(user);
+    console.log('------------');
+    console.log(order);
+   res.render('user/invoice',{order,address,user,selectedProducts :order.products})
+  }
+  catch (error) {
+    console.error("Error in createRazorpayOrder controller:", error);
+    res.status(500).json({ error: "An error occurred" });
+  }
+  
+}
+
+exports.invoiceDownload = async(req,res)=>{
+  try {
+    const id = req.query.id;
+    console.log('///////////////// ',id);
+    const userId = req.session.userId;
+    const result = await Order.findById({ _id: id }).populate('userId').populate('products.product')
+ // Extract the user's address based on the Order's address ID
+ console.log('---result-----');
+    console.log(result);
+  console.log('---result-----');
+    
+ 
+    const user = await User.findById({ _id: userId });     
+    const address = await Address.findById({_id: result.userId.addresses}) 
+    console.log("ADDRESS::",address);
+   
+    if (!result || !result.address) {
+        return res.status(404).json({ error: "Order not found or address missing" });
+    }
+
+    const order = {
+        id: id,
+        total: result.totalPrice,
+        date: result.createdOn, // Use the formatted date
+        paymentMethod: result.payment,
+        orderStatus: result.status,
+        name: address.name,
+        mobile: address.number,
+        house: address.house,
+        pincode: address.pinCode,
+        city: address.town,
+        state: address.state,
+        products: result.products,
+    };
+    console.log(order,';;;;;;;;;;;;;;;;;;;;;;;');        
+    // Assuming products is an array, adjust if needed
+    const products = order.products.map((product, i) => ({
+        quantity: parseInt(product.quantity),
+        description: product.product.name,
+        price: parseInt(product.product.offerPrice),
+        total: parseInt(result.totalPrice),
+        "tax-rate": 0,
+    }));
+console.log(products);
+          
+    const isoDateString = order.date;
+    const isoDate = new Date(isoDateString);
+
+    const options = { year: "numeric", month: "long", day: "numeric" };
+    const formattedDate = isoDate.toLocaleDateString("en-US", options);
+    const data = {
+      customize: {
+        //  "template": fs.readFileSync('template.html', 'base64') // Must be base64 encoded html
+      },
+      images: {
+        // The invoice background
+        background: "",
+      },
+      // Your own data
+      sender: {
+        company: "Shoes.in",
+        address: "Decide Your Feel",
+        city: "Ernakulam",
+        country: "India",
+      },
+      client: {
+        company: "Customer Address",
+        "zip": address.name,
+        "city": address.town,
+        "address": address.pinCode,
+      },
+      information: {
+        number: "order" + order.id,
+        date: formattedDate,
+      },
+      products: products,
+      "bottom-notice": "Happy shoping and visit Shoes.in again",
+    };
+    console.log(data+'/////////////////////////////////////////////////////////////////');
+let pdfResult = await easyinvoice.createInvoice(data);
+    const pdfBuffer = Buffer.from(pdfResult.pdf, "base64");
+
+    // Set HTTP headers for the PDF response
+    res.setHeader("Content-Disposition", 'attachment; filename="invoice.pdf"');
+    res.setHeader("Content-Type", "application/pdf");
+
+    // Create a readable stream from the PDF buffer and pipe it to the response
+    const pdfStream = new Readable();
+    pdfStream.push(pdfBuffer);
+    pdfStream.push(null);
+    pdfStream.pipe(res);
+} catch (error) {
+    console.error('Error in invoiceDownload:', error);
+    res.status(500).json({ error: error.message });
+}
+}

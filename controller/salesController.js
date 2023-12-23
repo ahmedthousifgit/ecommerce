@@ -9,6 +9,7 @@ exports.salesReport = async (req,res)=>{
         const date = req.query.date
         let orders
         const currentDate = new Date()
+        
 
         function getFirstDayOfMonth(date){
             return new Date(date.getFullYear(), date.getMonth(), 1);

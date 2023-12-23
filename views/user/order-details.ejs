@@ -50,7 +50,7 @@
                         <div class="col-lg-6 col-md-6 ms-auto text-md-end">
                             <!-- <button class="btn btn-outline-primary" onclick="tracking()">Track Order</button> -->
                            
-                        <a href="" class="btn btn-primary">invoice</a>
+                        <a href="/invoice/<%=order._id %>" class="btn btn-primary">invoice</a>
                         
                         </div>
                     </div>
@@ -147,7 +147,7 @@
                                                 </a>
                                             </td>
                                             <td>  <div class="info"><%= item.product.name %>  </div></td>
-                                            <td> <%= item.product.salePrice %> </td>
+                                            <td> <%= item.product.offerPrice %> </td>
                                             <td><%= item.quantity %></td>
                                             <td class="text-end"> <%= totalPrice %></td>                                        </tr>
                                         <td>

@@ -88,6 +88,11 @@ router.post('/apply-coupon',auth.isLogged,userController.applyCoupon)
 
 router.post('/checkout',auth.isLogged,cartController.checkout)
 
+//INVOICE
+
+router.get('/invoice/:orderId',auth.isLogged,cartController.invoice)
+
+router.get('/invoiceDownload',auth.isLogged,cartController.invoiceDownload)
 //RAZORPAY
 
 router.post('/razorpay-order', auth.isLogged, cartController.createRazorpayOrder);
