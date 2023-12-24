@@ -382,6 +382,7 @@ exports.updateProductOffer = async (req, res) => {
     product.offerPrice = Math.round(product.salePrice - percentage);
     product.offerPercentage = cappedPercentage;
 
+    product.hasProductOffer = true;
     users.forEach(async (user) => {
       user.cart.forEach((cart) => {
         console.log(offerPrice, "1234567890");
@@ -436,6 +437,10 @@ exports.updateCategoryOffer = async (req, res) => {
     const products = await Product.find({ category: category.name });
 
     products.forEach(async (product) => {
+      if (product.hasProductOffer) {
+        return;
+      }
+
       const discountAmount = (offerPercentage / 100) * product.salePrice;
       const newOfferPrice = Math.round(product.salePrice - discountAmount);
       const newPrice = product.salePrice;

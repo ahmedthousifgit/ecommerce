@@ -28,6 +28,10 @@ const productModel = mongoose.Schema({
   offerPrice: {
     type: Number,
   },
+  hasProductOffer: {
+    type: Boolean,
+    default: false,
+  },
   color: {
     type: String,
     require: true,

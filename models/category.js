@@ -16,6 +16,10 @@ const categoryModel = mongoose.Schema({
     type: String,
     default: 0,
   },
+  hasProductOffer: {
+    type: Boolean,
+    default: false,
+  },
   isListed: {
     type: Boolean,
     default: true,
