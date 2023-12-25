@@ -11,7 +11,7 @@ const upload = multer.upload
 
 
 //LOGIN
-// router.get("/", adminController.adminIndex);
+
 
 router.get("/", adminController.adminLoggin);
 

@@ -41,14 +41,6 @@ exports.authenticateAdmin = async (req, res) => {
   }
 };
 
-// exports.adminIndex = (req, res) => {
-//   if (req.session.adminId) {
-//     res.redirect("/admin/dashboard");
-//   }
-//   const errorMessage = "";
-//   res.render("admin/login", { errorMessage });
-// };
-
 exports.adminLoggin = (req, res) => {
   try {
     if (req.session.adminId) {
@@ -78,11 +70,10 @@ exports.loadHome = async (req, res) => {
       { $group: { _id: null, totalPrice: { $sum: "$totalPrice" } } },
     ]);
 
-    // monthly sale
     const monthlySales = await Order.aggregate([
       {
         $match: {
-          status: "delivered", // Filter by status
+          status: "delivered",
         },
       },
       {
@@ -103,13 +94,12 @@ exports.loadHome = async (req, res) => {
       const monthData = monthlySales.find((item) => item._id === index + 1);
       return monthData ? monthData.count : 0;
     });
-    // monthly sale end
+
     const productsPerMonth = Array(12).fill(0);
     products.forEach((product) => {
       const creationMonth = product.createdOn.getMonth();
       productsPerMonth[creationMonth]++;
     });
-    //------------order ststus--------------------
 
     const orderStatus = await Order.aggregate([
       {
@@ -121,7 +111,7 @@ exports.loadHome = async (req, res) => {
       },
       {
         $group: {
-          _id: "$status", // Group by status instead of month
+          _id: "$status",
           count: { $sum: 1 },
         },
       },
@@ -144,9 +134,6 @@ exports.loadHome = async (req, res) => {
     });
 
     console.log(orderStatusArray);
-    //-----------end order status
-
-    //---------product graph---------------
 
     const totalRevenue =
       aggregationResult.length > 0 ? aggregationResult[0].totalPrice : 0;
@@ -173,14 +160,13 @@ exports.loadHome = async (req, res) => {
 
 exports.adminCategoryForm = async (req, res) => {
   try {
-    const categories = await Category.find(); // Fetch the categories
-
+    const categories = await Category.find();
     const isError = "";
     res.render("admin/categoryForm", {
       title: "Category management",
       errorMessage: "",
       isError,
-      categories, // Pass the categories to the template
+      categories,
     });
   } catch (error) {
     console.log(error);
@@ -197,7 +183,6 @@ exports.submitCategory = async (req, res) => {
 
     if (existingCategory) {
       const isError = "category already existed";
-      // Category with the same name exists, return an error
       res.render("admin/categoryForm", { categories, isError });
     } else {
       const categoryData = {
@@ -207,8 +192,6 @@ exports.submitCategory = async (req, res) => {
       };
       const category = new Category(categoryData);
       await category.save();
-
-      // Fetch the list of categories and indicate that a submission has occurred
       const categories = await Category.find();
       const isSubmitted = true;
       const isError = "";
@@ -261,7 +244,6 @@ exports.deleteCategory = async (req, res) => {
     if (!category) {
       return res.status(404).json({ error: "Product not found" });
     }
-    // res.redirect("/admin/categories");
     res.status(200).json({ success: true, redirectTo: "/admin/categories" });
   } catch (error) {
     console.log(error);
@@ -354,7 +336,7 @@ exports.listProduct = async (req, res) => {
 exports.loadProductOffer = async (req, res) => {
   try {
     const product = await Product.find();
-    // console.log("PRODUCT:",product);
+
     res.render("admin/productOffer", { product });
   } catch (error) {
     console.log(
@@ -365,7 +347,6 @@ exports.loadProductOffer = async (req, res) => {
 
 exports.updateProductOffer = async (req, res) => {
   try {
-    console.log("hiiiiiiiiiiiiiiiiii");
     const { id, offerPrice } = req.body;
     console.log(id, offerPrice, "id,offerPrice");
 
@@ -374,10 +355,7 @@ exports.updateProductOffer = async (req, res) => {
     const product = await Product.findById(id);
     let productData = product._id;
     let users = await User.find({});
-    console.log(product, "product");
-    console.log("----------------+++++++++++++++");
     const cappedPercentage = Math.min(offerPrice, 100);
-
     const percentage = (product.salePrice * cappedPercentage) / 100;
     product.offerPrice = Math.round(product.salePrice - percentage);
     product.offerPercentage = cappedPercentage;
@@ -385,7 +363,6 @@ exports.updateProductOffer = async (req, res) => {
     product.hasProductOffer = true;
     users.forEach(async (user) => {
       user.cart.forEach((cart) => {
-        console.log(offerPrice, "1234567890");
         if (cart.productId == product._id + "") {
           cart.product.offerPrice = product.offerPrice;
           console.log(cart.product.offerPrice, "qwertyuiop");
@@ -394,11 +371,7 @@ exports.updateProductOffer = async (req, res) => {
       await User.findByIdAndUpdate(user._id, { $set: { cart: user.cart } });
     });
 
-    console.log(product.offerPrice, "updated product price");
-
     await product.save();
-
-    console.log(product.offerPrice, "updated product price");
     res.redirect("/admin/offerProduct");
   } catch (error) {
     console.log(error, "error");
@@ -458,9 +431,7 @@ exports.updateCategoryOffer = async (req, res) => {
     );
   }
 };
-//-------------------------------------------------------------------------------------------
 
-//USERS
 exports.users = async (req, res) => {
   try {
     const page = parseInt(req.query.page);
@@ -484,7 +455,7 @@ exports.blockUser = async (req, res) => {
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     } else {
-      user.blocked = !user.blocked; // Unblock the user
+      user.blocked = !user.blocked;
       await user.save();
       res.status(200).json({ success: true, redirectTo: "/admin/users-list" });
     }
@@ -493,23 +464,6 @@ exports.blockUser = async (req, res) => {
     res.status(500).json({ error: "An error occurred" });
   }
 };
-
-// exports.unblockUser = async (req, res) => {
-//   try {
-//     const userId = req.params.userId;
-//     const user = await User.findById(userId);
-//     if (!user) {
-//       return res.status(404).json({ error: "User not found" });
-//     } else {
-//       user.blocked = false; // unblock the user
-//       await user.save();
-//       res.redirect("/admin/users-list");
-//     }
-//   } catch (error) {
-//     console.log(error);
-//     res.status(500).json({ error: "An error occurred" });
-//   }
-// };
 
 exports.editProductForm = async (req, res) => {
   try {
@@ -623,9 +577,6 @@ exports.orderList = async (req, res) => {
       totalPages,
       currentPage: page,
     });
-
-    //  console.log(orders.user);
-    // console.log(orders.user);
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "An error occurred" });
@@ -648,9 +599,6 @@ exports.orderDetails = async (req, res) => {
       orderProducts: orders.products,
       formatDate,
     });
-    // console.log(orders);
-    // console.log('-----------------');
-    // console.log(orders.products);
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "An error occurred" });
@@ -658,8 +606,7 @@ exports.orderDetails = async (req, res) => {
 };
 
 exports.delivered = async (req, res) => {
-  await order
-    .updateOne({ _id: req.body.id }, { status: "2" })
+  await Order.updateOne({ _id: req.body.id }, { status: "2" })
     .then((data) => {
       res.json(true);
     })
@@ -671,12 +618,7 @@ exports.delivered = async (req, res) => {
 
 exports.updateOrderStatus = async (req, res) => {
   try {
-    console.log("inside::::::::orderstatus");
     const { orderId, status } = req.body;
-
-    console.log("orderID::::" + orderId);
-    console.log("status " + status);
-    // console.log(status,orderId);
     if (!status || !orderId) {
       return res.status(400).json({ error: "Invalid input parameters" });
     }
@@ -685,7 +627,7 @@ exports.updateOrderStatus = async (req, res) => {
       { $set: { status: status } },
       { new: true }
     );
-    console.log(updatedOrder);
+
     if (!updatedOrder) {
       return res.status(404).json({ error: "Order not found" });
     }
@@ -706,8 +648,9 @@ exports.orderStatus = async (req, res) => {
 };
 
 exports.changeStatus = async (req, res) => {
-  await order
-    .findByIdAndUpdate(req.query.id, { $set: { status: req.query.status } })
+  await Order.findByIdAndUpdate(req.query.id, {
+    $set: { status: req.query.status },
+  })
     .lean()
     .then((data) => {
       res.redirect(`/admin/details?id=${req.query.id}`);

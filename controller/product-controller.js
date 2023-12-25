@@ -9,7 +9,7 @@ exports.productShow = async (req, res) => {
     const categories = await Categories.find();
     const currentPage = parseInt(req.query.page) || 1;
     const productsPerPage = 6;
-    // Calculate the number of products to skip
+
     const skip = (currentPage - 1) * productsPerPage;
     const products = await Product.find({ verified: 0, isListed: true })
       .skip(skip)
@@ -19,7 +19,7 @@ exports.productShow = async (req, res) => {
       isListed: true,
     });
     const totalPages = Math.ceil(totalProducts / productsPerPage);
-    // const products = await Product.find({ verified: "0", isListed: true });
+
     const user = await User.findById(req.session.userId);
     res.render("user/items", {
       username: User.name,
@@ -40,7 +40,7 @@ exports.brandWise = async (req, res) => {
     const user = await User.findById(req.session.userId);
     const currentPage = parseInt(req.query.page) || 1;
     const productsPerPage = 6;
-    // Calculate the number of products to skip
+
     const skip = (currentPage - 1) * productsPerPage;
     const totalProducts = await Product.countDocuments({
       verified: 0,
@@ -82,7 +82,7 @@ exports.priceWise = async (req, res) => {
     const categories = await Categories.find({ isListed: true });
     const currentPage = parseInt(req.query.page) || 1;
     const productsPerPage = 6;
-    // Calculate the number of products to skip
+
     const skip = (currentPage - 1) * productsPerPage;
     const totalProducts = await Product.countDocuments({
       verified: 0,
@@ -101,7 +101,7 @@ exports.priceWise = async (req, res) => {
         .skip(skip)
         .limit(productsPerPage);
     }
-    // console.log(products);
+
     res.render("user/items", {
       products,
       username: User.name,
@@ -122,7 +122,7 @@ exports.colorWise = async (req, res) => {
     const categories = await Categories.find({ isListed: true });
     const currentPage = parseInt(req.query.page) || 1;
     const productsPerPage = 6;
-    // Calculate the number of products to skip
+
     const skip = (currentPage - 1) * productsPerPage;
     const totalProducts = await Product.countDocuments({
       verified: 0,
@@ -135,12 +135,12 @@ exports.colorWise = async (req, res) => {
         color: selectedColor,
         isListed: true,
       })
-      .skip(skip)
+        .skip(skip)
         .limit(productsPerPage);
     } else {
       products = await Product.find({ isListed: true })
-      .skip(skip)
-      .limit(productsPerPage);
+        .skip(skip)
+        .limit(productsPerPage);
     }
     res.render("user/items", {
       products,
@@ -162,7 +162,7 @@ exports.subCategory = async (req, res) => {
     const subCat = req.query.id;
     const currentPage = parseInt(req.query.page) || 1;
     const productsPerPage = 6;
-    // Calculate the number of products to skip
+
     const skip = (currentPage - 1) * productsPerPage;
     const totalProducts = await Product.countDocuments({
       verified: 0,
@@ -175,12 +175,12 @@ exports.subCategory = async (req, res) => {
         subCategory: subCat,
         isListed: true,
       })
-      .skip(skip)
-      .limit(productsPerPage);
+        .skip(skip)
+        .limit(productsPerPage);
     } else {
       products = await Product.find({ isListed: true })
-      .skip(skip)
-      .limit(productsPerPage);
+        .skip(skip)
+        .limit(productsPerPage);
     }
     res.render("user/items", {
       products,
@@ -188,7 +188,6 @@ exports.subCategory = async (req, res) => {
       categories,
       currentPage,
       totalPages,
-
     });
   } catch (error) {
     console.log(error);

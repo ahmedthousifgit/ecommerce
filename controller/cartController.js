@@ -3,11 +3,11 @@ const User = require("../models/user");
 const Product = require("../models/products-model");
 const Order = require("../models/order-model");
 const Coupon = require("../models/coupon");
-const Address = require('../models/address-model')
+const Address = require("../models/address-model");
 const { addAddress } = require("./userController");
 const { Readable } = require("stream");
 const Razorpay = require("razorpay");
-var easyinvoice = require('easyinvoice');
+var easyinvoice = require("easyinvoice");
 
 var razorpay = new Razorpay({
   key_id: "rzp_test_mu3Z5SNU9tR58R",
@@ -18,9 +18,8 @@ exports.showCart = async (req, res) => {
   try {
     const userId = req.session.userId;
     const user = await User.findById(userId).populate("cart.productId");
-    // console.log("USER::::",user);
+
     const totalPrice = user.cart.reduce((total, item) => {
-      // Check if item.product is not null before accessing properties
       if (item.product && item.product.offerPrice) {
         return total + item.product.offerPrice * item.quantity;
       }
@@ -28,7 +27,7 @@ exports.showCart = async (req, res) => {
     }, 0);
 
     const totalAmount = totalPrice;
-    // console.log(user.cart);
+
     res.render("user/cart", {
       cart: user.cart,
       username: user.name,
@@ -43,7 +42,7 @@ exports.showCart = async (req, res) => {
 
 exports.addToCart = async (req, res) => {
   try {
-    const { productId } = req.body; //hidden productId in productdetails
+    const { productId } = req.body;
     const userId = req.session.userId;
 
     const existingCartItem = await User.findOne({
@@ -51,7 +50,6 @@ exports.addToCart = async (req, res) => {
       "cart.productId": productId,
     });
     if (existingCartItem) {
-      // If the product is already in the cart, update the quantity
       const updatedUser = await User.findOneAndUpdate(
         { _id: userId, "cart.productId": productId },
         { $inc: { "cart.$.quantity": 1 } },
@@ -59,7 +57,6 @@ exports.addToCart = async (req, res) => {
       );
       res.redirect("/cart");
     } else {
-      // If the product is not in the cart, add it as a new item
       const product = await Product.findById(productId);
       const updatedUser = await User.findByIdAndUpdate(
         userId,
@@ -90,7 +87,6 @@ exports.updateQuantity = async (req, res) => {
         (item) => item.productId === productId
       ).quantity;
 
-      // Update the quantity based on the action (increment or decrement)
       let newQuantity;
       if (action === "increment") {
         newQuantity = currentQuantity + 1;
@@ -98,11 +94,8 @@ exports.updateQuantity = async (req, res) => {
         newQuantity = currentQuantity - 1;
       }
 
-      // Ensure the new quantity is between 1 and 15
       newQuantity = Math.min(15, Math.max(1, newQuantity));
 
-      // Update the quantity in the cart
-      console.log("000000000000000000000000");
       const productData = await Product.findById(productId);
       console.log(productData);
       if (productData.units >= newQuantity) {
@@ -151,16 +144,14 @@ exports.cartCount = async (req, res) => {
 exports.removeFromCart = async (req, res) => {
   try {
     const { productId } = req.body;
-    const userId = req.session.userId; // Assuming you are using sessions to manage user authentication
+    const userId = req.session.userId;
 
-    // Use findOneAndUpdate to remove the item from the cart
     const user = await User.findOneAndUpdate(
       { _id: userId },
       { $pull: { cart: { productId: productId } } },
       { new: true }
     );
 
-    // Check if the item was successfully removed
     if (user) {
       res.json({ message: "Item removed from the cart successfully" });
     } else {
@@ -173,30 +164,21 @@ exports.removeFromCart = async (req, res) => {
 };
 
 exports.buyNow = async (req, res) => {
-  // console.log(req.body);
   try {
     const userId = req.session.userId;
     const user = await User.findById(userId).populate("addresses");
     const coupons = await Coupon.find({ status: 1 }).lean();
     const sessionUser = req.session.user;
     const userData = await User.findById(userId);
-    console.log(user, "++++++++++++++++++");
-    console.log("COUPON:", coupons);
-    console.log("USER:", userData);
 
     if (user && !user.blocked) {
-      // Check if the user has items in the cart
-
-      // Calculate total price
       const totalPrice = user.cart.reduce((total, item) => {
-        // Check if item.product is not null before accessing properties
         if (item.product && item.product.offerPrice) {
           return total + item.product.offerPrice * item.quantity;
         }
         return total;
       }, 0);
-      console.log("0000000000000000000000");
-      console.log(user.cart);
+
       if (coupons.length === 0) {
         res.render("user/buy-now", {
           user,
@@ -236,8 +218,6 @@ exports.buyNow = async (req, res) => {
           });
         }
       }
-
-      // Render the buy-now page with user data and addresses
     } else {
       res.redirect("/login");
     }
@@ -247,13 +227,10 @@ exports.buyNow = async (req, res) => {
   }
 };
 
-//checkou (coupon changes)
-
 exports.checkout = async (req, res) => {
   try {
     const userId = req.session.userId;
     const { selectedAdd, discountTotal, couponCode } = req.body;
-    console.log(couponCode);
 
     const user = await User.findById(userId).populate("addresses");
     if (couponCode !== null) {
@@ -267,7 +244,7 @@ exports.checkout = async (req, res) => {
         (address) => address._id.toString() === selectedAdd
       );
       const productIds = user.cart.map((item) => item.productId);
-      // console.log(productIds,'------------');
+
       const selectedProducts = await Product.find({ _id: { $in: productIds } });
       let totalPrice;
       if (totalPrice == discountTotal) {
@@ -281,12 +258,6 @@ exports.checkout = async (req, res) => {
         totalPrice = discountTotal;
       }
 
-      // Check if the user has items in the cart
-      // console.log('---------cart-----------------');
-      // console.log(user.cart);
-      // console.log('---------cart-----------------');
-      // console.log(selectedProducts);
-      // console.log(productIds);
       if (!user.cart || user.cart.length === 0) {
         return res.status(400).json({ error: "Cart is empty" });
       }
@@ -297,7 +268,6 @@ exports.checkout = async (req, res) => {
         );
 
         if (product && product.units < item.quantity) {
-          // return res.status(400).json({ error: 'Insufficient stock' });
           outOfStock = true;
         }
         if (outOfStock) {
@@ -305,12 +275,11 @@ exports.checkout = async (req, res) => {
         }
       }
 
-      // Assuming you have a function to create an order in your Order model
       const order = new Order({
         userId: new mongoose.Types.ObjectId(req.session.userId),
         address: selectedAddress,
         payment: req.body.paymentMethod || "cod",
-        // product: selectedProducts,
+
         products: user.cart.map((item) => ({
           product: item.product._id,
           quantity: item.quantity,
@@ -320,10 +289,8 @@ exports.checkout = async (req, res) => {
         status: "pending",
       });
 
-      // Save the order to the database
       await order.save();
 
-      // Update stock for each product
       for (const item of user.cart) {
         const product = selectedProducts.find(
           (p) => p._id.toString() === item.productId
@@ -335,7 +302,6 @@ exports.checkout = async (req, res) => {
         }
       }
 
-      // Clear the user's cart after the purchase
       user.cart = [];
       await user.save();
       res.status(200).json({ success: true });
@@ -353,7 +319,6 @@ exports.walletPayment = async (req, res) => {
     const userId = req.session.userId;
     const { selectedAdd, discountTotal, couponCode } = req.body;
 
-    // Fetch the user and selected address
     const user = await User.findById(userId).populate("addresses");
     if (couponCode !== null) {
       const coupons = await Coupon.findOne({ code: couponCode });
@@ -365,11 +330,9 @@ exports.walletPayment = async (req, res) => {
       (address) => address._id.toString() === selectedAdd
     );
 
-    // Fetch user's cart and selected products
     const productIds = user.cart.map((item) => item.productId);
     const selectedProducts = await Product.find({ _id: { $in: productIds } });
 
-    // Calculate the total price based on the discount
     let totalPrice;
     if (discountTotal) {
       totalPrice = discountTotal;
@@ -382,12 +345,10 @@ exports.walletPayment = async (req, res) => {
       }, 0);
     }
 
-    // Check if the order amount is greater than the existing wallet amount
     if (totalPrice > user.wallet) {
       return res.status(400).json({ error: "Insufficient wallet balance" });
     }
 
-    // Check for product availability
     let outOfStock = false;
     for (const item of user.cart) {
       const product = selectedProducts.find(
@@ -402,11 +363,9 @@ exports.walletPayment = async (req, res) => {
       }
     }
 
-    // Deduct the amount from the wallet
     user.wallet -= totalPrice;
     await user.save();
 
-    // Create a new order
     const order = new Order({
       userId: new mongoose.Types.ObjectId(req.session.userId),
       address: selectedAddress,
@@ -420,10 +379,8 @@ exports.walletPayment = async (req, res) => {
       status: "pending",
     });
 
-    // Save the order to the database
     await order.save();
 
-    // Update stock for each product
     for (const item of user.cart) {
       const product = selectedProducts.find(
         (p) => p._id.toString() === item.productId
@@ -435,7 +392,6 @@ exports.walletPayment = async (req, res) => {
       }
     }
 
-    // Clear the user's cart after the purchase
     user.cart = [];
     await user.save();
 
@@ -445,14 +401,12 @@ exports.walletPayment = async (req, res) => {
     res.status(500).json({ error: "An error occurred" });
   }
 };
-//razorpay(coupon changes)
 
 exports.createRazorpayOrder = async (req, res) => {
   try {
     const userId = req.session.userId;
     const { selectedAdd, discountTotal, couponCode } = req.body;
-    console.log(couponCode, "--------------------------");
-    console.log(discountTotal);
+
     if (couponCode !== null) {
       const coupons = await Coupon.findOne({ code: couponCode });
       coupons.user.push(userId);
@@ -480,11 +434,10 @@ exports.createRazorpayOrder = async (req, res) => {
     }
     console.log(totalPrice);
 
-    // Create Razorpay order using the initialized instance
     const orderOptions = {
-      amount: Math.round(totalPrice * 100), // Razorpay accepts amount in paisa
+      amount: Math.round(totalPrice * 100),
       currency: "INR",
-      receipt: `order_${Date.now()}`, // Use a timestamp as a receipt
+      receipt: `order_${Date.now()}`,
       payment_capture: 1,
     };
 
@@ -508,13 +461,9 @@ exports.createRazorpayOrder = async (req, res) => {
 
 exports.createOrder = async (req, res) => {
   try {
-    console.log("----------[[[[[[[[[[[[[[[[[[[[[[[[[[[[[");
     const userId = req.session.userId;
     const { selectedAdd, totalPrice } = req.body;
-    console.log(totalPrice);
-    console.log(typeof totalPrice);
-    console.log(req.body, "0000000000000000000000000000000");
-    console.log(selectedAdd, "-==================");
+
     const user = await User.findById(userId).populate("addresses");
     console.log(user.cart);
     if (user && !user.blocked) {
@@ -526,7 +475,7 @@ exports.createOrder = async (req, res) => {
       const order = new Order({
         userId: new mongoose.Types.ObjectId(req.session.userId),
         address: selectedAddress,
-        payment: "razorpay", // Assuming 'razorpay' for Razorpay orders
+        payment: "razorpay",
         products: user.cart.map((item) => ({
           product: item.product._id,
           quantity: item.quantity,
@@ -536,7 +485,6 @@ exports.createOrder = async (req, res) => {
         status: "pending",
       });
 
-      // Save the order to the database
       await order.save();
 
       console.log(order);
@@ -552,7 +500,6 @@ exports.createOrder = async (req, res) => {
         }
       }
 
-      // Clear the user's cart after the purchase
       user.cart = [];
       await user.save();
       res.json({ success: true, order: order });
@@ -563,87 +510,80 @@ exports.createOrder = async (req, res) => {
   }
 };
 
-exports.invoice = async(req,res)=>{
-  try{
+exports.invoice = async (req, res) => {
+  try {
     const userId = req.session.userId;
     const orderId = req.params.orderId;
     const [user, order] = await Promise.all([
-      User.findById(userId).populate('addresses'),
-      Order.findOne({ userId, _id: orderId }).populate('products.product'),
-      
+      User.findById(userId).populate("addresses"),
+      Order.findOne({ userId, _id: orderId }).populate("products.product"),
     ]);
-    const address = await Address.findById({_id:order.address})
-    console.log(user);
-    console.log('------------');
-    console.log(order);
-   res.render('user/invoice',{order,address,user,selectedProducts :order.products})
-  }
-  catch (error) {
+    const address = await Address.findById({ _id: order.address });
+
+    res.render("user/invoice", {
+      order,
+      address,
+      user,
+      selectedProducts: order.products,
+    });
+  } catch (error) {
     console.error("Error in createRazorpayOrder controller:", error);
     res.status(500).json({ error: "An error occurred" });
   }
-  
-}
+};
 
-exports.invoiceDownload = async(req,res)=>{
+exports.invoiceDownload = async (req, res) => {
   try {
     const id = req.query.id;
-    console.log('///////////////// ',id);
+
     const userId = req.session.userId;
-    const result = await Order.findById({ _id: id }).populate('userId').populate('products.product')
- // Extract the user's address based on the Order's address ID
- console.log('---result-----');
-    console.log(result);
-  console.log('---result-----');
-    
- 
-    const user = await User.findById({ _id: userId });     
-    const address = await Address.findById({_id: result.userId.addresses}) 
-    console.log("ADDRESS::",address);
-   
+    const result = await Order.findById({ _id: id })
+      .populate("userId")
+      .populate("products.product");
+
+    const user = await User.findById({ _id: userId });
+    const address = await Address.findById({ _id: result.userId.addresses });
+
     if (!result || !result.address) {
-        return res.status(404).json({ error: "Order not found or address missing" });
+      return res
+        .status(404)
+        .json({ error: "Order not found or address missing" });
     }
 
     const order = {
-        id: id,
-        total: result.totalPrice,
-        date: result.createdOn, // Use the formatted date
-        paymentMethod: result.payment,
-        orderStatus: result.status,
-        name: address.name,
-        mobile: address.number,
-        house: address.house,
-        pincode: address.pinCode,
-        city: address.town,
-        state: address.state,
-        products: result.products,
+      id: id,
+      total: result.totalPrice,
+      date: result.createdOn,
+      paymentMethod: result.payment,
+      orderStatus: result.status,
+      name: address.name,
+      mobile: address.number,
+      house: address.house,
+      pincode: address.pinCode,
+      city: address.town,
+      state: address.state,
+      products: result.products,
     };
-    console.log(order,';;;;;;;;;;;;;;;;;;;;;;;');        
-    // Assuming products is an array, adjust if needed
+
     const products = order.products.map((product, i) => ({
-        quantity: parseInt(product.quantity),
-        description: product.product.name,
-        price: parseInt(product.product.offerPrice),
-        total: parseInt(result.totalPrice),
-        "tax-rate": 0,
+      quantity: parseInt(product.quantity),
+      description: product.product.name,
+      price: parseInt(product.product.offerPrice),
+      total: parseInt(result.totalPrice),
+      "tax-rate": 0,
     }));
-console.log(products);
-          
+
     const isoDateString = order.date;
     const isoDate = new Date(isoDateString);
 
     const options = { year: "numeric", month: "long", day: "numeric" };
     const formattedDate = isoDate.toLocaleDateString("en-US", options);
     const data = {
-      customize: {
-        //  "template": fs.readFileSync('template.html', 'base64') // Must be base64 encoded html
-      },
+      customize: {},
       images: {
-        // The invoice background
         background: "",
       },
-      // Your own data
+
       sender: {
         company: "Shoes.in",
         address: "Decide Your Feel",
@@ -652,9 +592,9 @@ console.log(products);
       },
       client: {
         company: "Customer Address",
-        "zip": address.name,
-        "city": address.town,
-        "address": address.pinCode,
+        zip: address.name,
+        city: address.town,
+        address: address.pinCode,
       },
       information: {
         number: "order" + order.id,
@@ -663,21 +603,19 @@ console.log(products);
       products: products,
       "bottom-notice": "Happy shoping and visit Shoes.in again",
     };
-    console.log(data+'/////////////////////////////////////////////////////////////////');
+
     let pdfResult = await easyinvoice.createInvoice(data);
     const pdfBuffer = Buffer.from(pdfResult.pdf, "base64");
 
-    // Set HTTP headers for the PDF response
     res.setHeader("Content-Disposition", 'attachment; filename="invoice.pdf"');
     res.setHeader("Content-Type", "application/pdf");
 
-    // Create a readable stream from the PDF buffer and pipe it to the response
     const pdfStream = new Readable();
     pdfStream.push(pdfBuffer);
     pdfStream.push(null);
     pdfStream.pipe(res);
-} catch (error) {
-    console.error('Error in invoiceDownload:', error);
+  } catch (error) {
+    console.error("Error in invoiceDownload:", error);
     res.status(500).json({ error: error.message });
-}
-}
+  }
+};
