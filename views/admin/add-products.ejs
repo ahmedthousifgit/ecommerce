@@ -67,23 +67,6 @@
                         <small id="salePrice-error" class="error-message"></small>
                       </div>
                     </div>
-
-                    <!-- <div class="col-lg-4">
-                      <div class="mb-4">
-                        <label class="form-label">Offer price</label>
-                        <input
-                          placeholder="$"
-                          type="number"
-                          class="form-control"
-                          name="offerPrice"
-                          id="salePrice"
-                          min="0"
-                          step="0.01" 
-                          required
-                        />
-                        <small id="salePrice-error" class="error-message"></small>
-                      </div>
-                    </div> -->
                     
                     <div class="col-lg-4">
                       <label class="form-label">Unit</label>
@@ -216,62 +199,7 @@
                 <div class="card-body" >
                     
                     <div class="card mb-4">
-                        <!-- <div class="card-body">
-                            
-                            <div class="images-container">
-                                <div class="image-preview-container d-flex flex-wrap justify-content-center">
-                                   
-                                    <div class="image-container border-1">
-                                        <img style="width: 100px; height: 100px; margin-bottom: 20px;" src="/assets/imgs/theme/upload.svg" alt="Default" class="image-preview">
-                                    </div>
-                                </div>
-                                <input class="form-control" name="image"  multiple="multiple" type="file" onchange="displayImages(this)">
-                                <div class="error-message" style="color: red;" id="product_image-error"></div>
-                            </div>
-                            
-                            <script>
-                                function displayImages(input) {
-                                    const previewContainer = document.querySelector('.image-preview-container');
-                                    previewContainer.innerHTML = ''; // Clear previous previews
-                            
-                                    if (input.files && input.files.length > 0) {
-                                        for (let i = 0; i < input.files.length; i++) {
-                                            const reader = new FileReader();
-                                            reader.onload = function (e) {
-                                               console.log(e.target.result,"kkkk");  
-                                              const imagePreview = document.createElement('div');
-                                                imagePreview.classList.add('image-container');
-                                                const img = document.createElement('img');
-                                                img.src = e.target.result;
-                                                img.style.width = '100px';
-                                                img.style.height = '100px';
-                                                img.style.marginBottom = '20px';
-                                                img.style.marginRight = '5px'; 
-                                                img.style.marginLeft = '5px'; 
-                                                img.classList.add('image-preview');
-                                                imagePreview.appendChild(img);
-                                                previewContainer.appendChild(imagePreview);
-                                            };
-                                          
-                                            reader.readAsDataURL(input.files[i]);
-                                        }
-                                    } else {
-                                        const defaultImagePreview = document.createElement('div');
-                                        defaultImagePreview.classList.add('image-container');
-                                        const defaultImg = document.createElement('img');
-                                        defaultImg.src = '/uploadimage.svg';
-                                        defaultImg.style.width = '100px';
-                                        defaultImg.style.height = '100px';
-                                        defaultImg.style.marginBottom = '20px';
-                                        defaultImg.style.marginRight = '5px'; 
-                                        defaultImg.style.marginLeft = '5px'; 
-                                        defaultImg.classList.add('image-preview');
-                                        defaultImagePreview.appendChild(defaultImg);
-                                        previewContainer.appendChild(defaultImagePreview);
-                                    }
-                                    
-                                }
-                            </script>
+                        
                         </div> -->
                         <center>
                           <p style="color: red; margin-top: 10px;" id="err14"></p>

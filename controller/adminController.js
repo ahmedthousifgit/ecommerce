@@ -64,12 +64,11 @@ exports.loadHome = async (req, res) => {
       .populate("userId");
     const orders = await Order.find({}).populate("userId");
     const products = await Product.find();
-
     const aggregationResult = await Order.aggregate([
       { $match: { status: "delivered" } },
       { $group: { _id: null, totalPrice: { $sum: "$totalPrice" } } },
     ]);
-
+    
     const monthlySales = await Order.aggregate([
       {
         $match: {
