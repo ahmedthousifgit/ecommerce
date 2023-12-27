@@ -233,6 +233,8 @@ exports.checkout = async (req, res) => {
     const { selectedAdd, discountTotal, couponCode } = req.body;
 
     const user = await User.findById(userId).populate("addresses");
+    console.log(userId);
+    console.log(user);
     if (couponCode !== null) {
       const coupons = await Coupon.findOne({ code: couponCode });
       coupons.user.push(userId);
